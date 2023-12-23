@@ -8,6 +8,7 @@
         "ms-vscode-remote.remote-wsl",
         "ms-python.vscode-pylance",
         "ms-vscode.cpptools",
-        "ms-vscode.cpptools-extension-pack"
+        "ms-vscode.cpptools-extension-pack",
+        "ms-vscode.powershell"
     ]
 }
