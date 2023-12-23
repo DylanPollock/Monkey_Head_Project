@@ -9,6 +9,8 @@
         "ms-python.vscode-pylance",
         "ms-vscode.cpptools",
         "ms-vscode.cpptools-extension-pack",
-        "ms-vscode.powershell"
+        "ms-vscode.powershell",
+        "vscjava.vscode-java-debug",
+        "microhobby.linuxkerneldev"
     ]
 }
