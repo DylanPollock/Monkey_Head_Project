@@ -5,7 +5,6 @@
         "ms-azuretools.vscode-docker",
         "ms-vscode-remote.remote-containers",
         "ms-python.python",
-        "ms-vscode.powershell",
         "ms-vscode-remote.remote-wsl",
         "ms-python.vscode-pylance",
         "ms-vscode.cpptools",
