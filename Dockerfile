@@ -13,6 +13,10 @@ RUN python3 -m venv /opt/venv
 # Activate virtual environment
 ENV PATH="/opt/venv/bin:$PATH"
 
+# Set environment variables
+ENV API_KEY=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
+ENV ORG_ID=org-QvCu4lkMIaiGUUO7vf7VRbHR
+
 # Copy the requirements file into the container
 COPY requirements.txt ./
 
@@ -30,4 +34,4 @@ RUN groupadd -r myuser && useradd -r -g myuser myuser
 USER myuser
 
 # Command to run your application
-CMD ["python3", "./your_script.py"]
+# CMD ["python3", "./your_script.py"] # Update with your script

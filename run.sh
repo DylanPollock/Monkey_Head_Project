@@ -1,5 +1,5 @@
 #!/bin/bash
-PROJECT_PATH="/path/to/your/GenCore"
+PROJECT_PATH="/mnt/c/Users/admin/OneDrive/Desktop/GenCore" # Update path for WSL
 CONTAINER_NAME="gencore-container"
 IMAGE_NAME="GenCore-app"
 
