@@ -11,6 +11,9 @@
         "ms-vscode.cpptools-extension-pack",
         "ms-vscode.powershell",
         "vscjava.vscode-java-debug",
-        "microhobby.linuxkerneldev"
+        "microhobby.linuxkerneldev",
+        "ms-vscode.remote-repositories",
+        "ms-vscode-remote.remote-ssh-edit",
+        "ms-vscode.remote-explorer"
     ]
 }
