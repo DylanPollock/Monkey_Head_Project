@@ -1,19 +1,21 @@
 {
     "recommendations": [
-        "github.copilot",
         "github.copilot-chat",
         "ms-azuretools.vscode-docker",
         "ms-vscode-remote.remote-containers",
-        "ms-python.python",
         "ms-vscode-remote.remote-wsl",
         "ms-python.vscode-pylance",
         "ms-vscode.cpptools",
-        "ms-vscode.cpptools-extension-pack",
-        "ms-vscode.powershell",
         "vscjava.vscode-java-debug",
         "microhobby.linuxkerneldev",
         "ms-vscode.remote-repositories",
         "ms-vscode-remote.remote-ssh-edit",
-        "ms-vscode.remote-explorer"
+        "ms-vscode.remote-explorer",
+        "ms-vscode-remote.vscode-remote-extensionpack",
+        "ms-vscode.remote-server",
+        "ms-vscode-remote.remote-ssh",
+        "github.remotehub",
+        "github.vscode-pull-request-github",
+        "ms-vscode.cmake-tools"
     ]
 }

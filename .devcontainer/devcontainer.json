@@ -38,6 +38,31 @@
 			"version": "latest"
 		},
 		"ghcr.io/akhildevelops/devcontainer-features/pip:0": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode-remote.remote-wsl",
+				"ms-vscode.remote-repositories",
+				"ms-vscode.remote-explorer",
+				"ms-vscode-remote.vscode-remote-extensionpack",
+				"ms-vscode.remote-server",
+				"ms-vscode-remote.remote-ssh-edit",
+				"ms-vscode-remote.remote-ssh",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-vscode.powershell",
+				"GitHub.remotehub",
+				"GitHub.vscode-pull-request-github",
+				"GitHub.copilot-chat",
+				"GitHub.copilot",
+				"ms-azuretools.vscode-docker",
+				"ms-vscode-remote.remote-containers",
+				"vscjava.vscode-java-debug",
+				"ms-vscode.cpptools-extension-pack",
+				"ms-vscode.cpptools"
+			]
+		}
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
