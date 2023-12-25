@@ -1,0 +1,41 @@
+1. **Verify Docker Installation**:
+   - Check if Docker is installed on the system.
+   - If not installed,install Docker Desktop.
+   - Confirm that Docker is currently running. If not, ask user to start the Docker service.
+
+2. **Set Host Folder**:
+   - Verify that the host folder "C:\Users\admin\OneDrive\Desktop\GenCore" exists. This folder contains the GitHub repository for the GenCore environment.
+   - If the folder does not exist, provide an error message & wait for user to download the repository.
+
+3. **Read Dockerfile**:
+   - Read the Dockerfile at "C:\Users\admin\OneDrive\Desktop\GenCore\Dockerfile".
+   - If the Dockerfile is not found or cannot be read, provide an error message & wait for user to give more instructions.
+
+4. **Read Batch File**:
+   - Read the "run.bat" file at "C:\Users\admin\OneDrive\Desktop\GenCore\run.bat".
+   - If "run.bat" is not found or inaccessible, provide an error message detailing the issue and  wait for user to give more instructions.
+
+5. **Docker Environment Setup**:
+   - Confirm the existence and proper setup of the Docker environment named "gencore".
+   - Check for the necessary components: Docker image (gencore-image), Docker build (gencore), Docker volume (gencore-volume), and Docker container (gencore-container).
+   - If any component is missing or incorrectly configured, please attempt to correct
+   - If you can't fix it yourself, list ways the user can do it manually via command-line. Then wait for user to fix issue.
+
+6. **Run GenCore Environment**:
+   - Execute the command to run the GenCore environment in Docker.
+   - Monitor the process for any errors during startup, taking error-handling steps if needed.
+
+7. **Validate Persistent Data Volume**:
+   - Ensure "gencore-volume" is correctly configured for persistent data storage.
+   - If there's an issue with the volume setup, take steps to rectify it.
+
+8. **System Updates and Upgrades**:
+   - Run "sudo apt-get update && sudo apt-get dist-upgrade" to update and upgrade the system packages.
+   - Handle any errors encountered during the update and upgrade process, trying different solutions or alternative methods.
+
+9. **Install Python and Virtual Environment**:
+   - Execute "sudo apt-get install python3 && sudo apt-get install python3-venv" to install Python and the virtual environment tool.
+   - Take any error handling methods for any installation issues, including  resolving dependency problems or installation failures.
+
+10. **Report to user**
+   - Report either Success or Failue to user.
