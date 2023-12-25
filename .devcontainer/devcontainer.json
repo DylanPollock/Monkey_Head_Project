@@ -1,81 +1,80 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/debian
 {
-	"name": "Debian",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
-	"features": {
-		"ghcr.io/devcontainers/features/git:1": {
-			"ppa": true,
-			"version": "latest"
+    "name": "GenCore AI / OS",
+    "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {
+            "ppa": true,
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {
+            "installDirectlyFromGitHubRelease": true,
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/powershell:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/python:1": {
+            "installTools": true,
+            "optimize": true,
+            "installJupyterlab": true,
+            "version": "3.12"
+        },
+        "ghcr.io/devcontainers-contrib/features/gh-release:1": {
+            "repo": "digitalocean/doctl",
+            "binaryNames": "gh",
+            "version": "latest",
+            "binLocation": "/usr/local/bin",
+            "libLocation": "/usr/local/lib",
+            "additionalFlags": "--no-filter-assets-by-distro"
+        },
+        "ghcr.io/devcontainers-contrib/features/java:1": {
+            "version": "latest",
+            "installMaven": true,
+            "installGradle": true
+        },
+        "ghcr.io/devcontainers-contrib/features/gcc:1": {
+            "version": "latest"
 		},
-		"ghcr.io/devcontainers/features/github-cli:1": {
-			"installDirectlyFromGitHubRelease": true,
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers/features/powershell:1": {
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers/features/python:1": {
-			"installTools": true,
-			"optimize": true,
-			"installJupyterlab": true,
-			"version": "3.12"
-		},
-		"ghcr.io/devcontainers-contrib/features/gh-release:1": {
-			"repo": "digitalocean/doctl",
-			"binaryNames": "gh",
-			"version": "latest",
-			"binLocation": "/usr/local/bin",
-			"libLocation": "/usr/local/lib",
-			"additionalFlags": "--no-filter-assets-by-distro"
-		},
-		"ghcr.io/devcontainers-contrib/features/powershell:1": {
-			"version": "latest"
-		},
-		"ghcr.io/natescherer/devcontainers-custom-features/powershell-resources:1": {},
-		"ghcr.io/oleksis/devcontainer-features/python-launcher:1": {
-			"version": "latest"
-		},
-		"ghcr.io/akhildevelops/devcontainer-features/pip:0": {}
-	},
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"ms-vscode-remote.remote-wsl",
-				"ms-vscode.remote-repositories",
-				"ms-vscode.remote-explorer",
-				"ms-vscode-remote.vscode-remote-extensionpack",
-				"ms-vscode.remote-server",
-				"ms-vscode-remote.remote-ssh-edit",
-				"ms-vscode-remote.remote-ssh",
-				"ms-python.python",
-				"ms-python.vscode-pylance",
-				"ms-vscode.powershell",
-				"GitHub.remotehub",
-				"GitHub.vscode-pull-request-github",
-				"GitHub.copilot-chat",
-				"GitHub.copilot",
-				"ms-azuretools.vscode-docker",
-				"ms-vscode-remote.remote-containers",
-				"vscjava.vscode-java-debug",
-				"ms-vscode.cpptools-extension-pack",
-				"ms-vscode.cpptools",
-				"microhobby.linuxkerneldev",
-				"ms-python.black-formatter"
-			]
-		}
-	}
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-
-	// Configure tool-specific properties.
-	// "customizations": {},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+        "ghcr.io/devcontainers-contrib/features/bash:1": {},
+        "ghcr.io/devcontainers-contrib/features/shellcheck:1": {},
+        "ghcr.io/devcontainers-contrib/features/cling:1": {} // Interactive C++ interpreter
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode-remote.remote-wsl",
+                "ms-vscode.remote-repositories",
+                "ms-vscode.remote-explorer",
+                "ms-vscode-remote.vscode-remote-extensionpack",
+                "ms-vscode.remote-server",
+                "ms-vscode-remote.remote-ssh-edit",
+                "ms-vscode-remote.remote-ssh",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-vscode.powershell",
+                "GitHub.remotehub",
+                "GitHub.vscode-pull-request-github",
+                "GitHub.copilot-chat",
+                "GitHub.copilot",
+                "ms-azuretools.vscode-docker",
+                "ms-vscode-remote.remote-containers",
+                "vscjava.vscode-java-debug",
+                "ms-vscode.cpptools-extension-pack",
+                "ms-vscode.cpptools",
+                "microhobby.linuxkerneldev",
+                "ms-python.black-formatter",
+                "redhat.java",
+                "twxs.cmake",
+                "ms-vscode.cpptools-extension-pack",
+                "ms-vscode.cpptools-themes",
+                "ms-vscode.cpptools-api"
+                // Additional extensions can be added as needed
+            ]
+        }
+    },
+    "remoteUser": "root"
+    // Uncomment the sections below for more customizations
+    // "features": {},
+    // "forwardPorts": {},
+    // "customizations": {},
 }
