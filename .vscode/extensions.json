@@ -16,6 +16,7 @@
         "ms-vscode-remote.remote-ssh",
         "github.remotehub",
         "github.vscode-pull-request-github",
-        "ms-vscode.cmake-tools"
+        "ms-vscode.cmake-tools",
+        "ms-python.black-formatter"
     ]
 }
