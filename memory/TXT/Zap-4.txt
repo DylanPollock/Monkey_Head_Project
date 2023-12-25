@@ -1,0 +1,26 @@
+### Translating Spoken Instructions into AI Actionable Steps
+
+**User's Verbal Input**:
+- Reread User's spoken instructions
+
+**AI's Task**:
+1. **Comprehension**: Analyze the user's verbal instructions, focusing on identifying key objectives, actions, and any specific requirements or constraints.
+
+2. **Task Breakdown**:
+   - Interpret and translate these instructions into discrete, actionable steps.
+   - Detail each step, including specific actions required and expected outcomes.
+
+3. **Prioritization and Sequencing**:
+   - Determine the logical order for executing these tasks, considering any inherent sequence in the instructions.
+
+4. **Error Checking and Interpretation**:
+   - Use informed interpretation to address potential ambiguities in the instructions.
+   - Identify possible challenges in task execution and incorporate solutions or alternatives into the steps.
+
+5. **Actionable Plan Formation**:
+   - Compile the interpreted instructions into a structured, step-by-step action plan.
+   - Ensure the plan is clear, concise, and ready for implementation.
+
+**AI's Output**:
+- Generated a step-by-step action plan based on the user's verbal instructions
+
