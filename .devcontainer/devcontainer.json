@@ -77,7 +77,24 @@
                 "ms-toolsai.vscode-jupyter-cell-tags",
                 "ms-toolsai.vscode-jupyter-slideshow",
                 "VisualStudioExptTeam.vscodeintellicode",
-                "dbaeumer.vscode-eslint"
+                "dbaeumer.vscode-eslint",
+                "ms-dotnettools.vscode-dotnet-runtime",
+                "ms-dotnettools.csharp",
+                "ms-mssql.data-workspace-vscode",
+                "vscjava.vscode-java-pack",
+                "GitHub.github-vscode-theme",
+                "eamodio.gitlens",
+                "VisualStudioExptTeam.intellicode-api-usage-examples",
+                "ms-python.isort",
+                "vscjava.vscode-maven",
+                "vscjava.vscode-java-dependency",
+                "ms-mssql.sql-bindings-vscode",
+                "ms-mssql.sql-database-projects-vscode",
+                "ms-mssql.mssql",
+                "vscjava.vscode-java-test",
+                "ms-vscode.vscode-speech",
+                "vscode-icons-team.vscode-icons",
+                "redhat.vscode-xml"
             ]
         }
     },
