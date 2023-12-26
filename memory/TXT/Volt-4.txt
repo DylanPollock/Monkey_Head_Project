@@ -1,41 +1,38 @@
+GenCore Docker Instructions:
+### Enhanced Docker Installation and Verification:
 1. **Verify Docker Installation**:
-   - Check if Docker is installed on the system.
-   - If not installed,install Docker Desktop.
-   - Confirm that Docker is currently running. If not, ask user to start the Docker service.
-
-2. **Set Host Folder**:
-   - Verify that the host folder "C:\Users\admin\OneDrive\Desktop\GenCore" exists. This folder contains the GitHub repository for the GenCore environment.
-   - If the folder does not exist, provide an error message & wait for user to download the repository.
-
-3. **Read Dockerfile**:
-   - Read the Dockerfile at "C:\Users\admin\OneDrive\Desktop\GenCore\Dockerfile".
-   - If the Dockerfile is not found or cannot be read, provide an error message & wait for user to give more instructions.
-
-4. **Read Batch File**:
-   - Read the "run.bat" file at "C:\Users\admin\OneDrive\Desktop\GenCore\run.bat".
-   - If "run.bat" is not found or inaccessible, provide an error message detailing the issue and  wait for user to give more instructions.
-
-5. **Docker Environment Setup**:
-   - Confirm the existence and proper setup of the Docker environment named "gencore".
-   - Check for the necessary components: Docker image (gencore-image), Docker build (gencore), Docker volume (gencore-volume), and Docker container (gencore-container).
-   - If any component is missing or incorrectly configured, please attempt to correct
-   - If you can't fix it yourself, list ways the user can do it manually via command-line. Then wait for user to fix issue.
-
-6. **Run GenCore Environment**:
-   - Execute the command to run the GenCore environment in Docker.
-   - Monitor the process for any errors during startup, taking error-handling steps if needed.
-
-7. **Validate Persistent Data Volume**:
-   - Ensure "gencore-volume" is correctly configured for persistent data storage.
-   - If there's an issue with the volume setup, take steps to rectify it.
-
-8. **System Updates and Upgrades**:
-   - Run "sudo apt-get update && sudo apt-get dist-upgrade" to update and upgrade the system packages.
-   - Handle any errors encountered during the update and upgrade process, trying different solutions or alternative methods.
-
-9. **Install Python and Virtual Environment**:
-   - Execute "sudo apt-get install python3 && sudo apt-get install python3-venv" to install Python and the virtual environment tool.
-   - Take any error handling methods for any installation issues, including  resolving dependency problems or installation failures.
-
-10. **Report to user**
-   - Report either Success or Failue to user.
+   - Run `docker --version` to check if Docker is installed.
+   - If not installed, download and install Docker Desktop from [Docker's official website](https://www.docker.com/products/docker-desktop).
+   - Start Docker Desktop if it's not already running. Instructions for starting Docker Desktop can be found in the application's documentation.
+### Improved Host Folder Setup:
+2. **Prepare Project Folder**:
+   - Clone the GenCore GitHub repository to `C:\Users\admin\OneDrive\Desktop\GenCore` using `git clone https://github.com/DLRP1995/MonkeyHeadProject.git`.
+   - If unable to clone, download the repository manually and extract it to the above path.
+### Dockerfile and Batch File Accessibility:
+3. **Validate Dockerfile and run.bat File**:
+   - Check if `Dockerfile` and `run.bat` are present in the `GenCore` folder. 
+   - Ensure that both files are correctly formatted. Refer to provided templates or documentation for format verification.
+### Detailed Docker Environment Setup:
+4. **Set Up Docker Components**:
+   - Build the Docker image with `docker build -t gencore-app C:\Users\admin\OneDrive\Desktop\GenCore`.
+   - If the build fails, check for errors in the Dockerfile and attempt to rebuild.
+### Enhanced Error Handling:
+5. **Monitor and Log Errors**:
+   - Set up logging by adding `--log-driver json-file --log-opt max-size=10m` to the `docker run` command.
+   - Consult the log file in case of any failures for detailed error messages.
+### Persistent Data Volume Setup:
+6. **Configure gencore-volume**:
+   - Create a volume using `docker volume create gencore-volume`.
+   - Verify volume creation with `docker volume inspect gencore-volume`.
+### System Update and Upgrade:
+7. **Update and Upgrade Docker Environment**:
+   - Ensure the Dockerfile includes commands for system updates (`apt-get update`) and upgrades (`apt-get dist-upgrade -y`).
+   - If encountering issues, consider alternate sources or methods and update the Dockerfile accordingly.
+### Python Installation and Verification:
+8. **Install and Verify Python**:
+   - Check if Python is already installed in the Docker container with `python3 --version`.
+   - If not installed, the Dockerfile should handle the installation. If installation fails, consider using an alternative method like compiling from source.
+### Final Reporting and Feedback:
+9. **Completion Report and Feedback Mechanism**:
+   - Implement a system to report the completion status of each step in the `run.bat` script.
+   - Provide an option at the end of the script for the user to submit feedback or request assistance, perhaps via a simple prompt or link to a feedback form.
