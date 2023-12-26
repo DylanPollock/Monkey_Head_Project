@@ -35,7 +35,7 @@
         },
         "ghcr.io/devcontainers-contrib/features/bash:1": {},
         "ghcr.io/devcontainers-contrib/features/shellcheck:1": {},
-        "ghcr.io/devcontainers-contrib/features/cling:1": {}, // Interactive C++ interpreter
+        "ghcr.io/devcontainers-contrib/features/cling:1": {},
         "ghcr.io/devcontainers/features/docker-in-docker:1": {
             "moby": true
         }
@@ -105,14 +105,7 @@
         }
     },
     "remoteUser": "root",
-    "features": {
-        "custom-scripts": {
-            "onCreateCommand": "/path/to/your/setup-script.sh",
-            "onStartCommand": "/path/to/your/startup-script.sh"
-        }
-    },
     "forwardPorts": [
-        4848,
-        // Add other necessary ports here, e.g., 8080 for a web server
+        4848
     ]
 }
