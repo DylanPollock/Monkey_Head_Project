@@ -4,53 +4,56 @@ SET CONTAINER_NAME=gencore-container
 SET IMAGE_NAME=gencore-app
 SET VOLUME_NAME=gencore-volume
 
-echo Checking if Docker is running...
+echo [****Checking system prerequisites...****]
+python --version > NUL 2>&1
+if %errorlevel% neq 0 (
+    echo [****Error: Python is not installed on the host OS. Please install Python 3.12.0 or higher.****]
+    exit /b 1
+)
+pip --version > NUL 2>&1
+if %errorlevel% neq 0 (
+    echo [****Error: Pip is not installed on the host OS. Please install Pip.****]
+    exit /b 1
+)
+
+echo [****Checking if Docker is running...****]
 docker info > NUL 2>&1
 if %errorlevel% neq 0 (
     echo [****Error: Docker is not running. Please start Docker and try again.****]
     exit /b 1
 )
 
-echo [****Checking if the Docker image already exists...****]
-docker image inspect %IMAGE_NAME% > NUL 2>&1
-if %errorlevel% neq 0 (
-    echo [****Building Docker Image...****]
-    docker build -t %IMAGE_NAME% %PROJECT_PATH% || (
-        echo [****Error: Failed to build Docker Image.****]
-        exit /b 1
-    )
-) else (
-    echo [****Docker Image already exists. Skipping build.****]
+echo [****Building or updating Docker Image...****]
+docker build --no-cache -t %IMAGE_NAME% %PROJECT_PATH% || (
+    echo [****Error: Failed to build or update Docker Image.****]
+    exit /b 1
 )
 
-echo [****Checking if the Docker volume exists...****]
-docker volume inspect %VOLUME_NAME% > NUL 2>&1
-if %errorlevel% neq 0 (
-    echo [****Creating Docker Volume...****]
-    docker volume create %VOLUME_NAME%
-)
+echo [****Ensuring Docker Volume exists...****]
+docker volume inspect %VOLUME_NAME% > NUL 2>&1 || docker volume create %VOLUME_NAME%
 
-echo [****Checking if the Docker container already exists...****]
+echo [****Managing Docker Container...****]
 docker container inspect %CONTAINER_NAME% > NUL 2>&1
 if %errorlevel% neq 0 (
-    echo [****Running Docker Container...****]
+    echo [****Creating and starting Docker Container...****]
     docker run -d --name %CONTAINER_NAME% -v %VOLUME_NAME%:/data -v %PROJECT_PATH%:/GenCore --restart unless-stopped %IMAGE_NAME% || (
-        echo [****Error: Failed to run Docker Container.****]
+        echo [****Error: Failed to create and start Docker Container.****]
         exit /b 1
     )
 ) else (
-    echo [****Docker Container already exists. Checking if it's running...****]
-    SET RUNNING=0
-    FOR /f "tokens=*" %%i IN ('docker inspect -f "{{.State.Running}}" %CONTAINER_NAME%') DO SET RUNNING=%%i
-    if "!RUNNING!"=="true" (
-        echo [****Docker Container is already running.****]
-    ) else (
-        echo [****Starting existing Docker Container...****]
-        docker start %CONTAINER_NAME% || (
-            echo [****Error: Failed to start Docker Container.****]
-            exit /b 1
-        )
+    echo [****Updating and restarting existing Docker Container...****]
+    docker stop %CONTAINER_NAME% && docker rm %CONTAINER_NAME%
+    docker run -d --name %CONTAINER_NAME% -v %VOLUME_NAME%:/data -v %PROJECT_PATH%:/GenCore --restart unless-stopped %IMAGE_NAME% || (
+        echo [****Error: Failed to update and restart Docker Container.****]
+        exit /b 1
     )
+)
+
+echo [****Verifying Python environment inside Docker Container...****]
+docker exec %CONTAINER_NAME% python --version > NUL 2>&1
+if %errorlevel% neq 0 (
+    echo [****Error: Python is not correctly installed inside the Docker Container.****]
+    exit /b 1
 )
 
 echo [****All operations completed successfully.****]
