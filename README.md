@@ -26,12 +26,10 @@ Contributions to the MonkeyHeadProject are welcome. Please follow the guidelines
 This project is open source and released under the GNU GPL V3 License.
 
 ## Support
-For support, questions, or more information about the MonkeyHeadProject, please visit our [Support Page] or contact the project team.
+For support, questions, or more information about the MonkeyHeadProject, please visit our 'http://www.dlrp.ca' or contact the project team.
 
 ## Acknowledgements
 Special thanks to all contributors and community members who have played a pivotal role in bringing the MonkeyHeadProject to fruition. Your insights, expertise, and dedication are immensely appreciated.
 
----
-
-Brought to life by Dylan and GIZMO, the MonkeyHeadProject is not just an operating system; it's a journey into the future of artificial intelligence and its harmonious integration with everyday technology.
-
+## The Journey
+Brought to life by Dylan & Spark-4, the MonkeyHeadProject is not just an operating system; it's a journey into the future of artificial intelligence and its harmonious integration with everyday technology.
