@@ -1,0 +1,19 @@
+{
+    "name": "*",
+    "ai_name": "",
+    "user_name": "",
+    "prompt": "You are a helpful assistant.",
+    "chat": false,
+    "completion": false,
+    "img": false,
+    "vision": true,
+    "langchain": false,
+    "assistant": false,
+    "temperature": 1.0,
+    "filename": null,
+    "__meta__": {
+        "version": "2.0.54",
+        "app.version": "2.0.54",
+        "updated_at": "2023-12-25T18:30:15"
+    }
+}

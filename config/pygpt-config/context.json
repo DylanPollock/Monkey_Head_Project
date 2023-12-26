@@ -1,0 +1,22 @@
+{
+    "items": {
+        "20231226115709.330954": {
+            "id": "20231226115709.330954",
+            "name": "Dockerfile & run.bat",
+            "date": "2023-12-26",
+            "mode": "chat",
+            "last_mode": "chat",
+            "thread": null,
+            "assistant": null,
+            "preset": null,
+            "run": null,
+            "status": null,
+            "initialized": true
+        }
+    },
+    "__meta__": {
+        "version": "2.0.57",
+        "app.version": "2.0.57",
+        "updated_at": "2023-12-26T11:57:43"
+    }
+}

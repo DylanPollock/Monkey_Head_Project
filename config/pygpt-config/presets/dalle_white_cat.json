@@ -1,0 +1,19 @@
+{
+    "name": "white Siamese cat",
+    "ai_name": "",
+    "user_name": "",
+    "prompt": "A photograph of a white Siamese cat.",
+    "chat": false,
+    "completion": false,
+    "img": true,
+    "vision": false,
+    "langchain": false,
+    "assistant": false,
+    "temperature": 1.0,
+    "filename": null,
+    "__meta__": {
+        "version": "2.0.54",
+        "app.version": "2.0.54",
+        "updated_at": "2023-12-25T18:30:15"
+    }
+}
