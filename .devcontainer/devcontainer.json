@@ -67,8 +67,15 @@
                 "twxs.cmake",
                 "ms-vscode.cpptools-extension-pack",
                 "ms-vscode.cpptools-themes",
-                "ms-vscode.cpptools-api"
-                // Additional extensions can be added as needed
+                "ms-vscode.cpptools-api",
+                "ms-kubernetes-tools.vscode-kubernetes-tools",
+                "redhat.vscode-yaml",
+                "googlecloudtools.cloudcode",
+                "ms-toolsai.jupyter",
+                "ms-toolsai.jupyter-keymap",
+                "ms-toolsai.jupyter-renderers",
+                "ms-toolsai.vscode-jupyter-cell-tags",
+                "ms-toolsai.vscode-jupyter-slideshow"
             ]
         }
     },
