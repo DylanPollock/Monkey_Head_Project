@@ -19,13 +19,11 @@
             "installJupyterlab": true,
             "version": "3.12"
         },
-        "ghcr.io/devcontainers-contrib/features/gh-release:1": {
-            "repo": "digitalocean/doctl",
-            "binaryNames": "gh",
-            "version": "latest",
-            "binLocation": "/usr/local/bin",
-            "libLocation": "/usr/local/lib",
-            "additionalFlags": "--no-filter-assets-by-distro"
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/go:1": {
+            "version": "latest"
         },
         "ghcr.io/devcontainers-contrib/features/java:1": {
             "version": "latest",
@@ -34,10 +32,13 @@
         },
         "ghcr.io/devcontainers-contrib/features/gcc:1": {
             "version": "latest"
-		},
+        },
         "ghcr.io/devcontainers-contrib/features/bash:1": {},
         "ghcr.io/devcontainers-contrib/features/shellcheck:1": {},
-        "ghcr.io/devcontainers-contrib/features/cling:1": {} // Interactive C++ interpreter
+        "ghcr.io/devcontainers-contrib/features/cling:1": {}, // Interactive C++ interpreter
+        "ghcr.io/devcontainers/features/docker-in-docker:1": {
+            "moby": true
+        }
     },
     "customizations": {
         "vscode": {
@@ -96,11 +97,22 @@
                 "vscode-icons-team.vscode-icons",
                 "redhat.vscode-xml"
             ]
+        },
+        "container": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash"
+            }
         }
     },
-    "remoteUser": "root"
-    // Uncomment the sections below for more customizations
-    // "features": {},
-    // "forwardPorts": {},
-    // "customizations": {},
+    "remoteUser": "root",
+    "features": {
+        "custom-scripts": {
+            "onCreateCommand": "/path/to/your/setup-script.sh",
+            "onStartCommand": "/path/to/your/startup-script.sh"
+        }
+    },
+    "forwardPorts": [
+        4848,
+        // Add other necessary ports here, e.g., 8080 for a web server
+    ]
 }
