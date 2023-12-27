@@ -1,34 +1,38 @@
-# Use Debian as the base image
-FROM debian:bookworm
+# Use Debian Trixie as the base image
+FROM python:3.11-slim
 
-# Update the package repository and upgrade the system. Then install Python 3.11 and its tools.
-# Python3-venv is used for creating an isolated Python environment.
-RUN apt-get update && apt-get dist-upgrade -y && \
-    apt-get install -y python3.11 python3-pip python3.11-venv
+# Update the package repository and upgrade the system
+RUN apt-get update && apt-get dist-upgrade -y
 
-<<<<<<< HEAD
-# Install necessary system packages
-RUN apt-get update && apt-get dist-upgrade
-=======
+# Install MATE Desktop Environment and VNC server for GUI access
+#RUN apt-get install -y task-mate-desktop tightvncserver
+
+# Install Python 3.11 and its tools
+RUN apt-get install -y python3.11 python3-pip python3.11-venv
+
+# Clean up to reduce image size
+#RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set up VNC server (replace 'your_vnc_password' with your desired password)
+#RUN mkdir /root/.vnc && \
+#    echo "your_vnc_password" | vncpasswd -f > /root/.vnc/passwd && \
+#    chmod 600 /root/.vnc/passwd
+
 # Create a virtual environment to isolate the Python environment
 RUN python3.11 -m venv /venv
->>>>>>> parent of 593d12c (Resync)
 
-# Activate virtual environment. All Python commands will now use this environment.
+# Activate virtual environment
 ENV PATH="/venv/bin:$PATH"
 
-<<<<<<< HEAD
-# Install Python packages from requirements.txt
-#RUN pip install --no-cache-dir -r requirements.txt
-=======
-# Install required Python packages from requirements.txt
-# Note: Ensure requirements.txt is present in the context directory
-COPY requirements.txt /MonkeyHeadProject/
-RUN pip install -r /MonkeyHeadProject/requirements.txt
->>>>>>> parent of 593d12c (Resync)
+# Copy the project's requirements file and install Python dependencies into the virtual environment
+COPY requirements.txt /gencore/
+#RUN /venv/bin/pip install --no-cache-dir -r /gencore/requirements.txt
 
-# Copy the project files into the container. Adjust the source path if necessary.
-COPY . /MonkeyHeadProject
+# Copy the project files into the container
+COPY . /gencore
 
 # Set the working directory to the project folder
-WORKDIR /MonkeyHeadProject
+WORKDIR /gencore
+
+# Expose VNC port and any other necessary ports
+#EXPOSE 5901 8448

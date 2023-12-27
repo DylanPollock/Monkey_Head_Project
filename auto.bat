@@ -1,6 +1,6 @@
 @echo off
 SET PROJECT_PATH=C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject
-SET TEMP_PATH=C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject\temp
+SET TEMP_PATH=C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject\[MEMORY]\TEMP
 SET CONTAINER_NAME=gencore-container
 SET IMAGE_NAME=gencore-image
 SET VOLUME_NAME=gencore-volume
@@ -12,15 +12,19 @@ echo [****Welcome to the GenCore Deployment Process****]
 :: Interactive Menu for AI/OS Actions
 :menu
 echo.
-echo [**  Select an action  :**]
-echo [**  1. Automatic Setup/Check **]
-echo [**  2. Check Environment     **]
-echo [**  3. Reset Docker Environment **]
-echo [**  4. Build Docker Image    **]
-echo [**  5. Run Docker Container  **]
-echo [**  6. Update Python / Debian **]
-echo [**  7. Clean Up              **]
-echo [**  8. Exit Program          **]
+echo [**  Select an action: **]
+echo [**  1. Automatic Setup/Check      **]
+echo [**  2. Check Environment          **]
+echo [**  3. Reset Docker Environment   **]
+echo [**  4. Build Docker Image         **]
+echo [**  5. Run Docker Container       **]
+echo [**  6. Update Python / Debian     **]
+echo [**  7. Clean Up                   **]
+echo [**  8. Check Docker Volume        **]
+echo [**  9. Check Container Status     **]
+echo [** 10. Check Build Status         **]
+echo [** 11. Check Docker Image         **]
+echo [** 12. Exit Program               **]
 set /p action=<con
 
 if "%action%"=="1" goto auto_setup
@@ -30,7 +34,11 @@ if "%action%"=="4" goto build
 if "%action%"=="5" goto run
 if "%action%"=="6" goto update
 if "%action%"=="7" goto cleanup
-if "%action%"=="8" goto end
+if "%action%"=="8" goto check_volume
+if "%action%"=="9" goto check_container
+if "%action%"=="10" goto check_build
+if "%action%"=="11" goto check_image
+if "%action%"=="12" goto end
 echo [****Invalid Selection. Please choose a valid option.****]
 goto menu
 
@@ -161,6 +169,32 @@ echo [****Installing Kubernetes****]
 choco install kubernetes-cli
 if %errorlevel% neq 0 echo [****Kubernetes Installation Failed****] && goto :eof
 echo [****Kubernetes Installed****]
+pause
+goto :eof
+
+:check_volume
+echo [****Checking Docker Volume Status****]
+docker volume inspect %VOLUME_NAME% > nul 2>&1
+if %errorlevel% neq 0 echo [****Volume %VOLUME_NAME% does not exist.****] && goto :eof
+echo [****Volume %VOLUME_NAME% exists.****]
+pause
+goto :eof
+
+:check_container
+echo [****Checking Docker Container Status****]
+docker ps -a | findstr /i "%CONTAINER_NAME%"
+pause
+goto :eof
+
+:check_build
+echo [****Checking Docker Build Status****]
+:: Add logic to check the Docker build status
+pause
+goto :eof
+
+:check_image
+echo [****Checking Docker Image Status****]
+docker images | findstr /i "%IMAGE_NAME%"
 pause
 goto :eof
 
