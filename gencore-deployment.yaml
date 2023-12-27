@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gencore-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gencore-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gencore
+  template:
+    metadata:
+      labels:
+        app: gencore
+    spec:
+      containers:
+      - name: gencore-container
+        image: gencore-app
+        ports:
+        - containerPort: 88
+        volumeMounts:
+        - name: gencore-volume
+          mountPath: /data
+      volumes:
+      - name: gencore-volume
+        persistentVolumeClaim:
+          claimName: gencore-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gencore-service
+spec:
+  selector:
+    app: gencore
+  ports:
+    - protocol: TCP
+      port: 88
+      targetPort: 88
+  type: LoadBalancer
