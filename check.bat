@@ -1,36 +1,46 @@
 @echo off
-SET CONTAINER_NAME=gencore-container
 SET IMAGE_NAME=gencore-image
 SET VOLUME_NAME=gencore-volume
+SET CONTAINER_NAME=gencore-container
 
-echo [****Checking GenCore System Components****]
+echo [**** Performing System Checks... ****]
 
-:: Check if Docker Image Exists
-echo Checking if Docker Image %IMAGE_NAME% exists...
-docker images | findstr /i "%IMAGE_NAME%"
+:: Check Docker Installation
+docker --version > NUL 2>&1
 if %errorlevel% neq 0 (
-    echo [****Docker Image %IMAGE_NAME% does not exist.****]
-) else (
-    echo [****Docker Image %IMAGE_NAME% exists.****]
+    echo Fail: Docker not installed
+    goto checkEnd
 )
 
-:: Check if Docker Container Exists and is Running
-echo Checking if Docker Container %CONTAINER_NAME% exists and is running...
-docker ps -a | findstr /i "%CONTAINER_NAME%"
+:: Check Docker Running Status
+docker info > NUL 2>&1
 if %errorlevel% neq 0 (
-    echo [****Docker Container %CONTAINER_NAME% does not exist or is not running.****]
-) else (
-    echo [****Docker Container %CONTAINER_NAME% is up and running.****]
+    echo Fail: Docker not running
+    goto checkEnd
 )
 
-:: Check if Docker Volume Exists
-echo Checking if Docker Volume %VOLUME_NAME% exists...
-docker volume inspect %VOLUME_NAME% >nul 2>&1
+:: Check Docker Volume
+docker volume inspect %VOLUME_NAME% > NUL 2>&1
 if %errorlevel% neq 0 (
-    echo [****Docker Volume %VOLUME_NAME% does not exist.****]
-) else (
-    echo [****Docker Volume %VOLUME_NAME% exists.****]
+    echo Fail: Volume %VOLUME_NAME% not found
+    goto checkEnd
 )
 
-echo [****GenCore System Check Completed****]
+:: Check Docker Image
+docker images | findstr /i "%IMAGE_NAME%" > NUL
+if %errorlevel% neq 0 (
+    echo Fail: Image %IMAGE_NAME% not found
+    goto checkEnd
+)
+
+:: Check Docker Container
+docker ps -a | findstr /i "%CONTAINER_NAME%" > NUL
+if %errorlevel% neq 0 (
+    echo Fail: Container %CONTAINER_NAME% not found or not running
+    goto checkEnd
+)
+
+echo Pass
+:checkEnd
 pause
+exit /b
