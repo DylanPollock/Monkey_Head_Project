@@ -1,0 +1,193 @@
+{
+    "__meta__": {
+        "version": "2.0.58",
+        "app.version": "2.0.58",
+        "updated_at": "2023-12-27T00:00:00"
+    },
+    "dall-e-2": {
+        "id": "dall-e-2",
+        "name": "DALL-E 2",
+        "mode": [
+            "img"
+        ],
+        "tokens": 0,
+        "ctx": 0
+    },
+    "dall-e-3": {
+        "id": "dall-e-3",
+        "name": "DALL-E 3",
+        "mode": [
+            "img"
+        ],
+        "tokens": 0,
+        "ctx": 0,
+        "default": true
+    },
+    "gpt-3.5-turbo": {
+        "id": "gpt-3.5-turbo",
+        "name": "gpt-3.5-turbo",
+        "mode": [
+            "chat",
+            "assistant",
+            "langchain"
+        ],
+        "langchain": {
+            "provider": "openai",
+            "mode": [
+                "chat"
+            ],
+            "args": {
+                "model_name": "gpt-3.5-turbo"
+            }
+        },
+        "ctx": 4096,
+        "tokens": 4096
+    },
+    "gpt-3.5-turbo-1106": {
+        "id": "gpt-3.5-turbo-1106",
+        "name": "gpt-3.5-turbo-1106",
+        "mode": [
+            "chat",
+            "assistant",
+            "langchain"
+        ],
+        "langchain": {
+            "provider": "openai",
+            "mode": [
+                "chat"
+            ],
+            "args": {
+                "model_name": "gpt-3.5-turbo-1106"
+            }
+        },
+        "ctx": 16385,
+        "tokens": 4096
+    },
+    "gpt-3.5-turbo-16k": {
+        "id": "gpt-3.5-turbo-16k",
+        "name": "gpt-3.5-turbo-16k",
+        "mode": [
+            "chat",
+            "assistant",
+            "langchain"
+        ],
+        "langchain": {
+            "provider": "openai",
+            "mode": [
+                "chat"
+            ],
+            "args": {
+                "model_name": "gpt-3.5-turbo-16k"
+            }
+        },
+        "ctx": 16385,
+        "tokens": 4096
+    },
+    "gpt-4": {
+        "id": "gpt-4",
+        "name": "gpt-4",
+        "mode": [
+            "chat",
+            "assistant",
+            "langchain"
+        ],
+        "langchain": {
+            "provider": "openai",
+            "mode": [
+                "chat"
+            ],
+            "args": {
+                "model_name": "gpt-4"
+            }
+        },
+        "ctx": 8192,
+        "tokens": 4096
+    },
+    "gpt-4-1106-preview": {
+        "id": "gpt-4-1106-preview",
+        "name": "gpt-4-turbo-1106",
+        "mode": [
+            "chat",
+            "assistant",
+            "langchain"
+        ],
+        "langchain": {
+            "provider": "openai",
+            "mode": [
+                "chat"
+            ],
+            "args": {
+                "model_name": "gpt-4-1106-preview"
+            }
+        },
+        "ctx": 128000,
+        "tokens": 4096
+    },
+    "gpt-4-32k": {
+        "id": "gpt-4-32k",
+        "name": "gpt-4-32k",
+        "mode": [
+            "chat",
+            "assistant",
+            "langchain"
+        ],
+        "langchain": {
+            "provider": "openai",
+            "mode": [
+                "chat"
+            ],
+            "args": {
+                "model_name": "gpt-4-32k"
+            }
+        },
+        "ctx": 32768,
+        "tokens": 4096
+    },
+    "gpt-4-vision-preview": {
+        "id": "gpt-4-vision-preview",
+        "name": "gpt-4-vision",
+        "mode": [
+            "vision"
+        ],
+        "ctx": 128000,
+        "tokens": 4096
+    },
+    "text-davinci-002": {
+        "id": "text-davinci-002",
+        "name": "gpt-3 (davinci-002)",
+        "mode": [
+            "completion",
+            "langchain"
+        ],
+        "langchain": {
+            "provider": "openai",
+            "mode": [
+                "completion"
+            ],
+            "args": {
+                "model_name": "text-davinci-002"
+            }
+        },
+        "ctx": 4096,
+        "tokens": 4096
+    },
+    "text-davinci-003": {
+        "id": "text-davinci-003",
+        "name": "gpt-3.5 (davinci-003)",
+        "mode": [
+            "completion",
+            "langchain"
+        ],
+        "langchain": {
+            "provider": "openai",
+            "mode": [
+                "completion"
+            ],
+            "args": {
+                "model_name": "text-davinci-003"
+            }
+        },
+        "ctx": 4096,
+        "tokens": 4096
+    }
+}
