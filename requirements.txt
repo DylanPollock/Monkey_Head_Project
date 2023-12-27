@@ -1,4 +1,3 @@
-Tkinter  # usually comes bundled with Python
 aiohttp>=3.8.4
 aiosignal>=1.3.1
 altgraph>=0.17.3

@@ -1,0 +1,30 @@
+{
+  "General": {
+    "Encoding": "utf-8",
+    "MaxRetries": 3,
+    "Temperature": 0.2,
+    "TokenLimit": 8192
+  },
+  "Paths": {
+    "MemoryFile": "MEMORY/Core_Memory.txt",
+    "ConfigFile": "CONFIG/Config_Settings.ini",
+    "MemoryFilePath": "MEMORY/Core_History"
+  },
+  "Libraries": [
+    "os", "sys", "datetime", "configparser", "openai", "platform",
+    "logging", "subprocess", "socket", "psutil", "tempfile",
+    "requests", "bs4.BeautifulSoup", "contextlib"
+  ],
+  "MessageTypes": [
+    "initialization", "status", "info", "error", "debug", "alert",
+    "user_input", "query", "summary", "warning", "fatal_error",
+    "shutdown"
+  ],
+  "API": {
+    "APIKey": "Your-API-Key-Here",
+    "GPTModel": ["gpt-4", "gpt-3.5-turbo"]
+  },
+  "Role": {
+    "RoleDescription": "Your name is Gizmo, & you're an AI Lab Assistant."
+  }
+}
