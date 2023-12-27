@@ -114,9 +114,4 @@ RabbitMQ>=3.8.15
 Gunicorn>=20.1.0
 UWSGI>=2.0.19.1
 Selenium>=3.141.0
-<<<<<<< HEAD
 Pillow>=8.2.0
-=======
-Pillow>=8.2.0
-
->>>>>>> parent of 593d12c (Resync)

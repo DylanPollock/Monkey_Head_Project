@@ -1,6 +1,6 @@
 @echo off
 SET PROJECT_PATH=C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject
-SET TEMP_PATH=C:\Users\admin\OneDrive\Desktop\gencore\temp
+SET TEMP_PATH=C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject\temp
 SET CONTAINER_NAME=gencore-container
 SET IMAGE_NAME=gencore-image
 SET VOLUME_NAME=gencore-volume
@@ -51,7 +51,6 @@ echo [****Checking GenCore Environment****]
 call :check_python || call :install_python
 call :check_docker || call :install_docker
 call :check_kubernetes || call :install_kubernetes
-:: Additional checks for GenCore components
 echo [****Environment Check Completed****]
 pause
 goto :eof
@@ -70,10 +69,8 @@ goto :eof
 :build
 echo [****Building Docker Image...****]
 if not exist %TEMP_PATH% mkdir %TEMP_PATH%
-:: Example build command (modify as needed)
 docker build --no-cache -t %IMAGE_NAME% %PROJECT_PATH% > build.log || (
     echo [****Build failed. Trying alternative build method...****]
-    :: Alternative build method if needed
 )
 echo [****Docker Image Built Successfully****]
 if exist %TEMP_PATH% rmdir /s /q %TEMP_PATH%
@@ -84,7 +81,6 @@ goto :eof
 echo [****Running Docker Container...****]
 docker run -d --name %CONTAINER_NAME% %IMAGE_NAME% > run.log || (
     echo [****Failed to run Docker container. Trying alternative method...****]
-    :: Try running with different parameters or a fallback image
 )
 echo [****Docker Container Running****]
 pause
@@ -120,7 +116,6 @@ goto :eof
 
 :install_python
 echo [****Installing Python 3.11****]
-:: Example: Download and install Python 3.11 (modify URL as needed)
 powershell -Command "Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.11.0/python-3.11.0.exe' -OutFile 'python-3.11.0.exe'"
 start /wait python-3.11.0.exe /quiet InstallAllUsers=1 PrependPath=1
 if %errorlevel% neq 0 echo [****Python Installation Failed****] && goto :eof
@@ -142,7 +137,6 @@ goto :eof
 
 :install_docker
 echo [****Installing Docker****]
-:: Example: Download and install Docker (modify URL as needed)
 powershell -Command "Invoke-WebRequest -Uri 'https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe' -OutFile 'DockerInstaller.exe'"
 start /wait DockerInstaller.exe install
 if %errorlevel% neq 0 echo [****Docker Installation Failed****] && goto :eof
@@ -164,7 +158,6 @@ goto :eof
 
 :install_kubernetes
 echo [****Installing Kubernetes****]
-:: Example: Install Kubernetes using Chocolatey (Windows package manager)
 choco install kubernetes-cli
 if %errorlevel% neq 0 echo [****Kubernetes Installation Failed****] && goto :eof
 echo [****Kubernetes Installed****]
@@ -174,4 +167,3 @@ goto :eof
 :end
 echo [****Exiting GenCore Deployment Process.****]
 pause
-

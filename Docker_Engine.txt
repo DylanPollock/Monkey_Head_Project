@@ -1,7 +1,7 @@
 {
   "builder": {
     "gc": {
-      "defaultKeepStorage": "64GB",
+      "defaultKeepStorage": "32GB",
       "enabled": true
     }
   },
