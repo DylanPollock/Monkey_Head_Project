@@ -1,5 +1,5 @@
-# Use Debian Trixie as the base image
-FROM debian:trixie
+# Use Debian as the base image
+FROM debian:bookworm
 
 # Update the package repository and upgrade the system. Then install Python 3.11 and its tools.
 # Python3-venv is used for creating an isolated Python environment.
@@ -14,11 +14,11 @@ ENV PATH="/venv/bin:$PATH"
 
 # Install required Python packages from requirements.txt
 # Note: Ensure requirements.txt is present in the context directory
-COPY requirements.txt /GenCore/
-RUN pip install -r /GenCore/requirements.txt
+COPY requirements.txt /MonkeyHeadProject/
+RUN pip install -r /MonkeyHeadProject/requirements.txt
 
 # Copy the project files into the container. Adjust the source path if necessary.
-COPY . /GenCore
+COPY . /MonkeyHeadProject
 
 # Set the working directory to the project folder
-WORKDIR /GenCore
+WORKDIR /MonkeyHeadProject
