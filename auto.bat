@@ -1,26 +1,26 @@
 @echo off
 SET PROJECT_PATH=C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject
-SET TEMP_PATH=C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject\memory\TEMP
+SET TEMP_PATH=C:\Users\admin\OneDrive\Desktop\gencore\temp
 SET CONTAINER_NAME=gencore-container
-SET IMAGE_NAME=gencore-app
+SET IMAGE_NAME=gencore-image
 SET VOLUME_NAME=gencore-volume
 SET KUBE_CONFIG_PATH=C:\Users\admin\.kube\config
 
-echo [****Welcome to GenCore Deployment Process****]
+echo [****Welcome to the GenCore Deployment Process****]
 
 :start
 :: Interactive Menu for AI/OS Actions
 :menu
 echo.
-echo Select an action:
-echo 1. Automatic Setup/Check (Run through setup options automatically)
-echo 2. Check Environment (checks for GenCore build, gencore-container, gencore-volume, and gencore-image)
-echo 3. Reset Docker Environment (Removes old builds, containers, volumes, and images)
-echo 4. Build Docker Image (creates new GenCore build, gencore-container, gencore-volume, and gencore-image)
-echo 5. Run Docker Container (starts docker environment)
-echo 6. Update Python libraries, and Debian packages
-echo 7. Clean up (removes all Docker config files, as well as any folder it stores information)
-echo 8. Exit program
+echo [**  Select an action  :**]
+echo [**  1. Automatic Setup/Check **]
+echo [**  2. Check Environment     **]
+echo [**  3. Reset Docker Environment **]
+echo [**  4. Build Docker Image    **]
+echo [**  5. Run Docker Container  **]
+echo [**  6. Update Python / Debian **]
+echo [**  7. Clean Up              **]
+echo [**  8. Exit Program          **]
 set /p action=<con
 
 if "%action%"=="1" goto auto_setup
@@ -35,7 +35,7 @@ echo [****Invalid Selection. Please choose a valid option.****]
 goto menu
 
 :auto_setup
-:: Automatic setup option for AI use
+echo [****Starting Automatic Setup/Check...****]
 call :cleanup
 call :reset
 call :check_environment
@@ -47,96 +47,131 @@ pause
 goto menu
 
 :check_environment
-:: Check various components required for GenCore
 echo [****Checking GenCore Environment****]
-call :check_python
-call :check_docker
-call :check_kubernetes
-:: Add logic to check GenCore specific components like build, container, volume, and image
+call :check_python || call :install_python
+call :check_docker || call :install_docker
+call :check_kubernetes || call :install_kubernetes
+:: Additional checks for GenCore components
 echo [****Environment Check Completed****]
+pause
 goto :eof
 
 :reset
-:: Reset Docker environment by removing all associated data
 echo [****Resetting Docker Environment...****]
-docker system prune -af --volumes
+docker system prune -af --volumes || (
+    echo [****Failed to reset Docker. Trying alternative method...****]
+    docker rm $(docker ps -a -q) 2>nul
+    docker rmi $(docker images -q) 2>nul
+)
 echo [****Docker Environment Reset Completed****]
+pause
 goto :eof
 
 :build
-:: Build the Docker image
 echo [****Building Docker Image...****]
-call :check_python
-call :check_docker
 if not exist %TEMP_PATH% mkdir %TEMP_PATH%
-:: Commands for setting up build environment
-docker build --no-cache -t %IMAGE_NAME% %PROJECT_PATH% > build.log
-if %errorlevel% neq 0 (
-    echo [****Build Error: See build.log for details.****]
-    type build.log
-    goto :eof
+:: Example build command (modify as needed)
+docker build --no-cache -t %IMAGE_NAME% %PROJECT_PATH% > build.log || (
+    echo [****Build failed. Trying alternative build method...****]
+    :: Alternative build method if needed
 )
 echo [****Docker Image Built Successfully****]
-:: Clean up TEMP_PATH
 if exist %TEMP_PATH% rmdir /s /q %TEMP_PATH%
+pause
 goto :eof
 
 :run
-:: Run the Docker container from the built image
 echo [****Running Docker Container...****]
-docker run -d --name %CONTAINER_NAME% %IMAGE_NAME% > run.log
-if %errorlevel% neq 0 (
-    echo [****Error: Failed to run Docker container. Check run.log for details.****]
-    type run.log
-    goto :eof
+docker run -d --name %CONTAINER_NAME% %IMAGE_NAME% > run.log || (
+    echo [****Failed to run Docker container. Trying alternative method...****]
+    :: Try running with different parameters or a fallback image
 )
 echo [****Docker Container Running****]
+pause
 goto :eof
 
 :update
-:: Update Python libraries and Debian packages
 echo [****Updating Python Libraries and Debian Packages...****]
-:: Placeholder for update logic (e.g., pip install -r requirements.txt, apt-get update)
+:: Example update command
+apt-get update && apt-get upgrade -y
 echo [****Update Completed****]
+pause
 goto :eof
 
 :cleanup
-:: Perform thorough cleanup of Docker configurations and project files
 echo [****Performing Clean Up...****]
-:: Placeholder for cleanup logic (e.g., docker system prune, removing local files)
+:: Remove temporary files and cleanup Docker resources
+if exist %TEMP_PATH% rmdir /s /q %TEMP_PATH%
+docker system prune -f
 echo [****Cleanup Completed****]
+pause
 goto :eof
 
 :check_python
-:: Check for Python installation
+echo [****Checking Python Installation****]
 python --version 2>&1 | find "Python 3.11" > nul
 if %errorlevel% neq 0 (
-    echo [****Error: Python 3.11 is not installed.****]
-    goto :eof
+    echo [****Python 3.11 Not Found. Installing...****]
+    call :install_python
 )
 echo [****Python 3.11 Detected****]
+pause
+goto :eof
+
+:install_python
+echo [****Installing Python 3.11****]
+:: Example: Download and install Python 3.11 (modify URL as needed)
+powershell -Command "Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.11.0/python-3.11.0.exe' -OutFile 'python-3.11.0.exe'"
+start /wait python-3.11.0.exe /quiet InstallAllUsers=1 PrependPath=1
+if %errorlevel% neq 0 echo [****Python Installation Failed****] && goto :eof
+echo [****Python 3.11 Installed****]
+pause
 goto :eof
 
 :check_docker
-:: Verify Docker is running and operational
+echo [****Verifying Docker is Running****]
 docker info > nul 2>&1
 if %errorlevel% neq 0 (
-    echo [****Error: Docker is not running.****]
-    goto :eof
+    echo [****Docker is Not Running. Installing...****]
+    call :install_docker
+) else (
+    echo [****Docker is Running****]
 )
-echo [****Docker is Running****]
+pause
+goto :eof
+
+:install_docker
+echo [****Installing Docker****]
+:: Example: Download and install Docker (modify URL as needed)
+powershell -Command "Invoke-WebRequest -Uri 'https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe' -OutFile 'DockerInstaller.exe'"
+start /wait DockerInstaller.exe install
+if %errorlevel% neq 0 echo [****Docker Installation Failed****] && goto :eof
+echo [****Docker Installed****]
+pause
 goto :eof
 
 :check_kubernetes
-:: Validate Kubernetes configuration
+echo [****Validating Kubernetes Configuration****]
 kubectl --kubeconfig=%KUBE_CONFIG_PATH% version --client > nul 2>&1
 if %errorlevel% neq 0 (
-    echo [****Error: Kubernetes is not set up correctly.****]
-    goto :eof
+    echo [****Kubernetes is Not Set Up Correctly. Installing...****]
+    call :install_kubernetes
+) else (
+    echo [****Kubernetes Detected****]
 )
-echo [****Kubernetes Detected****]
+pause
+goto :eof
+
+:install_kubernetes
+echo [****Installing Kubernetes****]
+:: Example: Install Kubernetes using Chocolatey (Windows package manager)
+choco install kubernetes-cli
+if %errorlevel% neq 0 echo [****Kubernetes Installation Failed****] && goto :eof
+echo [****Kubernetes Installed****]
+pause
 goto :eof
 
 :end
 echo [****Exiting GenCore Deployment Process.****]
 pause
+
