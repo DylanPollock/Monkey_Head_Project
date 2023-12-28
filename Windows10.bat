@@ -41,20 +41,18 @@ goto menu
 cls
 echo [****|     Performing Full Setup   |****]
 
-:: Step 1: Install necessary software
-echo [****| Step 1: Installing required software |****]
-:: Using 'python -m pip' to install software packages.
-python -m pip install --upgrade pip
-python -m pip install python3.11 python3.11-venv
+:: Step 1: Verify Python Installation
+echo [****| Step 1: Verifying Python installation |****]
+python --version
 
-:: Check the exit code of the installation command
+:: Check the exit code of the Python command
 if %errorlevel% neq 0 (
-    echo [****| Error during software installation |****]
-    echo [****| Exiting Full Setup.                |****]
+    echo [****| Python is not installed or not added to PATH. |****]
+    echo [****| Please install Python and add it to the PATH.  |****]
     pause
     goto menu
 ) else (
-    echo [****| Step 1: Required software installed successfully |****]
+    echo [****| Python is installed. |****]
 )
 
 :: Step 2: Set environment variables
@@ -62,33 +60,10 @@ echo [****| Step 2: Setting environment variables |****]
 :: Setting environment variables.
 set PROJECT=GenCore
 set ENVIRONMENT=Testing
+echo [****| Environment variables set successfully |****]
 
-:: Check the exit code of the environment variable setting
-if %errorlevel% neq 0 (
-    echo [****| Error during environment variable setup |****]
-    echo [****| Exiting Full Setup.                     |****]
-    pause
-    goto menu
-) else (
-    echo [****| Step 2: Environment variables set successfully |****]
-)
+:: Additional steps for full setup can be added here...
 
-:: Step 3: Download necessary files
-::echo [****| Step 3: Downloading necessary files |****]
-:: Using 'curl' to download files from the internet.
-::curl -o example_file.ext https://github.com/DLRP1995/MonkeyHeadProject
-
-:: Check the exit code of the download step
-::if %errorlevel% neq 0 (
-::    echo [****| Error during file download  |****]
-::    echo [****| Exiting Full Setup.         |****]
-::    pause
-::    goto menu
-::) else (
-::    echo [****| Step 3: Necessary files downloaded successfully |****]
-::)
-
-:: Return to the main menu after setup is complete
 goto full_setup_completed
 
 :full_setup_completed
