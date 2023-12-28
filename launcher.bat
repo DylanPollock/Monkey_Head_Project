@@ -324,7 +324,7 @@ echo [****| Creating Volume |****]
 :: Step 1: Initialize and configure storage volumes
 echo [****| Step 1: Initializing and configuring storage volumes |****]
 :: Example command to create a Docker volume
-:: docker volume create my_volume
+:docker volume create gencore-volume
 
 :: For Windows disk volumes, you might use diskpart or PowerShell commands
 :: Example using diskpart (this requires a script file or manual input)
@@ -359,24 +359,25 @@ echo [****| Creating Container |****]
 
 :: Step 1: Deploy and start Docker containers
 echo [****| Step 1: Deploying and starting Docker containers |****]
-:: Example command to pull and run a Docker container
-:: docker pull myimage:latest
-:: docker run -d --name mycontainer myimage:latest
 
-:: For more complex configurations, you can use docker-compose
-:: Example: docker-compose up -d
+:: Pull the latest version of the image (if required)
+:: Uncomment the following line if you need to pull the image from a registry
+:: docker pull gencore-image:latest
 
-:: Check the exit code of the container creation command
+:: Run the Docker container
+docker run -d --name gencore-container gencore-image:latest
+
+:: Check the exit code of the Docker run command
 if %errorlevel% neq 0 (
-    echo [****| Error during container creation |****]
-    echo [****| Exiting Container Creation. |****]
+    echo [****| Error during container deployment |****]
+    echo [****| Exiting Container Deployment.     |****]
     pause
     goto menu
 ) else (
-    echo [****| Step 1: Container created and running successfully |****]
+    echo [****| Docker container deployed and started successfully |****]
 )
 
-:: Return to the main menu after container creation is complete
+:: Return to the main menu after container deployment is complete
 goto create_container_completed
 
 :create_container_completed
@@ -384,6 +385,7 @@ cls
 echo [****| Container created and running |****]
 pause
 goto menu
+
 
 :kubernetes
 cls
