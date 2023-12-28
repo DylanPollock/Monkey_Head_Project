@@ -36,11 +36,13 @@ goto :eof
 
 :: Creates a Docker volume for persistent data
 :create_volume
+echo [**** Creating Docker Volume ****]
 docker volume create %VOLUME_NAME%
 goto :eof
 
 :: Builds a Docker image from the Dockerfile located at the project path
 :build_image
+echo [**** Building Docker Image ****]
 docker build --no-cache -t %IMAGE_NAME% %PROJECT_PATH%
 if %errorlevel% neq 0 (
     echo [**** Error: Docker Image Build Failed ****]
@@ -51,6 +53,7 @@ goto :eof
 
 :: Runs a Docker container using the built image and attaches the volume
 :run_container
+echo [**** Running Docker Container ****]
 docker run -d --name %CONTAINER_NAME% -v %VOLUME_NAME%:/data %IMAGE_NAME%
 if %errorlevel% neq 0 (
     echo [**** Error: Docker Container Run Failed ****]
@@ -61,35 +64,40 @@ goto :eof
 
 :: Checks if the Docker volume exists
 :check_volume
+echo [**** Checking Docker Volume ****]
 docker volume inspect %VOLUME_NAME% > NUL 2>&1
 if %errorlevel% neq 0 echo Volume %VOLUME_NAME% not found.
 goto :eof
 
 :: Checks if the Docker image exists
 :check_image
+echo [**** Checking Docker Image ****]
 docker images | findstr /i %IMAGE_NAME% > NUL
 if %errorlevel% neq 0 echo Image %IMAGE_NAME% not found.
 goto :eof
 
 :: Checks if the Docker container exists and is running
 :check_container
+echo [**** Checking Docker Container ****]
 docker ps -a | findstr /i %CONTAINER_NAME% > NUL
 if %errorlevel% neq 0 echo Container %CONTAINER_NAME% not found or not running.
 goto :eof
 
 :: Connects to the running container and opens a terminal for interaction
 :connect_terminal
+echo [**** Connecting to Terminal ****]
 call :setup_environment
 call :check_container
 if %errorlevel% neq 0 (
+    echo [**** Starting Container %CONTAINER_NAME%... ****]
     docker start %CONTAINER_NAME%
-    echo [**** Container %CONTAINER_NAME% started. ****]
 )
 docker exec -it %CONTAINER_NAME% /bin/bash
 goto menu
 
 :: Full setup logic including environment setup, volume creation, image build, and container run with error handling
 :full_setup
+echo [**** Performing Full Setup ****]
 call :setup_environment
 call :create_volume
 call :build_image
@@ -98,6 +106,7 @@ goto menu
 
 :: Mini setup logic focuses on creating volume and building image
 :mini_setup
+echo [**** Performing Mini Setup ****]
 call :setup_environment
 call :create_volume
 call :build_image
@@ -105,6 +114,7 @@ goto menu
 
 :: System checks logic including volume, image, and container checks
 :system_checks
+echo [**** Performing System Checks ****]
 call :setup_environment
 call :check_volume
 call :check_image
@@ -113,16 +123,18 @@ goto menu
 
 :: Launching the container if it's not running
 :launch_container
+echo [**** Launching Container ****]
 call :setup_environment
 call :check_container
 if %errorlevel% neq 0 (
+    echo [**** Starting Container %CONTAINER_NAME%... ****]
     docker start %CONTAINER_NAME%
-    echo [**** Container %CONTAINER_NAME% started. ****]
 )
 goto menu
 
 :: Cleanup logic to remove temporary files and clean up Docker resources
 :cleanup
+echo [**** Performing Cleanup ****]
 if exist %TEMP_PATH% rmdir /s /q %TEMP_PATH%
 docker system prune -f
 echo [**** Cleanup Completed ****]
