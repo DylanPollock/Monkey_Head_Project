@@ -1,7 +1,7 @@
 @echo off
 cls
 color 0A
-echo [****|     GenCore Deployment Process   |****]
+echo [****|     GenCore Deployment   |****]
 echo.
 
 :start
@@ -45,12 +45,12 @@ echo [****|     Performing Full Setup   |****]
 echo [****| Step 1: Installing required software |****]
 :: Using 'apt-get' for Debian-based systems to install software packages.
 apt-get update
-apt-get install -y software-package-name1 software-package-name2
+apt-get install -y python3.11 python3.11-venv
 
 :: Check the exit code of the installation command
 if %errorlevel% neq 0 (
     echo [****| Error during software installation |****]
-    echo [****| Exiting Full Setup.              |****]
+    echo [****| Exiting Full Setup.                |****]
     pause
     goto menu
 ) else (
@@ -61,12 +61,12 @@ if %errorlevel% neq 0 (
 echo [****| Step 2: Setting environment variables |****]
 :: Setting environment variables.
 set PROJECT=GenCore
-set ENVIRONMENT=Production
+set ENVIRONMENT=Testing
 
 :: Check the exit code of the environment variable setting
 if %errorlevel% neq 0 (
     echo [****| Error during environment variable setup |****]
-    echo [****| Exiting Full Setup.                    |****]
+    echo [****| Exiting Full Setup.                     |****]
     pause
     goto menu
 ) else (
@@ -76,7 +76,7 @@ if %errorlevel% neq 0 (
 :: Step 3: Download necessary files
 echo [****| Step 3: Downloading necessary files |****]
 :: Using 'curl' to download files from the internet.
-curl -o example_file.ext https://example.com/path/to/file.ext
+curl -o example_file.ext https://github.com/DLRP1995/MonkeyHeadProject.git
 
 :: Check the exit code of the download step
 if %errorlevel% neq 0 (
