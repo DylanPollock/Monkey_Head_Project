@@ -103,9 +103,8 @@ echo [****| Setting up 'Mini' Environment |****]
 
 :: Step 1: Install minimal necessary software
 echo [****| Step 1: Installing minimal required software |****]
-:: Using 'apt-get' for Debian-based systems to install minimal necessary software packages.
-apt-get update
-apt-get install -y python3.11-slim python3.11-venv
+:: Using 'pip' to install minimal necessary software packages.
+python -m pip install python3.11-slim python3.11-venv
 
 :: Check the exit code of the installation command
 if %errorlevel% neq 0 (
