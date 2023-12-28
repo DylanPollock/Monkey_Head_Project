@@ -1,118 +1,132 @@
 @echo off
+cls
+color 0A
 echo [**** Welcome to the GenCore Deployment Process ****]
 echo.
 
 :start
 :menu
-echo [**  Select an action:      	  **]
-echo [**  1. Full-Environment Setup       **]
-echo [**  2. Mini-Environment Setup       **]
-echo [**  3. Launch Terminal              **]
-echo [**  4. Create Build                 **]
-echo [**  5. Create Volume                **]
-echo [**  6. Create Container             **]
-echo [**  7. Kubernetes                   **]
-echo [**  8. Cleanup Files                **]
-echo [**  9. Exit Program                 **]
-echo.
-set /p action="Please select an option (1-9): "
+cls
+echo [**  Select an action:        **]
+echo [**  1. Full-Environment Setup **]
+echo [**  2. Mini-Environment Setup **]
+echo [**  3. Launch Terminal        **]
+echo [**  4. Create Build           **]
+echo [**  5. Create Volume          **]
+echo [**  6. Create Container       **]
+echo [**  7. Kubernetes             **]
+echo [**  8. Cleanup Files          **]
+echo [**  9. Update Python & Debian **]
+echo [**  10. Exit Program          **]
 echo.
 
-if "%action%"=="1" call :full_env_setup && goto menu
-if "%action%"=="2" call :mini_env_setup && goto menu
-if "%action%"=="3" call :launch_terminal && goto menu
-if "%action%"=="4" call :create_build && goto menu
-if "%action%"=="5" call :create_volume && goto menu
-if "%action%"=="6" call :create_container && goto menu
-if "%action%"=="7" call :kubernetes && goto menu
-if "%action%"=="8" call :cleanup_files && goto menu
-if "%action%"=="9" goto end
-echo [* Invalid Selection, choose a valid option. *]
+set /p action="Please select an option (1-10): "
+echo.
+
+if "%action%"=="1" goto full_env_setup
+if "%action%"=="2" goto mini_env_setup
+if "%action%"=="3" goto launch_terminal
+if "%action%"=="4" goto create_build
+if "%action%"=="5" goto create_volume
+if "%action%"=="6" goto create_container
+if "%action%"=="7" goto kubernetes
+if "%action%"=="8" goto cleanup_files
+if "%action%"=="9" goto update_python_debian
+if "%action%"=="10" goto end
+
+echo [* Invalid Selection. Please choose a valid option. *]
+pause
 goto menu
 
 :full_env_setup
+cls
 echo [**** Performing Full-Environment Setup ****]
-:: Step 1: Set up environment variables
-SET BUILD_NAME=GenCore-%date:~-10,2%-%date:~-7,2%-%date:~-4,4%
-SET VOLUME_NAME=gencore-volume
-SET CONTAINER_NAME=gencore-container
-:: Step 2: Create a Docker build
-docker build -t %BUILD_NAME% . > NUL 2>&1
+call setup_full_env.bat
 if %errorlevel% neq 0 (
-    echo [**** Error: Failed to create Docker build ****]
-    goto menu
+    echo [** Error during Full-Environment Setup **]
+    echo [** Please review the error log for details. **]
+    echo [** Exiting Full-Environment Setup. **]
+) else (
+    echo [**** Full-Environment Setup Completed Successfully ****]
 )
-:: Step 3: Create a Docker volume
-docker volume create %VOLUME_NAME% > NUL 2>&1
-:: Step 4: Run a Docker container with the new build and volume
-docker run -d --name %CONTAINER_NAME% -v %VOLUME_NAME%:/data %BUILD_NAME% > NUL 2>&1
-if %errorlevel% neq 0 (
-    echo [**** Error: Failed to run Docker container ****]
-    goto menu
-)
-echo [**** Full-Environment Setup Completed Successfully ****]
+pause
 goto menu
 
 :mini_env_setup
+cls
 echo [**** Setting up Mini-Environment ****]
-:: Mini-Environment setup similar to Full-Environment but with temporary build, volume, and container names
-SET MINI_BUILD_NAME=Mini-%date:~-10,2%-%date:~-7,2%-%date:~-4,4%
-SET MINI_VOLUME_NAME=mini-volume
-SET MINI_CONTAINER_NAME=mini-container
-:: Similar steps as in :full_env_setup but with mini environment variables
-echo [**** Mini-Environment Setup Completed Successfully ****]
+call setup_mini_env.bat
+if %errorlevel% neq 0 (
+    echo [** Error during Mini-Environment Setup **]
+    echo [** Please review the error log for details. **]
+    echo [** Exiting Mini-Environment Setup. **]
+) else (
+    echo [**** Mini-Environment Setup Completed Successfully ****]
+)
+pause
 goto menu
 
 :launch_terminal
+cls
 echo [**** Launching Terminal ****]
-:: Step 1: Check if the container is running
-docker ps | findstr /i %CONTAINER_NAME% > NUL
-if %errorlevel% neq 0 (
-    echo [**** Error: Container is not running ****]
-    goto menu
-)
-:: Step 2: Launch an interactive terminal session with the container
-docker exec -it %CONTAINER_NAME% /bin/bash
+start cmd
 goto menu
 
 :create_build
+cls
 echo [**** Creating Build ****]
-:: Create a new Docker build with the current date as part of the build name
-SET NEW_BUILD_NAME=GenCore-%date:~-10,2%-%date:~-7,2%-%date:~-4,4%
-docker build -t %NEW_BUILD_NAME% . > NUL 2>&1
+docker build -t gencore-app .
 if %errorlevel% neq 0 (
-    echo [**** Error: Failed to create new build ****]
-    goto menu
+    echo [** Error during build creation **]
+    echo [** Exiting Build Creation. **]
+) else (
+    echo [**** Build created successfully ****]
 )
-echo [**** Build %NEW_BUILD_NAME% created successfully ****]
+pause
 goto menu
 
 :create_volume
+cls
 echo [**** Creating Volume ****]
-:: Create a new Docker volume and ensure it's named correctly and connected to the build
-docker volume create %VOLUME_NAME% > NUL 2>&1
-echo [**** Volume %VOLUME_NAME% created and ready ****]
+docker volume create gencore-volume
+if %errorlevel% neq 0 (
+    echo [** Error during volume creation **]
+    echo [** Exiting Volume Creation. **]
+) else (
+    echo [**** Volume created successfully ****]
+)
+pause
 goto menu
 
 :create_container
+cls
 echo [**** Creating Container ****]
-:: Create a new Docker container and ensure it's running with the latest build and volume
-docker run -d --name %CONTAINER_NAME% -v %VOLUME_NAME%:/data %BUILD_NAME% > NUL 2>&1
+docker run -d --name gencore-container -v gencore-volume:/data gencore-app
 if %errorlevel% neq 0 (
-    echo [**** Error: Failed to create new container ****]
-    goto menu
+    echo [** Error during container creation **]
+    echo [** Exiting Container Creation. **]
+) else (
+    echo [**** Container created and running ****]
 )
-echo [**** Container %CONTAINER_NAME% created and running ****]
+pause
 goto menu
 
 :kubernetes
+cls
 echo [**** Setting up Kubernetes ****]
-:: Set up Kubernetes and ensure it's connected to the container and volume
-:: Kubernetes setup commands and error checking here
-echo [**** Kubernetes setup completed successfully ****]
+call setup_kubernetes.bat
+if %errorlevel% neq 0 (
+    echo [** Error during Kubernetes setup **]
+    echo [** Please review the error log for details. **]
+    echo [** Exiting Kubernetes Setup. **]
+) else (
+    echo [**** Kubernetes setup completed successfully ****]
+)
+pause
 goto menu
 
 :cleanup_files
+cls
 echo [**** Cleanup Files ****]
 echo [** Please select cleanup type: **]
 echo [** 1. Full-clean **]
@@ -121,19 +135,74 @@ set /p cleanup_type="Select an option (1-2): "
 echo.
 
 if "%cleanup_type%"=="1" (
-    echo [**** Performing Full-clean ****]
-    for /f "tokens=*" %%a in ('docker system prune -af --volumes ^| findstr "Total reclaimed space"') do set "reclaim=%%a"
-    echo %reclaim%
-    echo [** Full-clean completed **]
+    set /p confirm="Are you sure you want to perform a Full-clean? (Y/N): "
+    if /i "%confirm%"=="Y" (
+        cls
+        echo [**** Performing Full-clean ****]
+        docker system prune -af --volumes
+        if %errorlevel% neq 0 (
+            echo [** Error during Full-clean **]
+            echo [** Exiting Full-clean. **]
+        ) else (
+            echo [** Full-clean completed. All builds, containers, and volumes removed. **]
+        )
+    ) else (
+        echo [** Full-clean canceled. **]
+    )
 ) else if "%cleanup_type%"=="2" (
-    echo [**** Performing Mini-clean ****]
-    :: Mini-clean commands here
-    echo [** Mini-clean completed **]
+    set /p confirm="Are you sure you want to perform a Mini-clean? (Y/N): "
+    if /i "%confirm%"=="Y" (
+        cls
+        echo [**** Performing Mini-clean ****]
+        docker container prune -f
+        docker volume prune -f
+        if %errorlevel% neq 0 (
+            echo [** Error during Mini-clean **]
+            echo [** Exiting Mini-clean. **]
+        ) else (
+            echo [** Mini-clean completed. Temporary items removed. **]
+        )
+    ) else (
+        echo [** Mini-clean canceled. **]
+    )
 )
-echo [** Cleanup completed **]
+pause
+goto menu
+
+:update_python_debian
+cls
+echo [**** Updating Python & Debian ****]
+:: Add commands here to update Python and Debian
+:: Example: apt update && apt upgrade -y
+:: Example: python -m pip install --upgrade pip
+:: Ensure you add error handling for these commands
+
+:: Example: Updating Debian
+:: echo [** Updating Debian **]
+:: apt update
+:: if %errorlevel% neq 0 (
+::     echo [** Error updating Debian **]
+::     echo [** Exiting update process. **]
+:: ) else (
+::     echo [** Debian updated successfully **]
+:: )
+
+:: Example: Updating Python
+:: echo [** Updating Python **]
+:: python -m pip install --upgrade pip
+:: if %errorlevel% neq 0 (
+::     echo [** Error updating Python **]
+::     echo [** Exiting update process. **]
+:: ) else (
+::     echo [** Python updated successfully **]
+:: )
+echo [**** Python & Debian updated successfully ****]
+pause
 goto menu
 
 :end
+cls
 echo [**** Thank you for using GenCore. Exiting now. ****]
 pause
 exit /b
+"""
