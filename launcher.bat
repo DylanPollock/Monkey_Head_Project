@@ -74,19 +74,19 @@ if %errorlevel% neq 0 (
 )
 
 :: Step 3: Download necessary files
-echo [****| Step 3: Downloading necessary files |****]
+::echo [****| Step 3: Downloading necessary files |****]
 :: Using 'curl' to download files from the internet.
-curl -o example_file.ext https://github.com/DLRP1995/MonkeyHeadProject.git
+::curl -o example_file.ext https://github.com/DLRP1995/MonkeyHeadProject
 
 :: Check the exit code of the download step
-if %errorlevel% neq 0 (
-    echo [****| Error during file download |****]
-    echo [****| Exiting Full Setup.         |****]
-    pause
-    goto menu
-) else (
-    echo [****| Step 3: Necessary files downloaded successfully |****]
-)
+::if %errorlevel% neq 0 (
+::    echo [****| Error during file download  |****]
+::    echo [****| Exiting Full Setup.         |****]
+::    pause
+::    goto menu
+::) else (
+::    echo [****| Step 3: Necessary files downloaded successfully |****]
+::)
 
 :: Return to the main menu after setup is complete
 goto full_setup_completed
@@ -105,11 +105,11 @@ echo [****| Setting up 'Mini' Environment |****]
 echo [****| Step 1: Installing minimal required software |****]
 :: Using 'apt-get' for Debian-based systems to install minimal necessary software packages.
 apt-get update
-apt-get install -y minimal-software-package-name1 minimal-software-package-name2
+apt-get install -y python3.11-slim python3.11-venv
 
 :: Check the exit code of the installation command
 if %errorlevel% neq 0 (
-    echo [****| Error during minimal software installation |****]
+    echo [****| Error during minimal software installation  |****]
     echo [****| Exiting 'Mini' Environment Setup.           |****]
     pause
     goto menu
@@ -147,12 +147,43 @@ echo [****| Cleaning up Files |****]
 
 :: Step 1: Execute cleanup commands
 echo [****| Step 1: Executing cleanup commands |****]
-:: Cleanup commands, such as removing temporary files, clearing caches, or deleting log files.
-del /f /q C:\path\to\temp\*.tmp
-del /f /q C:\path\to\logs\*.log
+:: Cleanup temporary files
+::del /f /q C:\path\to\temp\*.tmp
 
-:: Additional cleanup commands can be added here.
-:: For instance, clearing browser cache or other application-specific temporary files.
+:: Cleanup log files
+::del /f /q C:\path\to\logs\*.log
+
+:: Additional cleanup commands:
+:: Clearing browser cache (Example for Chrome)
+del /f /q C:\Users\%USERNAME%\AppData\Local\Google\Chrome\User Data\Default\Cache\*
+
+:: Clearing system temp files
+del /f /q %temp%\*
+
+:: Removing any specific application cache or temp files
+:: Example: del /f /q C:\path\to\application\cache\*
+
+:: Removing old Windows Update files (administrative privileges required)
+:: Example: del /f /q C:\Windows\SoftwareDistribution\Download\*
+
+:: Check the exit code of the cleanup commands
+if %errorlevel% neq 0 (
+    echo [****| Error during cleanup process |****]
+    echo [****| Exiting Cleanup Files.      |****]
+    pause
+    goto menu
+) else (
+    echo [****| Step 1: Cleanup commands executed successfully |****]
+)
+
+:: Return to the main menu after cleanup is complete
+goto cleanup_completed
+
+:cleanup_completed
+cls
+echo [****| Cleanup completed successfully |****]
+pause
+goto menu
 
 :: Check the exit code of the cleanup commands
 if %errorlevel% neq 0 (
