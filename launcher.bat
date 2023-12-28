@@ -97,10 +97,43 @@ goto menu
 cls
 echo [****| Setting up Mini-Environment |****]
 
-:: (Similar steps as full environment setup)
+:: Step 1: Install required packages/software for the Mini-Environment
+echo [****| Step 1: Installing required packages/software for Mini-Environment |****]
+:: Add your installation commands here for the Mini-Environment packages/software
 
-:: Return to the main menu after setup is complete
+:: Check the exit code of the installation commands
+if %errorlevel% neq 0 (
+    echo [****| Error during Mini-Environment setup |****]
+    echo [****| Exiting Mini-Environment Setup.     |****]
+    pause
+    goto menu
+) else (
+    echo [****| Step 1: Mini-Environment setup completed successfully |****]
+)
+
+:: Step 2: Configure Mini-Environment settings if needed
+echo [****| Step 2: Configuring Mini-Environment settings |****]
+:: Add your configuration commands here for the Mini-Environment
+
+:: Check the exit code of the configuration step
+if %errorlevel% neq 0 (
+    echo [****| Error during Mini-Environment configuration |****]
+    echo [****| Exiting Mini-Environment Setup.             |****]
+    pause
+    goto menu
+) else (
+    echo [****| Step 2: Mini-Environment settings configured successfully |****]
+)
+
+:: Return to the main menu after Mini-Environment setup is complete
 goto mini_env_setup_completed
+
+:mini_env_setup_completed
+cls
+echo [****| Mini-Environment Setup completed successfully |****]
+pause
+goto menu
+
 
 :mini_env_setup_completed
 cls
@@ -139,8 +172,6 @@ goto menu
 cls
 echo [****| Creating Volume |****]
 
-:: (Similar steps as creating a build)
-
 :: Return to the main menu after setup is complete
 goto create_volume_completed
 
@@ -154,8 +185,6 @@ goto menu
 cls
 echo [****| Creating Container |****]
 
-:: (Similar steps as creating a build)
-
 :: Return to the main menu after setup is complete
 goto create_container_completed
 
@@ -168,8 +197,6 @@ goto menu
 :kubernetes
 cls
 echo [****| Kubernetes Setup |****]
-
-:: (Similar steps as full environment setup)
 
 :: Return to the main menu after Kubernetes setup is complete
 goto kubernetes_setup_completed
