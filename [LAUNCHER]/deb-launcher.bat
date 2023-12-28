@@ -1,7 +1,7 @@
 @echo off
 cls
 color 0A
-echo [****|     GenCore Deployment   |****]
+echo [****|     GenCore Deployment (Debian Trixie x64)   |****]
 echo.
 
 :start

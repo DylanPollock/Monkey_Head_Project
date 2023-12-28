@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: gencore-container
-        image: gencore-app
+        image: gencore-image
         ports:
         - containerPort: 88
         volumeMounts:
