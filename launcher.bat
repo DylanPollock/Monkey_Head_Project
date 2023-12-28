@@ -188,7 +188,7 @@ goto menu
 :: Check the exit code of the cleanup commands
 if %errorlevel% neq 0 (
     echo [****| Error during cleanup process |****]
-    echo [****| Exiting Cleanup Files.      |****]
+    echo [****| Exiting Cleanup Files.       |****]
     pause
     goto menu
 ) else (
@@ -238,20 +238,20 @@ cls
 echo [****| Updating Python & Debian |****]
 
 :: Step 1: Update Python packages
-echo [****| Step 1: Updating Python packages |****]
+::echo [****| Step 1: Updating Python packages |****]
 :: Using 'pip' to update Python and related packages.
-pip install --upgrade pip
-pip install --upgrade setuptools
+::pip install --upgrade pip
+::pip install --upgrade setuptools
 
 :: Check the exit code of the Python package update command
-if %errorlevel% neq 0 (
-    echo [****| Error updating Python packages |****]
-    echo [****| Exiting Update Python & Debian. |****]
-    pause
-    goto menu
-) else (
-    echo [****| Step 1: Python packages updated successfully |****]
-)
+::if %errorlevel% neq 0 (
+::    echo [****| Error updating Python packages |****]
+::    echo [****| Exiting Update Python & Debian. |****]
+::    pause
+::    goto menu
+::) else (
+::    echo [****| Step 1: Python packages updated successfully |****]
+::)
 
 :: Step 2: Apply Debian system updates
 echo [****| Step 2: Applying Debian system updates |****]
