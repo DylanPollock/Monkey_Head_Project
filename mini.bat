@@ -1,8 +1,8 @@
 @echo off
 SET PROJECT_PATH=C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject
-SET IMAGE_NAME=gencore-image
-SET VOLUME_NAME=gencore-volume
-SET CONTAINER_NAME=gencore-container
+SET IMAGE_NAME=gencore-mini-image
+SET VOLUME_NAME=gencore-mini-volume
+SET CONTAINER_NAME=gencore-mini-container
 
 echo [****Welcome to the GenCore 'Mini' Deployment Process****]
 
