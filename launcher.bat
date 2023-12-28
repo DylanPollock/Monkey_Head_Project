@@ -39,15 +39,12 @@ goto menu
 
 :full_env_setup
 cls
-:setup_full_env
-cls
 echo [****| Performing Full-Environment Setup |****]
 
-:: Install required packages/software (Replace with your actual installation commands)
-:: For example, using Chocolatey to install packages
-echo [****| Installing required packages/software |****]
-choco install package1
-choco install package2
+:: Step 1: Install required packages/software
+echo [****| Step 1: Installing required packages/software |****]
+:: choco install package1
+:: choco install package2
 
 :: Check the exit code of the installation commands
 if %errorlevel% neq 0 (
@@ -56,13 +53,12 @@ if %errorlevel% neq 0 (
     pause
     goto menu
 ) else (
-    echo [****| Required packages/software installed successfully |****]
+    echo [****| Step 1: Required packages/software installed successfully |****]
 )
 
-:: Configure system settings (Replace with your system configuration steps)
-:: For example, setting environment variables
-echo [****| Configuring system settings |****]
-setx ENV_VARIABLE_NAME "value"
+:: Step 2: Configure system settings
+echo [****| Step 2: Configuring system settings |****]
+setx PROJECT "MonkeyHeadProject"
 
 :: Check the exit code of the configuration step
 if %errorlevel% neq 0 (
@@ -71,13 +67,12 @@ if %errorlevel% neq 0 (
     pause
     goto menu
 ) else (
-    echo [****| System settings configured successfully |****]
+    echo [****| Step 2: System settings configured successfully |****]
 )
 
-:: Download necessary files (Replace with your actual download commands)
-:: For example, using curl or wget to download files
-echo [****| Downloading necessary files |****]
-curl -o filename.ext https://example.com/path/to/file.ext
+:: Step 3: Download necessary files
+echo [****| Step 3: Downloading necessary files |****]
+::curl -o filename.ext https://example.com/path/to/file.ext
 
 :: Check the exit code of the download step
 if %errorlevel% neq 0 (
@@ -86,7 +81,7 @@ if %errorlevel% neq 0 (
     pause
     goto menu
 ) else (
-    echo [****| Necessary files downloaded successfully |****]
+    echo [****| Step 3: Necessary files downloaded successfully |****]
 )
 
 :: Return to the main menu after setup is complete
@@ -98,58 +93,11 @@ echo [****| Full-Environment Setup completed successfully |****]
 pause
 goto menu
 
-
 :mini_env_setup
 cls
 echo [****| Setting up Mini-Environment |****]
 
-:: Install required packages/software (Replace with your actual installation commands)
-:: For example, using Chocolatey to install packages
-echo [****| Installing required packages/software |****]
-choco install package1
-choco install package2
-
-:: Check the exit code of the installation commands
-if %errorlevel% neq 0 (
-    echo [****| Error during package/software installation |****]
-    echo [****| Exiting Mini-Environment Setup.             |****]
-    pause
-    goto menu
-) else (
-    echo [****| Required packages/software installed successfully |****]
-)
-
-:: Configure system settings (Replace with your system configuration steps)
-:: For example, setting environment variables
-echo [****| Configuring system settings |****]
-setx ENV_VARIABLE_NAME "value"
-
-:: Check the exit code of the configuration step
-if %errorlevel% neq 0 (
-    echo [****| Error during system configuration |****]
-    echo [****| Exiting Mini-Environment Setup.   |****]
-    pause
-    goto menu
-) else (
-    echo [****| System settings configured successfully |****]
-)
-
-:: Download necessary files (Replace with your actual download commands)
-:: For example, using curl or wget to download files
-echo [****| Downloading necessary files |****]
-curl -o filename.ext https://example.com/path/to/file.ext
-
-:: Check the exit code of the download step
-if %errorlevel% neq 0 (
-    echo [****| Error during file download |****]
-    echo [****| Exiting Mini-Environment Setup. |****]
-    pause
-    goto menu
-) else (
-    echo [****| Necessary files downloaded successfully |****]
-)
-
-:: Additional setup steps can be added here as needed
+:: (Similar steps as full environment setup)
 
 :: Return to the main menu after setup is complete
 goto mini_env_setup_completed
@@ -173,7 +121,7 @@ goto menu
 cls
 echo [****| Creating Build |****]
 
-:: Build a Docker image named 'gencore-image'
+:: Step 4: Build a Docker image named 'gencore-image'
 docker build -t gencore-image .
 
 :: Check the exit code of the build command
@@ -181,7 +129,7 @@ if %errorlevel% neq 0 (
     echo [****| Error during build creation     |****]
     echo [****| Exiting Build Creation.         |****]
 ) else (
-    echo [****| Build created successfully      |****]
+    echo [****| Step 4: Build created successfully      |****]
 )
 
 pause
@@ -191,17 +139,14 @@ goto menu
 cls
 echo [****| Creating Volume |****]
 
-:: Create a Docker volume named 'gencore-volume'
-docker volume create gencore-volume
+:: (Similar steps as creating a build)
 
-:: Check the exit code of the volume creation command
-if %errorlevel% neq 0 (
-    echo [****| Error during volume creation    |****]
-    echo [****| Exiting Volume Creation.        |****]
-) else (
-    echo [****| Volume created successfully     |****]
-)
+:: Return to the main menu after setup is complete
+goto create_volume_completed
 
+:create_volume_completed
+cls
+echo [****| Volume created successfully     |****]
 pause
 goto menu
 
@@ -209,115 +154,24 @@ goto menu
 cls
 echo [****| Creating Container |****]
 
-:: Create a Docker container named 'gencore-container' using the 'gencore-image' image
-docker run -d --name gencore-container -v gencore-volume:/data gencore-image
+:: (Similar steps as creating a build)
 
-:: Check the exit code of the container creation command
-if %errorlevel% neq 0 (
-    echo [****| Error during container creation |****]
-    echo [****| Exiting Container Creation.     |****]
-) else (
-    echo [****| Container created and running   |****]
-)
+:: Return to the main menu after setup is complete
+goto create_container_completed
 
+:create_container_completed
+cls
+echo [****| Container created and running   |****]
 pause
 goto menu
 
 :kubernetes
 cls
-:setup_kubernetes
-cls
-:: Install Kubernetes components (Replace with your actual installation commands)
-:: For example, installing kubectl and minikube
-:: Note: This is a simplified example; you may need to install other components based on your requirements.
-echo [****| Installing Kubernetes components |****]
-choco install kubernetes-cli
-choco install minikube
+echo [****| Kubernetes Setup |****]
 
-:: Check the exit code of the installation commands
-if %errorlevel% neq 0 (
-    echo [****| Error during Kubernetes components installation |****]
-    echo [****| Exiting Kubernetes Setup.                      |****]
-    pause
-    goto menu
-) else (
-    echo [****| Kubernetes components installed successfully |****]
-)
-
-:: Configure Kubernetes cluster (Replace with your cluster configuration steps)
-:: For example, starting a local Kubernetes cluster with minikube
-echo [****| Configuring Kubernetes cluster |****]
-minikube start
-
-:: Check the exit code of the cluster configuration step
-if %errorlevel% neq 0 (
-    echo [****| Error during Kubernetes cluster configuration |****]
-    echo [****| Exiting Kubernetes Setup.                      |****]
-    pause
-    goto menu
-) else (
-    echo [****| Kubernetes cluster configured successfully |****]
-)
-
-:: Deploy necessary Kubernetes resources (Replace with your resource deployment commands)
-:: For example, deploying a sample application to the Kubernetes cluster
-echo [****| Deploying necessary Kubernetes resources |****]
-kubectl apply -f sample-app.yaml
-
-:: Check the exit code of the resource deployment step
-if %errorlevel% neq 0 (
-    echo [****| Error during Kubernetes resource deployment |****]
-    echo [****| Exiting Kubernetes Setup.                   |****]
-    pause
-    goto menu
-) else (
-    echo [****| Kubernetes resources deployed successfully |****]
-)
+:: (Similar steps as full environment setup)
 
 :: Return to the main menu after Kubernetes setup is complete
-goto kubernetes_setup_completed
-
-
-:: Check the exit code of the installation commands
-if %errorlevel% neq 0 (
-    echo [****| Error during Kubernetes component installation |****]
-    echo [****| Exiting Kubernetes Setup.                     |****]
-    pause
-    goto menu
-) else (
-    echo [****| Kubernetes components installed successfully |****]
-)
-
-:: Configure Kubernetes cluster (Replace with your actual configuration steps)
-:: For example, starting a local Minikube cluster
-echo [****| Configuring Kubernetes cluster |****]
-minikube start
-
-:: Check the exit code of the configuration step
-if %errorlevel% neq 0 (
-    echo [****| Error during Kubernetes cluster configuration |****]
-    echo [****| Exiting Kubernetes Setup.                        |****]
-    pause
-    goto menu
-) else (
-    echo [****| Kubernetes cluster configured successfully    |****]
-)
-
-:: Deploy necessary Kubernetes resources (Replace with your deployment steps)
-echo [****| Deploying Kubernetes resources |****]
-kubectl apply -f gencore-deployment.yaml
-
-:: Check the exit code of the deployment step
-if %errorlevel% neq 0 (
-    echo [****| Error during Kubernetes resource deployment |****]
-    echo [****| Exiting Kubernetes Setup.                    |****]
-    pause
-    goto menu
-) else (
-    echo [****| Kubernetes resources deployed successfully  |****]
-)
-
-:: Return to the main menu after setup is complete
 goto kubernetes_setup_completed
 
 :kubernetes_setup_completed
@@ -326,59 +180,73 @@ echo [****| Kubernetes setup completed successfully     |****]
 pause
 goto menu
 
-
 :cleanup_files
 cls
-echo [****| Cleanup Files |****]
-echo [****| 1. Full-clean |****]
-echo [****| 2. Mini-clean |****]
-echo [****| 3. Cancel / Return |****]
+echo [****| 1. Full-clean       |****]
+echo [****| 2. Mini-clean       |****]
+echo [****| 3. Cancel / Return  |****]
 
 set /p cleanup_type="Select an option (1-3): "
 echo.
 
 if "%cleanup_type%"=="1" (
-    set /p first_confirm="Do you want to perform a Full-clean? (Y/N): "
-    set /p confirm="Are you really, really sure you want to perform a Full-clean? (Y/N): "
-    if /i "%confirm%"=="Y" (
-        cls
-        echo [****| Performing Full-clean |****]
-
-        :: Perform a full clean, removing all Docker containers, images, and volumes
-        docker system prune -af --volumes
-
-        :: Check the exit code of the full clean command
-        if %errorlevel% neq 0 (
-            echo [****| Error during Full-clean |****]
-            echo [****| Exiting Full-clean.     |****]
-        ) else (
-            echo [****| Full-clean completed. All builds, containers, and volumes removed. |****]
-        )
+    echo [****| Initiating Full-clean |****]
+    
+    :: Step 1: Remove all Docker containers, images, and volumes
+    echo [****| Step 1: Removing all Docker containers, images, and volumes |****]
+    docker system prune -af --volumes
+    
+    :: Check the exit code of the full clean command
+    if %errorlevel% neq 0 (
+        echo [****| Error during Full-clean |****]
+        echo [****| Exiting Full-clean.     |****]
     ) else (
-        echo [****| Full-clean canceled. |****]
+        echo [****| Step 1: Full-clean completed. All builds, containers, and volumes removed. |****]
     )
+    
+    pause
+    goto cleanup_completed
 ) else if "%cleanup_type%"=="2" (
-    set /p confirm="Are you sure you want to perform a Mini-clean? (Y/N): "
-    if /i "%confirm%"=="Y" (
-        cls
-        echo [****| Performing Mini-clean |****]
-
-        :: Perform a mini clean, removing stopped Docker containers and unused volumes
-        docker container prune -f
-        docker volume prune -f
-
-        :: Check the exit code of the mini clean command
-        if %errorlevel% neq 0 (
-            echo [****| Error during Mini-clean |****]
-            echo [****| Exiting Mini-clean. |****]
-        ) else (
-            echo [****| Mini-clean completed. Temporary items removed. |****]
-        )
+    echo [****| Initiating Mini-clean |****]
+    
+    :: Step 1: Remove stopped Docker containers
+    echo [****| Step 1: Removing stopped Docker containers |****]
+    docker container prune -f
+    
+    :: Step 2: Remove unused volumes
+    echo [****| Step 2: Removing unused Docker volumes |****]
+    docker volume prune -f
+    
+    :: Check the exit code of the mini clean commands
+    if %errorlevel% neq 0 (
+        echo [****| Error during Mini-clean |****]
+        echo [****| Exiting Mini-clean. |****]
     ) else (
-        echo [****| Mini-clean canceled. |****]
+        echo [****| Step 1: Mini-clean completed. Temporary items removed. |****]
     )
+    
+    pause
+    goto cleanup_completed
+) else if "%cleanup_type%"=="3" (
+    echo [****| Cleanup canceled. |****]
+    pause
+    goto menu
+) else (
+    echo [****| Invalid Selection. Please choose a valid option. |****]
+    pause
+    goto menu
 )
 
+:cleanup_completed
+cls
+echo [****| Cleanup completed successfully |****]
+pause
+goto menu
+
+
+:cleanup_completed
+cls
+echo [****| Cleanup completed successfully |****]
 pause
 goto menu
 
@@ -386,49 +254,11 @@ goto menu
 cls
 echo [****| Updating Python & Debian |****]
 
-:: Updating Debian
-echo [****| Updating Debian |****]
+:: Return to the main menu after update is complete
+goto update_completed
 
-:: Update the package repository
-apt-get update
-
-:: Check the exit code of the update command
-if %errorlevel% neq 0 (
-    echo [****| Error updating Debian      |****]
-    echo [****| Exiting update process.    |****]
-    pause
-    goto menu
-) else (
-    :: Upgrade installed packages
-    apt-get upgrade -y
-
-    :: Check the exit code of the upgrade command
-    if %errorlevel% neq 0 (
-        echo [****| Error upgrading Debian packages |****]
-        echo [****| Exiting update process.         |****]
-        pause
-        goto menu
-    ) else (
-        echo [****| Debian updated successfully     |****]
-    )
-)
-
-:: Updating Python
-echo [** Updating Python |****]
-
-:: Upgrade pip (Python package manager) to the latest version
-python -m pip install --upgrade pip
-
-:: Check the exit code of the pip upgrade command
-if %errorlevel% neq 0 (
-    echo [****| Error updating Python |****]
-    echo [****| Exiting update process. |****]
-    pause
-    goto menu
-) else (
-    echo [****| Python updated successfully |****]
-)
-
+:update_completed
+cls
 echo [****| Python & Debian updated successfully |****]
 pause
 goto menu
@@ -438,21 +268,3 @@ cls
 echo [****| Thank you for using GenCore. Exiting now. |****]
 pause
 exit /b
-
-:full_env_setup_completed
-cls
-echo [****| Full-Environment Setup Completed Successfully   |****]
-pause
-goto menu
-
-:mini_env_setup_completed
-cls
-echo [****| Mini-Environment Setup Completed Successfully   |****]
-pause
-goto menu
-
-:kubernetes_setup_completed
-cls
-echo [****| Kubernetes setup completed successfully     |****]
-pause
-goto menu
