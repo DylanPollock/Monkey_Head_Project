@@ -338,7 +338,8 @@ set /p cleanup_type="Select an option (1-3): "
 echo.
 
 if "%cleanup_type%"=="1" (
-    set /p confirm="Are you sure you want to perform a Full-clean? (Y/N): "
+    set /p first_confirm="Do you want to perform a Full-clean? (Y/N): "
+    set /p confirm="Are you really, really sure you want to perform a Full-clean? (Y/N): "
     if /i "%confirm%"=="Y" (
         cls
         echo [****| Performing Full-clean |****]
