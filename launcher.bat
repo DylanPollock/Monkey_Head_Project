@@ -172,30 +172,39 @@ goto menu
 :update_python_debian
 cls
 echo [**** Updating Python & Debian ****]
-:: Add commands here to update Python and Debian
-:: Example: apt update && apt upgrade -y
-:: Example: python -m pip install --upgrade pip
-:: Ensure you add error handling for these commands
 
-:: Example: Updating Debian
-:: echo [** Updating Debian **]
-:: apt update
-:: if %errorlevel% neq 0 (
-::     echo [** Error updating Debian **]
-::     echo [** Exiting update process. **]
-:: ) else (
-::     echo [** Debian updated successfully **]
-:: )
+:: Updating Debian
+echo [** Updating Debian **]
+apt-get update
+if %errorlevel% neq 0 (
+    echo [** Error updating Debian **]
+    echo [** Exiting update process. **]
+    pause
+    goto menu
+) else (
+    apt-get upgrade -y
+    if %errorlevel% neq 0 (
+        echo [** Error upgrading Debian packages **]
+        echo [** Exiting update process. **]
+        pause
+        goto menu
+    ) else (
+        echo [** Debian updated successfully **]
+    )
+)
 
-:: Example: Updating Python
-:: echo [** Updating Python **]
-:: python -m pip install --upgrade pip
-:: if %errorlevel% neq 0 (
-::     echo [** Error updating Python **]
-::     echo [** Exiting update process. **]
-:: ) else (
-::     echo [** Python updated successfully **]
-:: )
+:: Updating Python
+echo [** Updating Python **]
+python -m pip install --upgrade pip
+if %errorlevel% neq 0 (
+    echo [** Error updating Python **]
+    echo [** Exiting update process. **]
+    pause
+    goto menu
+) else (
+    echo [** Python updated successfully **]
+)
+
 echo [**** Python & Debian updated successfully ****]
 pause
 goto menu
