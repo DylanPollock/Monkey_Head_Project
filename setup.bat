@@ -39,17 +39,27 @@ pause
 exit /b
 
 :check_prerequisites
-:: Check and install Docker
+:: Check Docker Installation
 docker --version > NUL 2>&1
 if %errorlevel% neq 0 (
-    echo [**** Docker is not installed. Installing Docker... ****]
-    :: Add logic to install Docker
+    echo [**** Docker is not installed. Please install Docker. ****]
+    pause
+    exit /b
 )
 
-:: Check and install Kubernetes
+:: Check Docker Running Status
+docker info > NUL 2>&1
+if %errorlevel% neq 0 (
+    echo [**** Docker is not running. Please start Docker. ****]
+    pause
+    exit /b
+)
+
+:: Check Kubernetes Installation
 kubectl version --client > NUL 2>&1
 if %errorlevel% neq 0 (
-    echo [**** Kubernetes is not installed. Installing Kubernetes... ****]
-    :: Add logic to install Kubernetes
+    echo [**** Kubernetes is not installed. Please install Kubernetes. ****]
+    pause
+    exit /b
 )
 goto :eof
