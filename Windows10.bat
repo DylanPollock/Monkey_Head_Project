@@ -33,7 +33,7 @@ if "%action%"=="8" goto create_container
 if "%action%"=="9" goto kubernetes
 if "%action%"=="10" goto end
 
-echo [****|     Invalid Selection. Choose a valid option :   |****]
+echo [****|     Invalid Selection. Choose a valid option:   |****]
 pause
 goto menu
 
@@ -390,26 +390,24 @@ goto menu
 cls
 echo [****| Kubernetes Setup |****]
 
-:: Step 1: Initialize Kubernetes cluster and deploy services
-echo [****| Step 1: Initializing Kubernetes cluster and deploying services |****]
-:: Example command to initialize a Kubernetes cluster using Minikube (for local development)
-:: minikube start
+:: Step 1: Apply Kubernetes configurations from gencore.yaml
+echo [****| Step 1: Applying Kubernetes configurations |****]
+kubectl apply -f gencore.yaml
 
-:: Example command to deploy a service or application using kubectl
-:: kubectl apply -f myservice-deployment.yaml
-
-:: For more complex configurations, you might use Helm charts
-:: Example: helm install myservice ./my-helm-chart
-
-:: Check the exit code of the Kubernetes setup command
+:: Check the exit code of the Kubernetes apply command
 if %errorlevel% neq 0 (
-    echo [****| Error during Kubernetes setup |****]
+    echo [****| Error during Kubernetes configuration application |****]
     echo [****| Exiting Kubernetes Setup. |****]
     pause
     goto menu
 ) else (
-    echo [****| Step 1: Kubernetes setup completed successfully |****]
+    echo [****| Kubernetes configurations applied successfully |****]
 )
+
+:: Step 2: Verify Deployment and Service
+echo [****| Step 2: Verifying Deployment and Service |****]
+kubectl get deployments
+kubectl get services
 
 :: Return to the main menu after Kubernetes setup is complete
 goto kubernetes_setup_completed
