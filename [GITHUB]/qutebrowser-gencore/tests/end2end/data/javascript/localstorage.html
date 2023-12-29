@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <script type="text/javascript">
+          function check_storage() {
+              var elem = document.getElementById("status");
+              try {
+                  localStorage.qute_test = "foo";
+                  elem.innerHTML = "working";
+                  console.log("local storage is working");
+              } catch (e) {
+                  elem.innerHTML = "not working";
+                  console.log("local storage is not working");
+              }
+          }
+      </script>
+  </head>
+  <body onload="check_storage()">
+    <p>Local storage status: <span id="status">checking...</span></p>
+  </body>
+</html>

@@ -1,0 +1,496 @@
+# SPDX-FileCopyrightText: Florian Bruhin (The Compiler) <mail@qutebrowser.org>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""Completion view for statusbar command section.
+
+Defines a CompletionView which uses CompletionFiterModel and CompletionModel
+subclasses to provide completions.
+"""
+
+from typing import TYPE_CHECKING, Optional
+
+from qutebrowser.qt.widgets import QTreeView, QSizePolicy, QStyleFactory, QWidget
+from qutebrowser.qt.core import pyqtSlot, pyqtSignal, Qt, QItemSelectionModel, QSize
+
+from qutebrowser.config import config, stylesheet
+from qutebrowser.completion import completiondelegate
+from qutebrowser.completion.models import completionmodel
+from qutebrowser.utils import utils, usertypes, debug, log, qtutils
+from qutebrowser.api import cmdutils
+if TYPE_CHECKING:
+    from qutebrowser.mainwindow.statusbar import command
+
+
+class CompletionView(QTreeView):
+
+    """The view showing available completions.
+
+    Based on QTreeView but heavily customized so root elements show as category
+    headers, and children show as flat list.
+
+    Attributes:
+        pattern: Current filter pattern, used for highlighting.
+        _win_id: The ID of the window this CompletionView is associated with.
+        _height: The height to use for the CompletionView.
+        _height_perc: Either None or a percentage if height should be relative.
+        _delegate: The item delegate used.
+        _column_widths: A list of column widths, in percent.
+        _active: Whether a selection is active.
+        _cmd: The statusbar Command object.
+
+    Signals:
+        update_geometry: Emitted when the completion should be resized.
+        selection_changed: Emitted when the completion item selection changes.
+    """
+
+    # Drawing the item foreground will be done by CompletionItemDelegate, so we
+    # don't define that in this stylesheet.
+    STYLESHEET = """
+        QTreeView {
+            font: {{ conf.fonts.completion.entry }};
+            background-color: {{ conf.colors.completion.even.bg }};
+            alternate-background-color: {{ conf.colors.completion.odd.bg }};
+            outline: 0;
+            border: 0px;
+        }
+
+        QTreeView::item:disabled {
+            background-color: {{ conf.colors.completion.category.bg }};
+            border-top: 1px solid
+                {{ conf.colors.completion.category.border.top }};
+            border-bottom: 1px solid
+                {{ conf.colors.completion.category.border.bottom }};
+        }
+
+        QTreeView::item:selected, QTreeView::item:selected:hover {
+            border-top: 1px solid
+                {{ conf.colors.completion.item.selected.border.top }};
+            border-bottom: 1px solid
+                {{ conf.colors.completion.item.selected.border.bottom }};
+            background-color: {{ conf.colors.completion.item.selected.bg }};
+        }
+
+        QTreeView:item::hover {
+            border: 0px;
+        }
+
+        QTreeView QScrollBar {
+            width: {{ conf.completion.scrollbar.width }}px;
+            background: {{ conf.colors.completion.scrollbar.bg }};
+        }
+
+        QTreeView QScrollBar::handle {
+            background: {{ conf.colors.completion.scrollbar.fg }};
+            border: {{ conf.completion.scrollbar.padding }}px solid
+                    {{ conf.colors.completion.scrollbar.bg }};
+            min-height: 10px;
+        }
+
+        QTreeView QScrollBar::sub-line, QScrollBar::add-line {
+            border: none;
+            background: none;
+        }
+    """
+
+    update_geometry = pyqtSignal()
+    selection_changed = pyqtSignal(str)
+
+    def __init__(self, *,
+                 cmd: 'command.Command',
+                 win_id: int,
+                 parent: QWidget = None) -> None:
+        super().__init__(parent)
+        self.pattern: Optional[str] = None
+        self._win_id = win_id
+        self._cmd = cmd
+        self._active = False
+
+        config.instance.changed.connect(self._on_config_changed)
+
+        self._delegate = completiondelegate.CompletionItemDelegate(self)
+        self.setItemDelegate(self._delegate)
+        self.setStyle(QStyleFactory.create('Fusion'))
+        stylesheet.set_register(self)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.setHeaderHidden(True)
+        self.setAlternatingRowColors(True)
+        self.setIndentation(0)
+        self.setItemsExpandable(False)
+        self.setExpandsOnDoubleClick(False)
+        self.setAnimated(False)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        # WORKAROUND
+        # This is a workaround for weird race conditions with invalid
+        # item indexes leading to segfaults in Qt.
+        #
+        # Some background: https://bugs.quassel-irc.org/issues/663
+        # The proposed fix there was later reverted because it didn't help.
+        self.setUniformRowHeights(True)
+        self.hide()
+        # FIXME set elidemode
+        # https://github.com/qutebrowser/qutebrowser/issues/118
+
+    def __repr__(self):
+        return utils.get_repr(self)
+
+    def _model(self) -> completionmodel.CompletionModel:
+        """Get the current completion model.
+
+        Ensures the model is not None.
+        """
+        model = self.model()
+        assert isinstance(model, completionmodel.CompletionModel), model
+        return model
+
+    def _selection_model(self) -> QItemSelectionModel:
+        """Get the current selection model.
+
+        Ensures the model is not None.
+        """
+        model = self.selectionModel()
+        assert model is not None
+        return model
+
+    @pyqtSlot(str)
+    def _on_config_changed(self, option):
+        if option in ['completion.height', 'completion.shrink']:
+            self.update_geometry.emit()
+
+    def _resize_columns(self):
+        """Resize the completion columns based on column_widths."""
+        if self.model() is None:
+            return
+        width = self.size().width()
+        column_widths = self._model().column_widths
+        pixel_widths = [(width * perc // 100) for perc in column_widths]
+
+        bar = self.verticalScrollBar()
+        assert bar is not None
+        delta = bar.sizeHint().width()
+        for i, width in reversed(list(enumerate(pixel_widths))):
+            if width > delta:
+                pixel_widths[i] -= delta
+                break
+
+        for i, w in enumerate(pixel_widths):
+            assert w >= 0, (i, w)
+            self.setColumnWidth(i, w)
+
+    def _next_idx(self, upwards):
+        """Get the previous/next QModelIndex displayed in the view.
+
+        Used by tab_handler.
+
+        Args:
+            upwards: Get previous item, not next.
+
+        Return:
+            A QModelIndex.
+        """
+        model = self._model()
+        idx = self._selection_model().currentIndex()
+        if not idx.isValid():
+            # No item selected yet
+            if upwards:
+                return model.last_item()
+            else:
+                return model.first_item()
+
+        while True:
+            idx = self.indexAbove(idx) if upwards else self.indexBelow(idx)
+            # wrap around if we arrived at beginning/end
+            if not idx.isValid() and upwards:
+                return model.last_item()
+            elif not idx.isValid() and not upwards:
+                idx = model.first_item()
+                self.scrollTo(idx.parent())
+                return idx
+            elif idx.parent().isValid():
+                # Item is a real item, not a category header -> success
+                return idx
+
+        raise utils.Unreachable
+
+    def _next_page(self, upwards):
+        """Return the index a page away from the selected index.
+
+        Args:
+            upwards: Get previous item, not next.
+
+        Return:
+            A QModelIndex.
+        """
+        old_idx = self._selection_model().currentIndex()
+        idx = old_idx
+        model = self._model()
+
+        if not idx.isValid():
+            # No item selected yet
+            return model.last_item() if upwards else model.first_item()
+
+        # Find height of each CompletionView element
+        rect = self.visualRect(idx)
+        qtutils.ensure_valid(rect)
+        page_length = self.height() // rect.height()
+
+        # Skip one pageful, except leave one old line visible
+        offset = -(page_length - 1) if upwards else page_length - 1
+        idx = model.sibling(old_idx.row() + offset, old_idx.column(), old_idx)
+
+        # Skip category headers
+        while idx.isValid() and not idx.parent().isValid():
+            idx = self.indexAbove(idx) if upwards else self.indexBelow(idx)
+
+        if idx.isValid():
+            return idx
+
+        border_item = model.first_item() if upwards else model.last_item()
+
+        # Wrap around if we were already at the beginning/end
+        if old_idx == border_item:
+            return self._next_idx(upwards)
+
+        # Select the first/last item before wrapping around
+        if upwards:
+            self.scrollTo(border_item.parent())
+        return border_item
+
+    def _next_category_idx(self, upwards):
+        """Get the index of the previous/next category.
+
+        Args:
+            upwards: Get previous item, not next.
+
+        Return:
+            A QModelIndex.
+        """
+        idx = self._selection_model().currentIndex()
+        model = self._model()
+        if not idx.isValid():
+            return self._next_idx(upwards).sibling(0, 0)
+        idx = idx.parent()
+        direction = -1 if upwards else 1
+        while True:
+            idx = idx.sibling(idx.row() + direction, 0)
+
+            if idx.isValid():
+                child = model.index(0, 0, idx)
+                if child.isValid():
+                    self.scrollTo(idx)  # scroll to ensure the category is visible
+                    return child
+            elif upwards:
+                # wrap around to the first item of the last category
+                return model.last_item().sibling(0, 0)
+            else:
+                # wrap around to the first item of the first category
+                idx = model.first_item()
+                self.scrollTo(idx.parent())
+                return idx
+
+        raise utils.Unreachable
+
+    @cmdutils.register(instance='completion',
+                       modes=[usertypes.KeyMode.command], scope='window')
+    @cmdutils.argument('which', choices=['next', 'prev',
+                                         'next-category', 'prev-category',
+                                         'next-page', 'prev-page'])
+    @cmdutils.argument('history', flag='H')
+    def completion_item_focus(self, which, history=False):
+        """Shift the focus of the completion menu to another item.
+
+        Args:
+            which: 'next', 'prev',
+                   'next-category', 'prev-category',
+                   'next-page', or 'prev-page'.
+            history: Navigate through command history if no text was typed.
+        """
+        if history:
+            if (self._cmd.text() == ':' or self._cmd.history.is_browsing() or
+                    not self._active):
+                if which == 'next':
+                    self._cmd.command_history_next()
+                    return
+                elif which == 'prev':
+                    self._cmd.command_history_prev()
+                    return
+                else:
+                    raise cmdutils.CommandError("Can't combine --history with "
+                                                "{}!".format(which))
+
+        if not self._active:
+            return
+
+        selmodel = self._selection_model()
+        indices = {
+            'next': lambda: self._next_idx(upwards=False),
+            'prev': lambda: self._next_idx(upwards=True),
+            'next-category': lambda: self._next_category_idx(upwards=False),
+            'prev-category': lambda: self._next_category_idx(upwards=True),
+            'next-page': lambda: self._next_page(upwards=False),
+            'prev-page': lambda: self._next_page(upwards=True),
+        }
+        idx = indices[which]()
+
+        if not idx.isValid():
+            return
+
+        selmodel.setCurrentIndex(
+            idx,
+            QItemSelectionModel.SelectionFlag.ClearAndSelect |
+            QItemSelectionModel.SelectionFlag.Rows)
+
+        # if the last item is focused, try to fetch more
+        next_idx = self.indexBelow(idx)
+        if not self.visualRect(next_idx).isValid():
+            self.expandAll()
+
+        count = self._model().count()
+        if count == 0:
+            self.hide()
+        elif count == 1 and config.val.completion.quick:
+            self.hide()
+        elif config.val.completion.show == 'auto':
+            self.show()
+
+    def set_model(self, model):
+        """Switch completion to a new model.
+
+        Called from on_update_completion().
+
+        Args:
+            model: The model to use.
+        """
+        old_model = self.model()
+        if old_model is not None and model is not old_model:
+            old_model.deleteLater()
+            self._selection_model().deleteLater()
+
+        self.setModel(model)
+
+        if model is None:
+            self._active = False
+            self.hide()
+            return
+
+        model.setParent(self)
+        self._active = True
+        self.pattern = None
+        self._maybe_show()
+
+        self._resize_columns()
+        for i in range(model.rowCount()):
+            self.expand(model.index(i, 0))
+
+    def set_pattern(self, pattern: str) -> None:
+        """Set the pattern on the underlying model."""
+        if not self.model():
+            return
+        if self.pattern == pattern:
+            # no changes, abort
+            log.completion.debug(
+                "Ignoring pattern set request as pattern has not changed.")
+            return
+        self.pattern = pattern
+        with debug.log_time(log.completion, 'Set pattern {}'.format(pattern)):
+            self._model().set_pattern(pattern)
+            self._selection_model().clear()
+            self._maybe_update_geometry()
+            self._maybe_show()
+
+    def _maybe_show(self):
+        if (config.val.completion.show == 'always' and
+                self._model().count() > 0):
+            self.show()
+        else:
+            self.hide()
+
+    def _maybe_update_geometry(self):
+        """Emit the update_geometry signal if the config says so."""
+        if config.val.completion.shrink:
+            self.update_geometry.emit()
+
+    @pyqtSlot()
+    def on_clear_completion_selection(self):
+        """Clear the selection model when an item is activated."""
+        self.hide()
+        selmod = self._selection_model()
+        if selmod is not None:
+            selmod.clearSelection()
+            selmod.clearCurrentIndex()
+
+    def sizeHint(self):
+        """Get the completion size according to the config."""
+        # Get the configured height/percentage.
+        confheight = str(config.val.completion.height)
+        if confheight.endswith('%'):
+            perc = int(confheight.rstrip('%'))
+            window = self.window()
+            assert window is not None
+            height = window.height() * perc // 100
+        else:
+            height = int(confheight)
+        # Shrink to content size if needed and shrinking is enabled
+        if config.val.completion.shrink:
+            bar = self.horizontalScrollBar()
+            assert bar is not None
+            contents_height = (
+                self.viewportSizeHint().height() +
+                bar.sizeHint().height())
+            if contents_height <= height:
+                height = contents_height
+        # The width isn't really relevant as we're expanding anyways.
+        return QSize(-1, height)
+
+    def selectionChanged(self, selected, deselected):
+        """Extend selectionChanged to call completers selection_changed."""
+        if not self._active:
+            return
+        super().selectionChanged(selected, deselected)
+        indexes = selected.indexes()
+        if not indexes:
+            return
+        data = str(self._model().data(indexes[0]))
+        self.selection_changed.emit(data)
+
+    def resizeEvent(self, e):
+        """Extend resizeEvent to adjust column size."""
+        super().resizeEvent(e)
+        self._resize_columns()
+
+    def showEvent(self, e):
+        """Adjust the completion size and scroll when it's freshly shown."""
+        self.update_geometry.emit()
+        scrollbar = self.verticalScrollBar()
+        if scrollbar is not None:
+            scrollbar.setValue(scrollbar.minimum())
+        super().showEvent(e)
+
+    @cmdutils.register(instance='completion',
+                       modes=[usertypes.KeyMode.command], scope='window')
+    def completion_item_del(self):
+        """Delete the current completion item."""
+        index = self.currentIndex()
+        if not index.isValid():
+            raise cmdutils.CommandError("No item selected!")
+        self._model().delete_cur_item(index)
+
+    @cmdutils.register(instance='completion',
+                       modes=[usertypes.KeyMode.command], scope='window')
+    def completion_item_yank(self, sel=False):
+        """Yank the current completion item into the clipboard.
+
+        Args:
+            sel: Use the primary selection instead of the clipboard.
+        """
+        text = self._cmd.selectedText()
+        if not text:
+            index = self.currentIndex()
+            if not index.isValid():
+                raise cmdutils.CommandError("No item selected!")
+            text = self._model().data(index)
+
+        if not utils.supports_selection():
+            sel = False
+
+        utils.set_clipboard(text, selection=sel)

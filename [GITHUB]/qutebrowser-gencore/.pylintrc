@@ -1,0 +1,96 @@
+[MASTER]
+ignore=resources.py
+extension-pkg-whitelist=PyQt5,PyQt6,sip
+load-plugins=qute_pylint.config,
+             pylint.extensions.docstyle,
+             pylint.extensions.overlapping_exceptions,
+             pylint.extensions.code_style,
+             pylint.extensions.comparison_placement,
+             pylint.extensions.for_any_all,
+             pylint.extensions.docstyle,
+             pylint.extensions.check_elif,
+             pylint.extensions.typing,
+             pylint.extensions.docparams,
+             pylint.extensions.private_import,
+             pylint.extensions.dict_init_mutate,
+             pylint.extensions.dunder
+
+persistent=n
+py-version=3.8
+
+[MESSAGES CONTROL]
+enable=all
+disable=locally-disabled,
+        suppressed-message,
+        fixme,
+        cyclic-import,
+        blacklisted-name,
+        logging-format-interpolation,
+        logging-not-lazy,
+        broad-except,
+        bare-except,
+        eval-used,
+        exec-used,
+        global-statement,
+        wrong-import-position,
+        duplicate-code,
+        no-else-return,
+        no-else-continue,
+        too-many-ancestors,
+        too-many-public-methods,
+        too-many-instance-attributes,
+        too-many-lines,
+        too-many-return-statements,
+        too-many-boolean-expressions,
+        too-many-locals,
+        too-many-branches,
+        too-many-statements,
+        too-few-public-methods,
+        import-outside-toplevel,
+        consider-using-f-string,
+        consider-using-assignment-expr,
+        logging-fstring-interpolation,
+        raise-missing-from,
+        consider-using-tuple,
+        consider-using-namedtuple-or-dataclass,
+        missing-raises-doc,
+        missing-type-doc,
+        missing-param-doc,
+        useless-param-doc,
+        wrong-import-order,  # doesn't work with qutebrowser.qt, even with known-third-party set
+        ungrouped-imports,   # ditto
+        use-implicit-booleaness-not-comparison-to-zero,
+
+[BASIC]
+function-rgx=[a-z_][a-z0-9_]{2,50}$
+const-rgx=[A-Za-z_][A-Za-z0-9_]{0,50}$
+method-rgx=[a-z_][A-Za-z0-9_]{1,50}$
+attr-rgx=[A-Za-z_][A-Za-z0-9_]{0,30}$
+class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{1,30}|(__.*__))$
+argument-rgx=[a-z_][a-z0-9_]{0,30}$
+variable-rgx=[a-z_][a-z0-9_]{0,30}$
+docstring-min-length=3
+no-docstring-rgx=(^_|^main$)
+class-const-naming-style = snake_case
+
+[FORMAT]
+# FIXME:v4 (lint) down to 88 again once we use black
+max-line-length=190
+ignore-long-lines=(<?https?://|file://|link:)
+expected-line-ending-format=LF
+
+[VARIABLES]
+dummy-variables-rgx=_.*
+
+[DESIGN]
+max-args=10
+
+[CLASSES]
+valid-metaclass-classmethod-first-arg=cls
+
+[TYPECHECK]
+ignored-modules=PyQt5,PyQt5.QtWebKit
+ignored-classes=DummyBox,__cause__
+
+[IMPORTS]
+known-third-party=sip

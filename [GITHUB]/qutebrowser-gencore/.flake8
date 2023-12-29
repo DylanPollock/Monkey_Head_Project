@@ -1,0 +1,75 @@
+[flake8]
+exclude = .*,__pycache__,resources.py
+# B001: bare except
+# B008: Do not perform calls in argument defaults. (fine with some Qt stuff)
+# B011: Do not call assert False since python -O removes these calls. Instead
+#       callers should raise AssertionError().
+# B028: Missing stacklevel= for warnings
+# B305: .next() (false-positives)
+# E128: continuation line under-indented for visual indent
+# E226: missing whitespace around arithmetic operator
+# E265: Block comment should start with '#'
+# E501: Line too long
+# E402: module level import not at top of file
+# E266: too many leading '#' for block comment
+# E722: do not use bare except
+# E731: do not assign a lambda expression, use a def
+#       (for pytest's __tracebackhide__)
+# F401: Unused import
+# N802: function name should be lowercase
+# N818: exception name '...' should be named with an Error suffix
+# N806: variable in function should be lowercase
+# P101: format string does contain unindexed parameters
+# P102: docstring does contain unindexed parameters
+# P103: other string does contain unindexed parameters
+# D102: Missing docstring in public method (will be handled by others)
+# D103: Missing docstring in public function (will be handled by others)
+# D104: Missing docstring in public package (will be handled by others)
+# D105: Missing docstring in magic method (will be handled by others)
+# D106: Missing docstring in public nested class (will be handled by others)
+# D107: Missing docstring in __init__ (will be handled by others)
+# D209: Blank line before closing """ (removed from PEP257)
+# D211: No blank lines allowed before class docstring
+#       (PEP257 got changed, but let's stick to the old standard)
+# D401: First line should be in imperative mood (okay sometimes)
+# D402: First line should not be function's signature (false-positives)
+# D403: First word of the first line should be properly capitalized
+#       (false-positives)
+# D412: No blank lines allowed between a section header and its content
+#       (numpy-style)
+# D413: Missing blank line after last section (not in pep257?)
+# A003: Builtin name for class attribute (needed for overridden methods)
+# W503: like break before binary operator
+# W504: line break after binary operator
+# FI18: __future__ import "annotations" missing
+# PT004: fixture '{name}' does not return anything, add leading underscore
+# PT011: pytest.raises(ValueError) is too broad, set the match parameter or use a more specific exception
+# PT012: pytest.raises() block should contain a single simple statement
+ignore =
+    B001,B008,B305,
+    E128,E226,E265,E501,E402,E266,E722,E731,
+    F401,
+    N802,N818,
+    P101,P102,P103,
+    D102,D103,D106,D107,D104,D105,D209,D211,D401,D402,D403,D412,D413,
+    A003,
+    W503, W504,
+    FI18,
+    PT004,
+    PT011,
+    PT012
+min-version = 3.8.0
+max-complexity = 12
+per-file-ignores =
+    qutebrowser/api/hook.py : N801
+    qutebrowser/qt/*.py : F403
+    tests/* : B011,B028,D100,D101
+    tests/unit/browser/test_history.py : D100,D101,N806
+    tests/helpers/fixtures.py : D100,D101,N806
+    tests/unit/browser/webkit/http/test_content_disposition.py : D100,D101,D400
+copyright-check = True
+copyright-regexp = # Copyright [\d-]+ .*
+copyright-min-file-size = 110
+pytest-fixture-no-parentheses = True
+pytest-mark-no-parentheses = True
+pytest-parametrize-names-type = csv

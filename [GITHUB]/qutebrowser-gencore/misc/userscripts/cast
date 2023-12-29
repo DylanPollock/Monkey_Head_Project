@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+#
+# Behavior
+#   Userscript for qutebrowser which casts the url passed in $1 to the default
+#   ChromeCast device in the network using the program `castnow`
+#
+# Usage
+#   You can launch the script from qutebrowser as follows:
+#       spawn --userscript ${PATH_TO_FILE} {url}
+#
+#   Then, you can control the chromecast by launching the simple command
+#   `castnow` in a shell which will connect to the running castnow instance.
+#
+#   For stopping the script, issue the command `pkill -f castnow` which would
+#   then let the rest of the userscript execute for cleaning temporary file.
+#
+# Thanks
+#   This userscript borrows Thorsten Wißmann's javascript code from his `mpv`
+#   userscript.
+#
+# Dependencies
+#   - castnow, https://github.com/xat/castnow
+#   - youtube-dl (https://youtube-dl.org/) or a drop-in replacement such as
+#     yt-dlp (https://github.com/yt-dlp/yt-dlp).
+#
+# Configuration:
+#   This script looks at the optional QUTE_CAST_YTDL_PROGRAM environment
+#   variable (if it exists) to decide which program to use for downloading
+#   videos. If specified, this should be youtube-dl or a drop-in replacement
+#   for it.
+#
+# Author
+#   Simon Désaulniers <sim.desaulniers@gmail.com>
+
+if [ -z "$QUTE_FIFO" ] ; then
+    cat 1>&2 <<EOF
+Error: $0 can not be run as a standalone script.
+
+It is a qutebrowser userscript. In order to use it, call it using
+'spawn --userscript' as described in qute://help/userscripts.html
+EOF
+    exit 1
+fi
+
+msg() {
+    local cmd="$1"
+    shift
+    local msg="$*"
+    if [ -z "$QUTE_FIFO" ] ; then
+        echo "$cmd: $msg" >&2
+    else
+        echo "message-$cmd '${msg//\'/\\\'}'" >> "$QUTE_FIFO"
+    fi
+}
+
+js() {
+cat <<EOF
+
+    function descendantOfTagName(child, ancestorTagName) {
+        // tells whether child has some (proper) ancestor
+        // with the tag name ancestorTagName
+        while (child.parentNode != null) {
+            child = child.parentNode;
+            if (typeof child.tagName === 'undefined') break;
+            if (child.tagName.toUpperCase() == ancestorTagName.toUpperCase()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    var App = {};
+
+    var all_videos = [];
+    all_videos.push.apply(all_videos, document.getElementsByTagName("video"));
+    all_videos.push.apply(all_videos, document.getElementsByTagName("object"));
+    all_videos.push.apply(all_videos, document.getElementsByTagName("embed"));
+    App.backup_videos = Array();
+    App.all_replacements = Array();
+    for (i = 0; i < all_videos.length; i++) {
+        var video = all_videos[i];
+        if (descendantOfTagName(video, "object")) {
+            // skip tags that are contained in an object, because we hide
+            // the object anyway.
+            continue;
+        }
+        var replacement = document.createElement("div");
+        replacement.innerHTML = "
+            <p style=\\"margin-bottom: 0.5em\\">
+            The video is being cast on your ChromeCast device.
+            </p>
+            <p>
+            In order to restore this particular video
+            <a style=\\"font-weight: bold;
+                        color: white;
+                        background: transparent;
+                     \\"
+               onClick=\\"restore_video(this, " + i + ");\\"
+               href=\\"javascript: restore_video(this, " + i + ")\\"
+              >click here</a>.
+            </p>
+        ";
+        replacement.style.position = "relative";
+        replacement.style.zIndex = "100003000000";
+        replacement.style.fontSize = "1rem";
+        replacement.style.textAlign = "center";
+        replacement.style.verticalAlign = "middle";
+        replacement.style.height = "100%";
+        replacement.style.background = "#101010";
+        replacement.style.color = "white";
+        replacement.style.border = "4px dashed #545454";
+        replacement.style.padding = "2em";
+        replacement.style.margin = "auto";
+        App.all_replacements[i] = replacement;
+        App.backup_videos[i] = video;
+        video.parentNode.replaceChild(replacement, video);
+    }
+
+    function restore_video(obj, index) {
+        obj = App.all_replacements[index];
+        video = App.backup_videos[index];
+        console.log(video);
+        obj.parentNode.replaceChild(video, obj);
+    }
+
+    /** force repainting the video, thanks to:
+     * http://web.archive.org/web/20151029064649/https://martinwolf.org/2014/06/10/force-repaint-of-an-element-with-javascript/
+     */
+    var siteHeader = document.getElementById('header');
+    siteHeader.style.display='none';
+    siteHeader.offsetHeight; // no need to store this anywhere, the reference is enough
+    siteHeader.style.display='block';
+
+EOF
+}
+
+printjs() {
+    js | sed 's,//.*$,,' | tr '\n' ' '
+}
+echo "jseval -q $(printjs)" >> "$QUTE_FIFO"
+
+tmpdir=$(mktemp -d)
+file_to_cast=${tmpdir}/qutecast
+cast_program=$(command -v castnow)
+
+# pick a ytdl program
+for p in "$QUTE_CAST_YTDL_PROGRAM" yt-dlp youtube-dl; do
+    ytdl_program=$(command -v -- "$p")
+    [ "$ytdl_program" == "" ] || break
+done
+
+if [[ "${cast_program}" == "" ]]; then
+    msg error "castnow can't be found"
+    exit 1
+fi
+if [[ "${ytdl_program}" == "" ]]; then
+    msg error "youtube-dl or a drop-in replacement can't be found in PATH, and no installed program " \
+        "specified in QUTE_CAST_YTDL_PROGRAM (currently \"$QUTE_CAST_YTDL_PROGRAM\")"
+    exit 1
+fi
+
+# kill any running instance of castnow
+pkill -f -- "${cast_program}"
+
+# start youtube download in stream mode (-o -) into temporary file
+"${ytdl_program}" -qo - "$1" > "${file_to_cast}" &
+ytdl_pid=$!
+
+msg info "Casting $1" >> "$QUTE_FIFO"
+# start castnow in stream mode to cast on ChromeCast
+tail -F "${file_to_cast}" | ${cast_program} -
+
+# cleanup remaining background process and file on disk
+kill ${ytdl_pid}
+rm -rf "${tmpdir}"

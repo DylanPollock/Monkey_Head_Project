@@ -1,0 +1,354 @@
+Crowdfunding backers
+====================
+
+2019+
+-----
+
+Since late 2019, qutebrowser is taking recurring donations via
+https://github.com/sponsors/The-Compiler/[GitHub Sponsors] and
+https://liberapay.com/The-Compiler/[Liberapay]. You can find Sponsors/Patrons
+who opted to be listed as public on the respective pages. **Thank you!**
+
+2017
+----
+
+Mid-2017, qutebrowser had its
+https://www.kickstarter.com/projects/the-compiler/qutebrowser-v10-with-per-domain-settings[second crowdfunding]
+with the goal of implementing the new config system and releasing v1.0.
+
+Thanks a lot to the following people who contributed to it:
+
+Gold sponsors
+~~~~~~~~~~~~~
+
+- Iggy
+- zwitschi
+- 2x Anonymous
+
+Silver sponsors
+~~~~~~~~~~~~~~~
+
+- https://benary.org[benaryorg]
+- https://scratchbook.ch[Claude]
+- Martin Tournoij
+- https://elsensohn.ch[Thomas Elsensohn]
+- Christian Helbling
+- Gavin Troy
+- Chris King-Parra
+- Tim Das Mool Wegener
+
+Other sponsors
+~~~~~~~~~~~~~~
+
+- 7scan
+- AMD1212
+- Alex
+- Alex Suykov
+- Alexey Zhikhartsev
+- Allan Nordhøy
+- Anirudh Sanjeev
+- Anssi Puustinen
+- Anton Grensjö
+- Aristaeus
+- Armin Fisslthaler
+- Ashley Hauck
+- Benedikt Steindorf
+- Bernardo Kuri
+- Blaise Duszynski
+- Bostan
+- Bruno Oliveira
+- BunnyApocalypse
+- Christian Kellermann
+- Colin Jacobs
+- Daniel Andersson
+- Daniel Nelson
+- Daniel P. Schmidt
+- Daniel Salby
+- Danilo
+- David Beley
+- David Hollings
+- David Keijser
+- David Parrish
+- Derin Yarsuvat
+- Dmytro Kostiuchenko
+- Eero Kari
+- Epictek
+- Eric
+- Faure Hu
+- Ferus
+- Frederik Thorøe
+- G4v4g4i
+- Granitosaurus
+- Gyula Teleki
+- H
+- Heinz Bruhin
+- Hosaka
+- Ihor Radchenko
+- Iordanis Grigoriou
+- Isaac Sandaljian
+- Jakub Podeszwik
+- Jamie Anderson
+- Jasper Woudenberg
+- Jay Kamat
+- Jens Højgaard
+- Johannes
+- John Baber-Lucero
+- Jonas Schürmann
+- Kenichiro Ito
+- Kenny Low
+- Lars Ivar Igesund
+- Leulas
+- Lucas Aride Moulin
+- Ludovic Chabant
+- Lukas Gierth
+- Magnus Lindström
+- Marulkan
+- Matthew Chun-Lum
+- Matthew Cronen
+- Matthew Quigley
+- Michael Schönwälder
+- Mika Kutila
+- Mitchell Stokes
+- Nathan Howell
+- Nathan Schlehlein
+- Noël Zindel
+- Obri
+- Patrik Peng
+- Peter DiMarco
+- Peter Rice
+- Philipp Middendorf
+- Pkill9
+- PluMGMK
+- Prescott
+- ProXicT
+- Ram-Z
+- Robotichead
+- Roshless
+- Ryan Ellis
+- Ryan P Deslandes
+- Sam Doshi
+- Sam Stone
+- Sean Herman
+- Sebastian Frysztak
+- Shelby Cruver
+- Simon Désaulniers
+- SirCmpwn
+- Soham Pal
+- Stephan Jauernick
+- Stewart Webb
+- Sven Reinecke
+- Timothée Floure
+- Tom Bass
+- Tom Kirchner
+- Tomas Slusny
+- Tomasz Kramkowski
+- Tommy Thomas
+- Tuscan
+- Ulrich Pötter
+- Vasilij Schneidermann
+- Vlaaaaaaad
+- XTaran
+- Z2h-A6n
+- ayekat
+- beanieuptop
+- cee
+- craftyguy
+- demure
+- dlangevi
+- epon
+- evenorbert
+- fishss
+- gsnewmark
+- guillermohs9
+- hernani
+- hubcaps
+- jnphilipp
+- lobachevsky
+- neodarz
+- nihlaeth
+- notbenh
+- nyctea
+- ongy
+- patrick suwanvithaya
+- pyratebeard
+- p≡p foundation
+- randm_dave
+- sabreman
+- toml
+- vimja
+- wiz
+- 48 Anonymous
+
+2016
+----
+
+Mid-2016, qutebrowser did run a https://igg.me/at/qutebrowser[crowdfunding] for
+QtWebEngine support in qutebrowser.
+
+Thanks a lot to the following people who contributed to it:
+
+Gold sponsors
+~~~~~~~~~~~~~
+
+- Chris Salzberg
+- Clayton Craft
+- Jean-Louis Fuchs
+- Matthias Lisin
+- 1 Anonymous
+
+Day sponsors
+~~~~~~~~~~~~
+
+- Agent 42
+- Iggy Jackson
+- James B
+- Rudi Seitz
+- Tim „Das MooL“ Wegener
+- amd1212
+- gavtroy
+- 4 Anonymous
+
+Other sponsors
+~~~~~~~~~~~~~~
+
+- AP M
+- Alessandro Balzano
+- Allan Nordhøy
+- Andor Uhlar
+- Andreas Leppert
+- Andreas Saga Romsdal
+- Andrew Rogers / tuxlovesyou
+- André Glüpker
+- Arian Sanusi
+- Arin Lares
+- Assaf Lavie
+- Baptiste Wicht
+- Benjamin Richter
+- Benjamin Schnitzler
+- Bernardo Kuri
+- Boris Kourtoukov
+- Brian Buccola
+- Bruno Oliveira
+- Bryan Gilbert
+- Cassandra Rebecca Ruppen
+- Charles Saternos
+- Chris H
+- Christian Karl
+- Christian Lange
+- Christian Strasser
+- Colin O'Brien
+- Corsin Pfister
+- Cosmin Popescu
+- Daniel Andersson
+- David Wilson
+- Demure Demeanor
+- Doug Stone-Weaver
+- Eero Kari
+- Enric Morales
+- Eric Krohn
+- Eskild Hustvedt
+- Federico Panico
+- Felix Van der Jeugt
+- Francis Tseng
+- Geir Isene
+- George Voronin
+- German Correa
+- Grady Martin
+- Gregor Böhl
+- Guilherme Stein
+- Hannes Doyle
+- Hasan Soydabas
+- Ian Scott
+- Jacob Boldman
+- Jacob Wikmark
+- Jan Verbeek
+- Jarrod Seccombe
+- Joel Bradshaw
+- Johannes Martinsson
+- Jonas Schürmann
+- Josh Medeiros
+- José Alberto Orejuela García
+- Julie Engel
+- Jörg Behrmann
+- Jørgen Skancke
+- Kevin Kainan Li
+- Kevin Velghe
+- Konstantin Shmelkov
+- Kyle Frazer
+- Lukas Gierth
+- Mar v Leeuwaarde
+- Marek Roszman
+- Marius Betz
+- Marius Krämer
+- Markus Schmidinger
+- Martin Gabelmann
+- Martin Zimmermann
+- Mathias Fußenegger
+- Maxime Wack
+- Michał Góral
+- Nathan Isom
+- Nathanael Philipp
+- Nils Stål
+- Oliver Hope
+- Oskar Nyberg
+- Pablo Navarro
+- Panashe M. Fundira
+- Patric Schmitz
+- Pete M
+- Peter Smith
+- Phil Collins
+- Philipp Hansch
+- Philipp Kuhnz
+- Raphael Khaiat
+- Raphael Pierzina
+- Renan Guilherme
+- Rick Losie
+- Robert Cross
+- Roy Van Ginneken
+- Rupus Reinefjord
+- Ryan Roden-Corrent
+- Samir Benmendil
+- Simon Giotta
+- Stephen England
+- Sverrir H Steindorsson
+- Tarcisio Fedrizzi
+- Thorsten Wißmann
+- Timon Stampfli
+- Tjelvar Olsson
+- Tomasz Kramkowski
+- Tsukiko Tsutsukakushi
+- Vasilij Schneidermann
+- Vinney Cavallo
+- Wesly Grefrath
+- Will Ware
+- Yousaf Khurshid
+- Zach Schultz
+- averrin
+- ben hengst
+- colin
+- craigtski47
+- dag.robole
+- daniel.m.kao
+- diepfann3
+- eamonn oneil
+- esakaforever
+- francois47
+- glspisso
+- gmccoy4242
+- gtcee3
+- jonathf
+- lapinski.maciej
+- lauri.hakko
+- ljanzen
+- mutilx9
+- nussgipfel
+- oed
+- p p
+- r.c.bruno.andre
+- robert.perce
+- sghctoma
+- targy
+- freelancer
+- pupu
+- regines
+- 37 Anonymous

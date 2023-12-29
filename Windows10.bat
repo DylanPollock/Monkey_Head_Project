@@ -63,11 +63,19 @@ set PROJECT=GenCore
 set ENVIRONMENT=Testing
 echo [****| Environment variables set successfully |****]
 
-:: Additional steps for full setup can be added here...
-:: Example: Setting up a Python virtual environment
-echo [****| Setting up Python virtual environment |****]
+:: Step 3: Set up a Python virtual environment
+echo [****| Step 3: Setting up Python virtual environment |****]
 python -m venv GenCoreEnv
-echo [****| Python virtual environment setup completed |****]
+if !errorlevel! neq 0 (
+    echo [****| Error setting up Python virtual environment |****]
+    echo [****| Exiting Full Setup.                        |****]
+    pause
+    goto end
+) else (
+    echo [****| Python virtual environment setup completed |****]
+)
+
+:: Additional steps for full setup can be added here...
 
 goto full_setup_completed
 
@@ -91,8 +99,6 @@ echo [****| Setting up 'Mini' Environment |****]
 echo [****| Step 1: Installing minimal required software |****]
 :: Using 'pip' to install minimal necessary software packages.
 python -m pip install requests beautifulsoup4 lxml
-
-:: Check the exit code of the installation command
 if !errorlevel! neq 0 (
     echo [****| Error during minimal software installation  |****]
     echo [****| Exiting 'Mini' Environment Setup.           |****]
@@ -172,25 +178,6 @@ echo [****| Cleanup completed successfully |****]
 pause
 goto menu
 
-:: Check the exit code of the cleanup commands
-if !errorlevel! neq 0 (
-    echo [****| Error during cleanup process |****]
-    echo [****| Exiting Cleanup Files.       |****]
-    pause
-    goto menu
-) else (
-    echo [****| Step 1: Cleanup commands executed successfully |****]
-)
-
-:: Return to the main menu after cleanup is complete
-goto cleanup_completed
-
-:cleanup_completed
-cls
-echo [****| Cleanup completed successfully |****]
-pause
-goto menu
-
 :launch_terminal
 cls
 echo [****| Launching Terminal |****]
@@ -215,7 +202,9 @@ goto launch_terminal_completed
 
 :launch_terminal_completed
 cls
-echo [****| Terminal launched successfully |****]
+echo [****| Terminal
+
+ launched successfully |****]
 pause
 goto menu
 

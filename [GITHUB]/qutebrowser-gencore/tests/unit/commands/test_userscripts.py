@@ -1,0 +1,245 @@
+# SPDX-FileCopyrightText: Florian Bruhin (The Compiler) <mail@qutebrowser.org>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+import os
+import pathlib
+import json
+import time
+import logging
+import signal
+
+import pytest
+from qutebrowser.qt.core import QFileSystemWatcher
+
+from qutebrowser.commands import userscripts
+from qutebrowser.utils import utils
+
+
+@pytest.mark.posix
+class TestQtFIFOReader:
+
+    @pytest.fixture
+    def reader(self, tmp_path, qapp):
+        fifo_path = str(tmp_path / 'fifo')
+        os.mkfifo(fifo_path)  # pylint: disable=no-member,useless-suppression
+        reader = userscripts._QtFIFOReader(fifo_path)
+        yield reader
+        if reader._notifier.isEnabled():
+            reader.cleanup()
+
+    def test_single_line(self, reader, qtbot):
+        """Test QSocketNotifier with a single line of data."""
+        with qtbot.wait_signal(reader.got_line) as blocker:
+            with open(reader._filepath, 'w', encoding='utf-8') as f:
+                f.write('foobar\n')
+
+        assert blocker.args == ['foobar']
+
+    def test_cleanup(self, reader):
+        assert not reader._fifo.closed
+        reader.cleanup()
+        assert reader._fifo.closed
+
+
+@pytest.fixture(params=[
+    userscripts._POSIXUserscriptRunner,
+    userscripts._WindowsUserscriptRunner,
+])
+def runner(request, runtime_tmpdir):
+    if (not utils.is_posix and
+            request.param is userscripts._POSIXUserscriptRunner):
+        pytest.skip("Requires a POSIX os")
+        raise utils.Unreachable
+    return request.param()
+
+
+def test_command(qtbot, py_proc, runner):
+    cmd, args = py_proc(r"""
+        import os
+        with open(os.environ['QUTE_FIFO'], 'w') as f:
+            f.write('foo\n')
+    """)
+    with qtbot.wait_signal(runner.finished, timeout=10000):
+        with qtbot.wait_signal(runner.got_cmd, timeout=10000) as blocker:
+            runner.prepare_run(cmd, *args)
+            runner.store_html('')
+            runner.store_text('')
+    assert blocker.args == ['foo']
+
+
+def test_custom_env(qtbot, monkeypatch, py_proc, runner):
+    monkeypatch.setenv('QUTEBROWSER_TEST_1', '1')
+    env = {'QUTEBROWSER_TEST_2': '2'}
+
+    cmd, args = py_proc(r"""
+        import os
+        import json
+
+        env = dict(os.environ)
+
+        with open(os.environ['QUTE_FIFO'], 'w') as f:
+            json.dump(env, f)
+            f.write('\n')
+    """)
+
+    with qtbot.wait_signal(runner.finished, timeout=10000):
+        with qtbot.wait_signal(runner.got_cmd, timeout=10000) as blocker:
+            runner.prepare_run(cmd, *args, env=env)
+            runner.store_html('')
+            runner.store_text('')
+
+    data = blocker.args[0]
+    ret_env = json.loads(data)
+    assert 'QUTEBROWSER_TEST_1' in ret_env
+    assert 'QUTEBROWSER_TEST_2' in ret_env
+
+
+def test_source(qtbot, py_proc, runner):
+    """Make sure the page source is read and cleaned up correctly."""
+    cmd, args = py_proc(r"""
+        import os
+        import json
+
+        data = {
+            'html_file': os.environ['QUTE_HTML'],
+            'text_file': os.environ['QUTE_TEXT'],
+        }
+
+        with open(os.environ['QUTE_HTML'], 'r') as f:
+            data['html'] = f.read()
+
+        with open(os.environ['QUTE_TEXT'], 'r') as f:
+            data['text'] = f.read()
+
+        with open(os.environ['QUTE_FIFO'], 'w') as f:
+            json.dump(data, f)
+            f.write('\n')
+    """)
+
+    with qtbot.wait_signal(runner.finished, timeout=10000):
+        with qtbot.wait_signal(runner.got_cmd, timeout=10000) as blocker:
+            runner.prepare_run(cmd, *args)
+            runner.store_html('This is HTML')
+            runner.store_text('This is text')
+
+    data = blocker.args[0]
+    parsed = json.loads(data)
+    assert parsed['text'] == 'This is text'
+    assert parsed['html'] == 'This is HTML'
+
+    assert not pathlib.Path(parsed['text_file']).exists()
+    assert not pathlib.Path(parsed['html_file']).exists()
+
+
+def test_command_with_error(qtbot, py_proc, runner, caplog):
+    cmd, args = py_proc(r"""
+        import sys, os, json
+
+        with open(os.environ['QUTE_FIFO'], 'w') as f:
+            json.dump(os.environ['QUTE_TEXT'], f)
+            f.write('\n')
+
+        sys.exit(1)
+    """)
+
+    with caplog.at_level(logging.ERROR):
+        with qtbot.wait_signal(runner.finished, timeout=10000):
+            with qtbot.wait_signal(runner.got_cmd, timeout=10000) as blocker:
+                runner.prepare_run(cmd, *args)
+                runner.store_text('Hello World')
+                runner.store_html('')
+
+    data = json.loads(blocker.args[0])
+    assert not pathlib.Path(data).exists()
+
+
+def test_killed_command(qtbot, tmp_path, py_proc, runner, caplog):
+    data_file = tmp_path / 'data'
+    watcher = QFileSystemWatcher()
+    watcher.addPath(str(tmp_path))
+
+    cmd, args = py_proc(r"""
+        import os
+        import time
+        import sys
+        import json
+
+        data = {
+            'pid': os.getpid(),
+            'text_file': os.environ['QUTE_TEXT'],
+        }
+
+        # We can't use QUTE_FIFO to transmit the PID because that wouldn't work
+        # on Windows, where QUTE_FIFO is only monitored after the script has
+        # exited.
+
+        with open(sys.argv[1], 'w') as f:
+            json.dump(data, f)
+
+        time.sleep(30)
+    """)
+    args.append(str(data_file))
+
+    with qtbot.wait_signal(watcher.directoryChanged, timeout=10000):
+        runner.prepare_run(cmd, *args)
+        runner.store_text('Hello World')
+        runner.store_html('')
+
+    # For some reason, this tends to be flaky on Windows, and we got the
+    # directoryChanged signal *without* the file existing (wut?)...
+    qtbot.wait_until(data_file.exists)
+
+    # Make sure the PID was written to the file, not just the file created
+    time.sleep(0.5)
+
+    with data_file.open() as f:
+        data = json.load(f)
+
+    with caplog.at_level(logging.ERROR):
+        with qtbot.wait_signal(runner.finished):
+            os.kill(int(data['pid']), signal.SIGTERM)
+
+    assert not pathlib.Path(data['text_file']).exists()
+
+
+def test_temporary_files_failed_cleanup(caplog, qtbot, py_proc, runner):
+    """Delete a temporary file from the script so cleanup fails."""
+    cmd, args = py_proc(r"""
+        import os
+        os.remove(os.environ['QUTE_HTML'])
+    """)
+
+    with caplog.at_level(logging.ERROR):
+        with qtbot.wait_signal(runner.finished, timeout=10000):
+            runner.prepare_run(cmd, *args)
+            runner.store_text('')
+            runner.store_html('')
+
+    assert len(caplog.records) == 1
+    expected = "Failed to delete tempfile"
+    assert caplog.messages[0].startswith(expected)
+
+
+def test_unicode_error(caplog, qtbot, py_proc, runner):
+    cmd, args = py_proc(r"""
+        import os
+        with open(os.environ['QUTE_FIFO'], 'wb') as f:
+            f.write(b'\x80')
+    """)
+    with caplog.at_level(logging.ERROR):
+        with qtbot.wait_signal(runner.finished, timeout=10000):
+            runner.prepare_run(cmd, *args)
+            runner.store_text('')
+            runner.store_html('')
+
+    assert len(caplog.records) == 1
+    expected = "Invalid unicode in userscript output: "
+    assert caplog.messages[0].startswith(expected)
+
+
+@pytest.mark.fake_os('unknown')
+def test_unsupported(tabbed_browser_stubs):
+    with pytest.raises(userscripts.UnsupportedError, match="Userscripts are "
+                       "not supported on this platform!"):
+        userscripts.run_async(tab=None, cmd=None, win_id=0, env=None)

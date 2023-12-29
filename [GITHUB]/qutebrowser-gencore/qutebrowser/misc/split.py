@@ -1,0 +1,197 @@
+# SPDX-FileCopyrightText: Florian Bruhin (The Compiler) <mail@qutebrowser.org>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""Our own fork of shlex.split with some added and removed features."""
+
+import re
+
+from qutebrowser.utils import log, utils
+
+
+class ShellLexer:
+
+    """A lexical analyzer class for simple shell-like syntaxes.
+
+    Based on Python's shlex, but cleaned up, removed some features, and added
+    some features useful for qutebrowser.
+
+    Attributes:
+        FIXME
+    """
+
+    def __init__(self, s):
+        self.string = s
+        self.whitespace = ' \t\r'
+        self.quotes = '\'"'
+        self.escape = '\\'
+        self.escapedquotes = '"'
+        self.keep = False
+        self.quoted = False
+        self.escapedstate = ' '
+        self.token = ''
+        self.state = ' '
+
+    def reset(self):
+        """Reset the state machine state to the defaults."""
+        self.quoted = False
+        self.escapedstate = ' '
+        self.token = ''
+        self.state = ' '
+
+    def __iter__(self):  # noqa: C901 pragma: no mccabe
+        """Read a raw token from the input stream."""
+        self.reset()
+        for nextchar in self.string:
+            if self.state == ' ':
+                if self.keep:
+                    self.token += nextchar
+                if nextchar in self.whitespace:
+                    if self.token or self.quoted:
+                        yield self.token
+                        self.reset()
+                elif nextchar in self.escape:
+                    self.escapedstate = 'a'
+                    self.state = nextchar
+                elif nextchar in self.quotes:
+                    self.state = nextchar
+                else:
+                    self.token = nextchar
+                    self.state = 'a'
+            elif self.state in self.quotes:
+                self.quoted = True
+                if nextchar == self.state:
+                    if self.keep:
+                        self.token += nextchar
+                    self.state = 'a'
+                elif (nextchar in self.escape and
+                      self.state in self.escapedquotes):
+                    if self.keep:
+                        self.token += nextchar
+                    self.escapedstate = self.state
+                    self.state = nextchar
+                else:
+                    self.token += nextchar
+            elif self.state in self.escape:
+                # In posix shells, only the quote itself or the escape
+                # character may be escaped within quotes.
+                if (self.escapedstate in self.quotes and
+                        nextchar != self.state and
+                        nextchar != self.escapedstate and not self.keep):
+                    self.token += self.state
+                self.token += nextchar
+                self.state = self.escapedstate
+            elif self.state == 'a':
+                if nextchar in self.whitespace:
+                    self.state = ' '
+                    assert self.token or self.quoted
+                    yield self.token
+                    self.reset()
+                    if self.keep:
+                        yield nextchar
+                elif nextchar in self.quotes:
+                    if self.keep:
+                        self.token += nextchar
+                    self.state = nextchar
+                elif nextchar in self.escape:
+                    if self.keep:
+                        self.token += nextchar
+                    self.escapedstate = 'a'
+                    self.state = nextchar
+                else:
+                    self.token += nextchar
+            else:
+                raise utils.Unreachable(
+                    "Invalid state {!r}!".format(self.state))
+        if self.state in self.escape and not self.keep:
+            self.token += self.state
+        if self.token or self.quoted:
+            yield self.token
+
+
+def split(s, keep=False):
+    """Split a string via ShellLexer.
+
+    Args:
+        s: The string to split.
+        keep: Whether to keep special chars in the split output.
+    """
+    lexer = ShellLexer(s)
+    lexer.keep = keep
+    tokens = list(lexer)
+    if not tokens:
+        return []
+    out = []
+    spaces = ""
+
+    log.shlexer.vdebug(  # type: ignore[attr-defined]
+        "{!r} -> {!r}".format(s, tokens))
+
+    for t in tokens:
+        if t.isspace():
+            spaces += t
+        else:
+            out.append(spaces + t)
+            spaces = ""
+    if spaces:
+        out.append(spaces)
+
+    return out
+
+
+def _combine_ws(parts, whitespace):
+    """Combine whitespace in a list with the element following it.
+
+    Args:
+        parts: A list of strings.
+        whitespace: A string containing what's considered whitespace.
+
+    Return:
+        The modified list.
+    """
+    out = []
+    ws = ''
+    for part in parts:
+        if not part:
+            continue
+        elif part in whitespace:
+            ws += part
+        else:
+            out.append(ws + part)
+            ws = ''
+    if ws:
+        out.append(ws)
+    return out
+
+
+def simple_split(s, keep=False, maxsplit=None):
+    """Split a string on whitespace, optionally keeping the whitespace.
+
+    Args:
+        s: The string to split.
+        keep: Whether to keep whitespace.
+        maxsplit: The maximum count of splits.
+
+    Return:
+        A list of split strings.
+    """
+    whitespace = '\n\t '
+    if maxsplit == 0:
+        # re.split with maxsplit=0 splits everything, while str.split splits
+        # nothing (which is the behavior we want).
+        if keep:
+            return [s]
+        else:
+            return [s.strip(whitespace)]
+    elif maxsplit is None:
+        maxsplit = 0
+
+    if keep:
+        pattern = '([' + whitespace + '])'
+        parts = re.split(pattern, s, maxsplit=maxsplit)
+        return _combine_ws(parts, whitespace)
+    else:
+        pattern = '[' + whitespace + ']'
+        parts = re.split(pattern, s, maxsplit=maxsplit)
+        parts[-1] = parts[-1].rstrip()
+        return [p for p in parts if p]

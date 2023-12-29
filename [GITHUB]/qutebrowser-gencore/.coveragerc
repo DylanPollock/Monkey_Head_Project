@@ -1,0 +1,25 @@
+[run]
+include =
+    qutebrowser/*
+    tests/*
+    scripts/*
+branch = true
+omit =
+    qutebrowser/__main__.py
+    */__init__.py
+    qutebrowser/resources.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+    raise utils\.Unreachable
+    if __name__ == ["']__main__["']:
+    if typing.TYPE_CHECKING:
+    if TYPE_CHECKING:
+    \.\.\.
+
+[xml]
+output=coverage.xml

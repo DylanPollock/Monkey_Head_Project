@@ -1,0 +1,283 @@
+# SPDX-FileCopyrightText: Florian Bruhin (The Compiler) <mail@qutebrowser.org>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""Misc. utility commands exposed to the user."""
+
+# QApplication and objects are imported so they're usable in :debug-pyeval
+
+import functools
+import os
+import sys
+import traceback
+from typing import Optional
+
+from qutebrowser.qt.core import QUrl
+from qutebrowser.qt.widgets import QApplication
+
+from qutebrowser.browser import qutescheme
+from qutebrowser.utils import log, objreg, usertypes, message, debug, utils
+from qutebrowser.keyinput import modeman
+from qutebrowser.commands import runners
+from qutebrowser.api import cmdutils
+from qutebrowser.misc import (  # pylint: disable=unused-import
+    consolewidget, debugcachestats, objects, miscwidgets)
+from qutebrowser.utils.version import pastebin_version
+from qutebrowser.qt import sip
+
+
+@cmdutils.register(maxsplit=1, no_cmd_split=True, no_replace_variables=True,
+                   deprecated_name='later')
+@cmdutils.argument('win_id', value=cmdutils.Value.win_id)
+def cmd_later(duration: str, command: str, win_id: int) -> None:
+    """Execute a command after some time.
+
+    Args:
+        duration: Duration to wait in format XhYmZs or a number for milliseconds.
+        command: The command to run, with optional args.
+    """
+    try:
+        ms = utils.parse_duration(duration)
+    except ValueError as e:
+        raise cmdutils.CommandError(e)
+    commandrunner = runners.CommandRunner(win_id)
+    timer = usertypes.Timer(name='later', parent=QApplication.instance())
+    try:
+        timer.setSingleShot(True)
+        try:
+            timer.setInterval(ms)
+        except OverflowError:
+            raise cmdutils.CommandError("Numeric argument is too large for "
+                                        "internal int representation.")
+        timer.timeout.connect(
+            functools.partial(commandrunner.run_safely, command))
+        timer.timeout.connect(timer.deleteLater)
+        timer.start()
+    except:
+        timer.deleteLater()
+        raise
+
+
+@cmdutils.register(maxsplit=1, no_cmd_split=True, no_replace_variables=True,
+                   deprecated_name='repeat')
+@cmdutils.argument('win_id', value=cmdutils.Value.win_id)
+@cmdutils.argument('count', value=cmdutils.Value.count)
+def cmd_repeat(times: int, command: str, win_id: int, count: int = None) -> None:
+    """Repeat a given command.
+
+    Args:
+        times: How many times to repeat.
+        command: The command to run, with optional args.
+        count: Multiplies with 'times' when given.
+    """
+    if count is not None:
+        times *= count
+
+    if times < 0:
+        raise cmdutils.CommandError("A negative count doesn't make sense.")
+    commandrunner = runners.CommandRunner(win_id)
+    for _ in range(times):
+        commandrunner.run_safely(command)
+
+
+@cmdutils.register(maxsplit=1, no_cmd_split=True, no_replace_variables=True,
+                   deprecated_name='run-with-count')
+@cmdutils.argument('win_id', value=cmdutils.Value.win_id)
+@cmdutils.argument('count', value=cmdutils.Value.count)
+def cmd_run_with_count(count_arg: int, command: str, win_id: int,
+                   count: int = 1) -> None:
+    """Run a command with the given count.
+
+    If cmd_run_with_count itself is run with a count, it multiplies count_arg.
+
+    Args:
+        count_arg: The count to pass to the command.
+        command: The command to run, with optional args.
+        count: The count that run_with_count itself received.
+    """
+    runners.CommandRunner(win_id).run(command, count_arg * count)
+
+
+@cmdutils.register()
+def clear_messages() -> None:
+    """Clear all message notifications."""
+    message.global_bridge.clear_messages.emit()
+
+
+@cmdutils.register(debug=True)
+def debug_all_objects() -> None:
+    """Print a list of  all objects to the debug log."""
+    s = debug.get_all_objects()
+    log.misc.debug(s)
+
+
+@cmdutils.register(debug=True)
+def debug_cache_stats() -> None:
+    """Print LRU cache stats."""
+    if sys.version_info < (3, 9):
+        raise cmdutils.CommandError('debugcachestats not supported on python < 3.9')
+    debugcachestats.debug_cache_stats()  # type: ignore[unreachable]
+
+
+@cmdutils.register(debug=True)
+def debug_console() -> None:
+    """Show the debugging console."""
+    if consolewidget.console_widget is None:
+        log.misc.debug('initializing debug console')
+        consolewidget.init()
+
+    assert consolewidget.console_widget is not None
+
+    if consolewidget.console_widget.isVisible():
+        log.misc.debug('hiding debug console')
+        consolewidget.console_widget.hide()
+    else:
+        log.misc.debug('showing debug console')
+        consolewidget.console_widget.show()
+
+
+@cmdutils.register(maxsplit=0, debug=True, no_cmd_split=True)
+def debug_pyeval(s: str, file: bool = False, quiet: bool = False) -> None:
+    """Evaluate a python string and display the results as a web page.
+
+    Args:
+        s: The string to evaluate.
+        file: Interpret s as a path to file, also implies --quiet.
+        quiet: Don't show the output in a new tab.
+    """
+    if file:
+        quiet = True
+        path = os.path.expanduser(s)
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                s = f.read()
+        except OSError as e:
+            raise cmdutils.CommandError(str(e))
+        try:
+            exec(s)
+            out = "No error"
+        except Exception:
+            out = traceback.format_exc()
+    else:
+        try:
+            r = eval(s)
+            out = repr(r)
+        except Exception:
+            out = traceback.format_exc()
+
+    qutescheme.pyeval_output = out
+    if quiet:
+        log.misc.debug("pyeval output: {}".format(out))
+    else:
+        tabbed_browser = objreg.get('tabbed-browser', scope='window',
+                                    window='last-focused')
+        tabbed_browser.load_url(QUrl('qute://pyeval'), newtab=True)
+
+
+@cmdutils.register(debug=True)
+def debug_set_fake_clipboard(s: str = None) -> None:
+    """Put data into the fake clipboard and enable logging, used for tests.
+
+    Args:
+        s: The text to put into the fake clipboard, or unset to enable logging.
+    """
+    if s is None:
+        utils.log_clipboard = True
+    else:
+        utils.fake_clipboard = s
+
+
+@cmdutils.register(deprecated_name='repeat-command')
+@cmdutils.argument('win_id', value=cmdutils.Value.win_id)
+@cmdutils.argument('count', value=cmdutils.Value.count)
+def cmd_repeat_last(win_id: int, count: int = None) -> None:
+    """Repeat the last executed command.
+
+    Args:
+        count: Which count to pass the command.
+    """
+    mode_manager = modeman.instance(win_id)
+    if mode_manager.mode not in runners.last_command:
+        raise cmdutils.CommandError("You didn't do anything yet.")
+    cmd = runners.last_command[mode_manager.mode]
+    commandrunner = runners.CommandRunner(win_id)
+    commandrunner.run(cmd[0], count if count is not None else cmd[1])
+
+
+@cmdutils.register(debug=True, name='debug-log-capacity')
+def log_capacity(capacity: int) -> None:
+    """Change the number of log lines to be stored in RAM.
+
+    Args:
+       capacity: Number of lines for the log.
+    """
+    if capacity < 0:
+        raise cmdutils.CommandError("Can't set a negative log capacity!")
+    assert log.ram_handler is not None
+    log.ram_handler.change_log_capacity(capacity)
+
+
+@cmdutils.register(debug=True)
+def debug_log_filter(filters: str) -> None:
+    """Change the log filter for console logging.
+
+    Args:
+        filters: A comma separated list of logger names. Can also be "none" to
+                 clear any existing filters.
+    """
+    if log.console_filter is None:
+        raise cmdutils.CommandError("No log.console_filter. Not attached "
+                                    "to a console?")
+
+    try:
+        new_filter = log.LogFilter.parse(filters)
+    except log.InvalidLogFilterError as e:
+        raise cmdutils.CommandError(e)
+
+    log.console_filter.update_from(new_filter)
+
+
+@cmdutils.register()
+@cmdutils.argument('current_win_id', value=cmdutils.Value.win_id)
+def window_only(current_win_id: int) -> None:
+    """Close all windows except for the current one."""
+    for win_id, window in objreg.window_registry.items():
+
+        # We could be in the middle of destroying a window here
+        if sip.isdeleted(window):
+            continue
+
+        if win_id != current_win_id:
+            window.close()
+
+
+@cmdutils.register()
+@cmdutils.argument('win_id', value=cmdutils.Value.win_id)
+def version(win_id: int, paste: bool = False) -> None:
+    """Show version information.
+
+    Args:
+        paste: Paste to pastebin.
+    """
+    tabbed_browser = objreg.get('tabbed-browser', scope='window',
+                                window=win_id)
+    tabbed_browser.load_url(QUrl('qute://version/'), newtab=True)
+
+    if paste:
+        pastebin_version()
+
+
+_keytester_widget: Optional[miscwidgets.KeyTesterWidget] = None
+
+
+@cmdutils.register(debug=True)
+def debug_keytester() -> None:
+    """Show a keytester widget."""
+    global _keytester_widget
+    if (_keytester_widget and
+            not sip.isdeleted(_keytester_widget) and
+            _keytester_widget.isVisible()):
+        _keytester_widget.close()
+    else:
+        _keytester_widget = miscwidgets.KeyTesterWidget()
+        _keytester_widget.show()

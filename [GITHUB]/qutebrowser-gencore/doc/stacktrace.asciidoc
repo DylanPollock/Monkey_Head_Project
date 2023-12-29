@@ -1,0 +1,186 @@
+Getting stacktraces on crashes
+==============================
+:toc:
+The Compiler <mail@qutebrowser.org>
+
+When there is a fatal crash in qutebrowser - most of the times a
+https://en.wikipedia.org/wiki/Segmentation_fault[segfault] - the crash report
+usually doesn't contain much viable information, as these crashes usually
+happen inside of the Qt mainloop in C++.
+
+To know what the issue is, a
+https://en.wikipedia.org/wiki/Stack_trace[stack trace] with
+https://en.wikipedia.org/wiki/Debug_symbol[debugging symbols] is required.
+
+The rest of this guide is quite Linux specific, though there is a
+<<windows,section for Windows>> at the end.
+
+Crashes which can be reproduced
+-------------------------------
+
+If a crash can be reproduced, packages with debugging symbols should be
+installed, and the crash should be reproduced under gdb.
+
+Getting debugging symbols
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Debian/Ubuntu/...
+^^^^^^^^^^^^^^^^^
+
+For Debian based systems (Debian, Ubuntu, Linux Mint, ...), debug information
+is for QtWebEngine is available in a dedicated repository. Enable that repository
+(https://wiki.debian.org/HowToGetABacktrace#Installing_the_debugging_symbols[Debian],
+https://wiki.ubuntu.com/Debug%20Symbol%20Packages[Ubuntu],
+https://www.linuxmint.com/rel_tessa_mate_whatsnew.php[Linux Mint]) and install
+the debug packages:
+
+----
+# apt install python3-dbg python3-pyqt5-dbg python3-pyqt5.qtwebengine-dbg libqt5webengine5-dbgsym libqt5webenginecore5-dbgsym
+----
+
+or with the QtWebKit backend:
+
+----
+# apt install python3-dbg python3-pyqt5-dbg python3-pyqt5.qtwebkit-dbg libqt5webkit5-dbg
+----
+
+Fedora
+^^^^^^
+
+For Fedora you first need to install the dnf/yum-utils:
+
+----
+# dnf install dnf-utils
+----
+
+Or:
+
+----
+# yum install yum-utils
+----
+
+Then install the needed debuginfo packages:
+
+----
+# debuginfo-install python3 qt5-qtwebengine python3-qt5-webengine python3-qt5-base python-qt5 python3-qt5 python3-qt5-webkit
+----
+
+Archlinux
+^^^^^^^^^
+
+For Archlinux, debug information is provided via their https://wiki.archlinux.org/title/Debuginfod[Debuginfod instance]. To use it, set the following in your environment:
+
+----
+DEBUGINFOD_URLS="https://debuginfod.archlinux.org/"
+----
+
+(Until early 2021, there was a custom [`qt-debug` repository](https://github.com/qutebrowser/qt-debug-pkgbuild). This is now archived.)
+
+Getting the stack trace
+~~~~~~~~~~~~~~~~~~~~~~~
+
+First install `gdb` on your system if it's not installed already.
+
+Then run qutebrowser directly inside gdb like this:
+
+----
+$ gdb -ex r --args $(readlink -f $(which python3)) -m qutebrowser --debug --temp-basedir
+----
+
+Note qutebrowser/gdb will take a long time to start. After you reproduce the
+crash, you should now see something like:
+
+----
+Program received signal SIGSEGV, Segmentation fault.
+...
+(gdb)
+----
+
+Now enter these commands at the gdb prompt:
+
+----
+(gdb) set pagination off
+(gdb) set logging overwrite on
+(gdb) set logging on
+(gdb) bt
+(gdb) quit
+----
+
+This will create a `gdb.txt` in your current directory.
+
+Copy the last few lines of the debug log (before you got the gdb prompt) and
+the full content of `gdb.txt` into the bug report. Please also add some words
+about what you were doing (or what pages you visited) before the crash
+happened.
+
+Crashes which can NOT be reproduced
+-----------------------------------
+
+If you cannot reproduce the problem, you need to check if a coredump got
+written somewhere. You should not install debug symbols as they won't match the
+generated coredump.
+
+First install `gdb` on your system if it's not installed already.
+
+Then check the file `/proc/sys/kernel/core_pattern` on your system. If it does
+not start with a `|` character (pipe), check if there is a file named `core` or
+`core.NNNN` in the directory from that file, or in the current directory.
+
+If so, execute gdb like this:
+
+----
+$ gdb $(readlink -f $(which python3)) /path/to/core
+----
+
+If your `/proc/sys/kernel/core_pattern` contains something like
+`|/usr/lib/systemd/systemd-coredump`, use `coredumpctl` to run gdb:
+
+----
+$ coredumpctl gdb $(readlink -f $(which python3))
+----
+
+Getting the stack trace
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Now enter these commands at the gdb prompt:
+
+----
+(gdb) set pagination off
+(gdb) set logging overwrite on
+(gdb) set logging on
+(gdb) bt
+(gdb) quit
+----
+
+Copy the content of `gdb.txt` into the bug report. Please also add some words
+about what you were doing (or what pages you visited) before the crash
+happened.
+
+[[windows]]
+For Windows
+-----------
+
+First install
+https://www.microsoft.com/en-us/download/details.aspx?id=58210[DebugDiag] from
+Microsoft.
+
+If you see the _qutebrowser.exe has stopped working_ window, do not click
+"Close the program". Instead, open your task manager, there right-click on
+`qutebrowser.exe` and select "Create dump file". Remember the path of the dump
+file displayed there.
+
+If you do not see such a window, instead run *DebugDiag 2 Collection* while
+qutebrowser is still running. There, use *Add Rule* -> *Crash* ->
+*A specific process* and select `qutebrowser.exe`. Accept the *Advanced
+Configuration* as-is and select a location to save dump files. Finally, tell
+DebugDiag to activate the rule and reproduce the crash. After a while, a log
+file (`.txt`) and crash dump should appear in that directory.
+
+Finally, run the *DebugDiag 2 Analysis* tool. There, check *CrashHangAnalysis*
+and add your crash dump via *Add Data files*. Then click *Start analysis*.
+
+Close the Internet Explorer which opens when it's done and use the
+folder-button at the top left to get to the reports. There, find the report
+file (as well as the logfile, if any), zip them (important, as some mail
+providers like GMail corrupt the file otherwise) and send them to
+mail@qutebrowser.org.

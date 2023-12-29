@@ -1,0 +1,49 @@
+recursive-include qutebrowser *.py
+recursive-include qutebrowser/img *.svg *.png
+recursive-include qutebrowser/javascript *.js
+graft tests
+graft qutebrowser/html
+graft qutebrowser/3rdparty
+graft qutebrowser/icons
+graft doc/img
+graft misc/apparmor
+graft misc/userscripts
+graft misc/requirements
+recursive-include scripts *.py *.sh *.js
+include qutebrowser/utils/testfile
+include qutebrowser/git-commit-id
+include LICENSE doc/* README.asciidoc
+include misc/org.qutebrowser.qutebrowser.desktop
+include misc/org.qutebrowser.qutebrowser.appdata.xml
+include misc/Makefile
+include requirements.txt
+include qutebrowser.py
+include misc/cheatsheet.svg
+include qutebrowser/config/configdata.yml
+include pytest.ini
+
+prune www
+prune scripts/dev
+prune scripts/testbrowser/cpp
+prune .github
+exclude scripts/asciidoc2html.py
+recursive-exclude doc *.asciidoc
+include doc/qutebrowser.1.asciidoc
+include doc/changelog.asciidoc
+prune qutebrowser/3rdparty
+exclude mypy.ini
+exclude pyrightconfig.json
+exclude tox.ini
+exclude qutebrowser/javascript/.eslintrc.yaml
+exclude qutebrowser/javascript/.eslintignore
+exclude doc/help
+exclude .*
+exclude misc/qutebrowser.spec
+exclude misc/qutebrowser.rcc
+exclude tests/unit/scripts/test_run_vulture.py
+exclude tests/unit/scripts/test_check_coverage.py
+prune doc/extapi
+prune misc/nsis
+prune **/.mypy_cache
+
+global-exclude __pycache__ *.pyc *.pyo

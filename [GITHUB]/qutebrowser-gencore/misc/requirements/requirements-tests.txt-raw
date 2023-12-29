@@ -1,0 +1,34 @@
+beautifulsoup4
+cheroot
+coverage
+Flask
+hypothesis
+pytest
+pytest-bdd
+pytest-benchmark
+pytest-instafail
+pytest-mock
+pytest-qt
+pytest-rerunfailures
+
+## optional:
+# To test :debug-trace, gets skipped if hunter is not installed
+hunter
+# To test scripts/dev/run_vulture.py which is not part of the release tarball
+vulture
+# For colored pytest output (though also a direct qutebrowser dependency))
+pygments
+# --repeat switch (used to manually repeat tests)
+pytest-repeat
+# For coverage tests
+pytest-cov
+# To avoid windows from popping up
+pytest-xvfb
+PyVirtualDisplay
+# To run on multiple cores with -n
+pytest-xdist
+
+# Needed to test misc/userscripts/qute-lastpass
+tldextract
+
+#@ ignore: Jinja2, MarkupSafe, colorama

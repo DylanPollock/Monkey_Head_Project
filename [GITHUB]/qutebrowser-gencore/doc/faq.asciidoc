@@ -1,0 +1,581 @@
+Frequently asked questions
+==========================
+:title: Frequently asked questions
+The Compiler <mail@qutebrowser.org>
+
+[qanda]
+What is qutebrowser based on?::
+    qutebrowser uses https://www.python.org/[Python], https://www.qt.io/[Qt] and
+    https://www.riverbankcomputing.com/software/pyqt/intro[PyQt].
++
+The concept of it is largely inspired by https://bitbucket.org/portix/dwb/[dwb]
+and http://www.vimperator.org/vimperator[Vimperator]. Many actions and
+key bindings are similar to dwb.
+
+Why another browser?::
+    It might be hard to believe, but I didn't find any browser which I was
+    happy with, so I started to write my own. Also, I needed a project to get
+    into writing GUI applications with Python and
+    link:https://www.qt.io/[Qt]/link:https://www.riverbankcomputing.com/software/pyqt/intro[PyQt].
++
+Read the next few questions to find out why I was unhappy with existing
+software.
+
+What's wrong with link:https://bitbucket.org/portix/dwb/[dwb]/link:https://sourceforge.net/projects/vimprobable/[vimprobable]/link:https://luakit.github.io/[luakit]/jumanji/... (projects based on WebKitGTK)?::
+    Most of them are based on the https://webkitgtk.org/[WebKitGTK+]
+    https://webkitgtk.org/reference/webkitgtk/stable/index.html[WebKit1] API,
+    which causes a lot of crashes. As the GTK API using WebKit1 is
+    https://lists.webkit.org/pipermail/webkit-gtk/2014-March/001821.html[deprecated],
+    these bugs are never going to be fixed.
++
+When qutebrowser was created, the newer
+https://webkitgtk.org/reference/webkit2gtk/stable/index.html[WebKit2 API] lacked
+basic features like proxy support, and almost no projects have started porting
+to WebKit2. In the meantime, this situation has improved a bit, but there are
+still only a few projects which have some kind of WebKit2 support (see the
+https://github.com/qutebrowser/qutebrowser#similar-projects[list of
+alternatives]).
++
+qutebrowser uses https://www.qt.io/[Qt] and
+https://wiki.qt.io/QtWebEngine[QtWebEngine] by default (and supports
+https://wiki.qt.io/QtWebKit[QtWebKit] optionally). QtWebEngine is based on
+Google's https://www.chromium.org/Home[Chromium]. With an up-to-date Qt, it has
+much more man-power behind it than WebKitGTK+ has, and thus supports more modern
+web features - it's also arguably more secure.
+
+What's the difference to Firefox/Chromium addons like https://github.com/tridactyl/tridactyl[Tridactyl] or https://vimium.github.io/[Vimium]?::
+    The WebExtensions API doesn't seem to allow much freedom for plugin
+    writers, which results in Vimium/Tridactyl not really having all the
+    features you'd expect from a proper minimal, vim-like browser. Due to the
+    same reason, those addons are quite inconsistent - on some pages, they
+    can't run and intercept keyboard inputs correctly. Tridactyl gets around
+    those limitations with various measures (such as a native messenger written
+    in Python doing some work which can't be done from the addon directly), but
+    there's only so much that can be done.
+
+Why Python?::
+    I enjoy writing Python since 2011, which made it one of the possible
+    choices. I wanted to use https://www.qt.io/[Qt] because of
+    https://wiki.qt.io/QtWebKit[QtWebKit] so I didn't have
+    https://wiki.qt.io/Category:LanguageBindings[many other choices]. At that
+    point, I wasn't comfortable with C++ so that wasn't an alternative.
+
+But isn't Python too slow for a browser?::
+    https://www.infoworld.com/d/application-development/van-rossum-python-not-too-slow-188715[It's generally less of a problem than one would expect.]
+    Most of the heavy lifting of qutebrowser is done by Qt and
+    QtWebKit/QtWebEngine in C++, with the
+    https://wiki.python.org/moin/GlobalInterpreterLock[GIL] released.
++
+It can be problematic in some areas, but various performance optimizations have
+been carried out to problematic portions of the code.
+
+Is qutebrowser secure?::
+    Most security issues are in the backend (which handles networking,
+    rendering, JavaScript, etc.) and not qutebrowser itself.
++
+qutebrowser uses https://wiki.qt.io/QtWebEngine[QtWebEngine] by default.
+QtWebEngine is based on Google's https://www.chromium.org/Home[Chromium]. While
+Qt only updates to a new Chromium release on every minor Qt release (all ~6
+months), every patch release backports security fixes from newer Chromium
+versions. In other words: As long as you're using an up-to-date Qt, you should
+be receiving security updates on a regular basis, without qutebrowser having to
+do anything. Chromium's process isolation and
+https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md[sandboxing]
+features are also enabled as a second line of defense.
++
+https://wiki.qt.io/QtWebKit[QtWebKit] is also supported as an alternative
+backend, but hasn't seen new releases
+https://github.com/annulen/webkit/releases[in a while]. It also doesn't have any
+process isolation or sandboxing. See
+https://github.com/qutebrowser/qutebrowser/issues/4039[#4039] for more details.
++
+Security issues in qutebrowser's code happen very rarely (as per September 2019,
+there have been three security issues caused by qutebrowser in almost 6 years).
+Those were handled appropriately
+(https://seclists.org/oss-sec/2018/q3/29[example]) and fixed timely. To report
+security bugs, please contact me directly at mail@qutebrowser.org, GPG ID
+https://www.the-compiler.org/pubkey.asc[0x916eb0c8fd55a072].
+
+Is there an ad blocker?::
+    Since version 2.0.0, if the
+    https://pypi.org/project/adblock/[Python `adblock` library] is available,
+    it will be used to integrate
+    https://github.com/brave/adblock-rust[Brave's Rust adblocker library]
+    for improved adblocking, based on
+    https://help.eyeo.com/en/adblockplus/how-to-write-filters[ABP-like filter lists]
+    (such as https://easylist.to/[EasyList]).
+    If that library is unavailable or on older versions of qutebrowser, a
+    simpler built-in ad blocker is used instead. It takes `/etc/hosts`-like lists
+    and thus is only able to block entire hosts.
++
+Note that even the more sophisticated blocker
+https://github.com/qutebrowser/qutebrowser/issues/5754[does not support element hiding]
+(cosmetic filtering) yet, it only blocks network requests.
+
+How can I get No-Script-like behavior?::
+    To disable JavaScript by default:
++
+----
+:set content.javascript.enabled false
+----
++
+The basic keybinding for enabling JavaScript for the current host is `tsh`.
+This will allow JavaScript execution for the current session.
+Use `S` instead of `s` to make the exception permanent.
+With `H` instead of `h`, subdomains are included.
+With `u` instead of `h`, JavaScript is allowed for the current URL only (not the whole host).
++
+The list of domains that have been permanently granted permission to execute
+JavaScript will be written to `autoconfig.yml`.
+
+How do I play Youtube videos with mpv?::
+    You can easily add a key binding to play youtube videos inside a real video
+    player - optionally even with hinting for links:
++
+----
+:bind ,m spawn mpv {url}
+:bind ,M hint links spawn mpv {hint-url}
+----
++
+The comma prefix is used to make sure user-defined bindings don't conflict with
+the built-in ones.
++
+Note that you might need an additional package (e.g.
+https://www.archlinux.org/packages/community/any/youtube-dl/[youtube-dl] on
+Archlinux) to play web videos with mpv.
++
+There is a very useful script for mpv, which emulates "unique application"
+functionality. This way you can add links to the mpv playlist instead of
+playing them all at once.
++
+You can find the script here: https://github.com/mpv-player/mpv/blob/master/TOOLS/umpv
++
+It also works nicely with rapid hints:
++
+----
+:bind ,m spawn umpv {url}
+:bind ,M hint links spawn umpv {hint-url}
+:bind ;M hint --rapid links spawn umpv {hint-url}
+----
+
+How do I use qutebrowser with mutt/neomutt or other mail clients?::
+    For security reasons, local files without `.html` extensions aren't
+    rendered as HTML, see
+    https://bugs.chromium.org/p/chromium/issues/detail?id=777737[this Chromium issue]
+    for details. You can do this in your `mailcap` file to get a proper
+    extension:
++
+----
+text/html; qutebrowser %s; needsterminal; nametemplate=%s.html
+----
++
+Note that you might want to add additional options to qutebrowser, so that it
+runs as a separate instance configured to disable JavaScript and avoid network
+requests, in order to avoid privacy leaks when reading mails. The easiest way
+to do so is by specifying a non-existent proxy server, e.g.:
++
+----
+qutebrowser --temp-basedir -s content.proxy http://localhost:666 -s content.dns_prefetch false -s content.javascript.enabled false %s
+----
++
+With Qt 6, using something like:
++
+----
+qutebrowser --temp-basedir -s content.dns_prefetch false -s content.javascript.enabled false %s
+----
++
+should lead to a similar result, due to a more restrictive implementation of
+the `content.local_content_can_access_remote_urls` setting (`false` by default
+already). However, it's advised to use a page like
+https://www.emailprivacytester.com/[Email Privacy Tester] to verify your
+configuration.
+
+What is the difference between bookmarks and quickmarks?::
+    Bookmarks will always use the title of the website as their name, but with quickmarks
+    you can set your own title.
++
+For example, if you bookmark multiple food recipe websites and use `:open`,
+you have to type the title or address of the website.
++
+When using quickmark, you can give them all names, like
+`foodrecipes1`, `foodrecipes2` and so on. When you type
+`:open foodrecipes`, you will see a list of all the food recipe sites,
+without having to remember the exact website title or address.
+
+How do I use spell checking?::
+	Configuring spell checking in qutebrowser depends on the backend in use
+    (see https://github.com/qutebrowser/qutebrowser/issues/700[#700] for
+	a more detailed discussion).
++
+For QtWebKit:
+
+. Install https://github.com/QupZilla/qtwebkit-plugins[qtwebkit-plugins].
+  . Note: with QtWebKit reloaded you may experience some issues. See
+    https://github.com/QupZilla/qtwebkit-plugins/issues/10[#10].
+. The dictionary to use is taken from the `DICTIONARY` environment variable.
+  The default is `en_US`. For example to use Dutch spell check set `DICTIONARY`
+  to `nl_NL`; you can't use multiple dictionaries or change them at runtime at
+  the moment.
+  (also see the README file for `qtwebkit-plugins`).
+. Remember to install the hunspell dictionaries if you don't have them already
+  (most distros should have packages for this).
++
+For QtWebEngine:
+
+. Use `dictcli.py` script to install dictionaries.
+  Run the script with `-h` for the parameter description.
+. Set `spellcheck.languages` to the desired list of languages, e.g.:
+  `:set spellcheck.languages "['en-US', 'pl-PL']"`
+
+How do I use Tor with qutebrowser?::
+    Start tor on your machine, and do `:set content.proxy socks://localhost:9050/`
+    in qutebrowser. Note this won't give you the same amount of fingerprinting
+    protection that the Tor Browser does, but it's useful to be able to access
+    `.onion` sites.
+
+Why does J move to the next (right) tab, and K to the previous (left) one?::
+    One reason is because https://bitbucket.org/portix/dwb[dwb] did it that way,
+    and qutebrowser's keybindings are designed to be compatible with dwb's.
+    The rationale behind it is that J is "down" in vim, and K is "up", which
+    corresponds nicely to "next"/"previous". It also makes much more sense with
+    vertical tabs (e.g. `:set tabs.position left`). If you prefer swapped
+    bindings, you can run `:bind J tab-prev` and `:bind K tab-next` to swap
+    them.
+
+What's the difference between insert and passthrough mode?::
+    They are quite similar, but insert mode has some bindings (like `Ctrl-e` to
+    open an editor) while passthrough mode only has shift+escape bound. This is
+    because shift+escape is unlikely to be a useful binding to be passed to a
+    webpage. However, any other keys may be assigned to leaving passthrough mode
+    instead of shift+escape should this be desired.
+
+Why does it take longer to open a URL in qutebrowser than in chromium?::
+    When opening a URL in an existing instance, the normal qutebrowser
+    Python script is started and a few PyQt libraries need to be
+    loaded until it is detected that there is an instance running
+    to which the URL is then passed. This takes some time.
+    One workaround is to use this
+    https://github.com/qutebrowser/qutebrowser/blob/main/scripts/open_url_in_instance.sh[script]
+    and place it in your $PATH with the name "qutebrowser". This
+    script passes the URL via a unix socket to qutebrowser (if its
+    running already) using socat which is much faster and starts a new
+    qutebrowser if it is not running already.
+
+How do I make qutebrowser use greasemonkey scripts?::
+    There is currently no UI elements to handle managing greasemonkey scripts.
+    All management of what scripts are installed or disabled is done in the
+    filesystem by you. qutebrowser reads all files that have an extension of
+    `.js` from the `<data>/greasemonkey/` folder and attempts to load them.
+    Where `<data>` is the qutebrowser data directory shown in the `Paths`
+    section of the page displayed by `:version`. If you want to disable a
+    script just rename it, for example, to have `.disabled` on the end, after
+    the `.js` extension. To reload scripts from that directory run the command
+    `:greasemonkey-reload`.
++
+Troubleshooting: to check that your script is being loaded when
+`:greasemonkey-reload` runs you can start qutebrowser with the arguments
+`--debug --logfilter greasemonkey,js` and check the messages on the
+program's standard output for errors parsing or loading your script.
+You may also see javascript errors if your script is expecting an environment
+that we fail to provide.
++
+Note that there are some missing features which you may run into:
+
+. Some scripts expect `GM_xmlhttpRequest` to ignore Cross Origin Resource
+  Sharing restrictions, this is currently not supported, so scripts making
+  requests to third party sites will often fail to function correctly.
+. Any greasemonkey API function to do with adding UI elements is not currently
+  supported. That means context menu extentensions and background pages.
+
+How do I change the `WM_CLASS` used by qutebrowser windows?::
+    Qt only supports setting `WM_CLASS` globally, which you can do by starting
+    with `--qt-arg name foo`. Note that all windows are part of the same
+    qutebrowser instance (unless you use `--temp-basedir` or `--basedir`), so
+    they all will share the same `WM_CLASS`.
+
+How do I use X.509 Client Certificates?::
+Right now there is no certificate-chooser prompt implemented when there are
+multiple matches. Subscribe to https://github.com/qutebrowser/qutebrowser/issues/4587[Issue#4587]
+for progress notifications.
++
+QtWebEngine will attempt to use certificates stored in `${HOME}/.pki/nssdb`. If
+you have Chromium installed, you can import the certificate there and
+qutebrowser will pick it up as well. Alternatively, you can use the `certutil`
+commandline tool:
++
+Assuming you have a CA Certificate and a
+Client Certificate that you want for authenticating yourself on a web
+service that validates against this CA Certificate, you need to perform
+the following steps.
++
+1. Import the CA Certificate
++
+----
+certutil -d "sql:${HOME}/.pki/nssdb" -A -i <path_to_ca_cert.pem> -n "My Fancy CA" -t "TC,C,T"
+----
++
+2. Merge your `<cert.crt>` and `<privkey.pem>` files into a single `PKCS#12`
+certificate file (optional, skip if your Client Certificate already is in
+`PKCS#12` format)
++
+----
+openssl pkcs12 -export -in <path_to_client_cert.crt> -inkey <path_to_client_cert_privkey.pem> -out my_fancy_client_cert.pkcs12
+----
++
+3. Import your Client Certificate into the certificate store
++
+----
+pk12util -d "sql:${HOME}/.pki/nssdb" -i <path_to_my_fancy_client_cert.pkcs12> -n "My Fancy Client Certificate"
+----
++
+Upon visiting a website that requests a Client Certificate you should now
+be prompted by qutebrowser whether you want to submit the newly imported
+Client Certificate or not.
++
+If you ever need to renew any of these certificates, you can take a look
+at the currently imported certificates using:
++
+----
+certutil -d "sql:${HOME}/.pki/nssdb" -L
+----
++
+Then remove the expired certificates using:
++
+----
+certutil -d "sql:${HOME}/.pki/nssdb" -D -n "My Fancy Certificate Nickname"
+----
++
+And then import the new and valid certificates using the procedure
+described above.
+
+Is there a dark mode? How can I filter websites to be darker?::
+There is a total of four possible approaches to get dark websites:
++
+- The `colors.webpage.preferred_color_scheme` setting tells websites that you prefer
+  a light or dark theme. However, this requires websites to ship an appropriate dark
+  style sheet. The setting requires a restart and QtWebEngine with at least Qt 5.14.
+- The `colors.webpage.darkmode.*` settings enable the dark mode of the underlying
+  Chromium. Those setting require a restart and QtWebEngine with at least Qt 5.14. It's
+  unfortunately not possible (due to limitations
+  https://bugs.chromium.org/p/chromium/issues/detail?id=952419[in Chromium] and/or
+  https://bugreports.qt.io/browse/QTBUG-84484[QtWebEngine]) to
+  change them dynamically or to specify a list of excluded websites.
+  There is some remaining hope to
+  https://github.com/qutebrowser/qutebrowser/issues/5542[allow for this]
+  using HTML/CSS features, but so far nobody has been able to get things to
+  work (even with Chromium) - help welcome!
+- The `content.user_stylesheets` setting allows specifying a custom CSS such as
+  https://github.com/alphapapa/solarized-everything-css/[Solarized Everything]. Despite
+  the name, the repository also offers themes other than just Solarized. This approach
+  often yields worse results compared to the above ones, but it's possible to toggle it
+  dynamically using a binding like `:bind ,d config-cycle content.user_stylesheets
+  ~/path/to/solarized-everything-css/css/gruvbox/gruvbox-all-sites.css ""`
+- Finally, qutebrowser's Greasemonkey support should allow for running a
+  https://github.com/darkreader/darkreader/issues/926#issuecomment-575893299[stripped down version]
+  of the Dark Reader extension. This is mostly untested, though.
+
+How do I make copy to clipboard buttons work?::
+You can `:set content.javascript.clipboard access` to allow this globally (not
+recommended!), or `:set -u some.domain content.javascript.clipboard access` if
+you want to limit the setting to `some.domain`.
+
+
+== Troubleshooting
+
+Unable to view Flash content.::
+    If you have Flash installed for on your system, it's necessary to enable plugins
+    to use the flash plugin. Using the command `:set content.plugins true`
+    in qutebrowser will enable plugins. Packages for Flash should
+    be provided for your platform or it can be obtained from
+    https://get.adobe.com/flashplayer/[Adobe]. Note that QtWebEngine needs
+    PPAPI Flash, while QtWebKit needs NPAPI Flash.
+
+Unable to view DRM content (Netflix, Spotify, etc.).::
+    On Arch Linux, simply install `chromium-widevine` from the AUR.
++
+For other distributions, it should be possible to obtain the needed
+widevine files and store them in the correct places, but the details differ
+wildly between various Qt versions.
+
+Unable to use `spawn` on MacOS.::
+    When running qutebrowser from the prebuilt binary (`qutebrowser.app`) it
+    *will not* read any files that would alter your `$PATH` (e.g. `.profile`,
+    `.bashrc`, etc). This is not a bug, just that `.profile` is not propagated
+    to GUI applications in MacOS.
++
+See https://github.com/qutebrowser/qutebrowser/issues/4273[Issue #4273] for
+details and potential workarounds.
+
+QtWebKit: Experiencing freezing on sites like DuckDuckGo and YouTube.::
+    This issue could be caused by stale plugin files installed by `mozplugger`
+    if mozplugger was subsequently removed.
+    Try exiting qutebrowser and removing `~/.mozilla/plugins/mozplugger*.so`.
+    See https://github.com/qutebrowser/qutebrowser/issues/357[Issue #357]
+    for more details.
+
+My issue is not listed.::
+    If you experience any segfaults or crashes, you can report the issue in
+    https://github.com/qutebrowser/qutebrowser/issues[the issue tracker] or
+    using the `:report` command.
+    If you are reporting a segfault, make sure you read the
+    link:stacktrace{outfilesuffix}[guide] on how to report them with all needed
+    information.
+
+[[sponsors]]
+== GitHub Sponsors FAQ
+
+Using https://github.com/sponsors/The-Compiler[GitHub Sponsors], you can sign
+up for a monthly donation to The-Compiler (qutebrowser's main developer),
+allowing him to work part-time on qutebrowser. If you keep your donation level
+for long enough, you can get some qutebrowser stickers!
+
+Why GitHub Sponsors?::
+    GitHub Sponsors is a crowdfundign platform nicely integrated with
+    qutebrowser's existing GitHub page and a better offering than alternatives such
+    as Patreon or Liberapay.
++
+It also offers a
+https://help.github.com/en/github/supporting-the-open-source-community-with-github-sponsors/about-github-sponsors#about-the-github-sponsors-matching-fund[Matching Fund]
+which matches all donations until a cap of $5000, which has already been
+reached by qutebrowser.
+
+Is it possible to contribute via a one-time donation instead?::
+    Yes! GitHub Sponsors allows for one-time donations (including custom amounts) using
+    the buttons next to "Select a tier". Alternatively, see the
+    https://github.com/qutebrowser/qutebrowser#donating[readme] for other donation
+    methods, but note that physical rewards (stickers/shirts) for such donations are
+    handled on a case-by-case basis due to the higher administrative overhead and fees.
+
+I'd like a certain reward (e.g. a t-shirt) but I'd prefer making a smaller monthly donation. Can I upgrade via a one-time donation?::
+    GitHub allows for one-time donations (see the previous question). For physical
+    rewards, your total contributions will be summed up, so you can indeed make a
+    one-time donation to "upgrade". Before rewards are ordered, all sponsors will be
+    contacted with their total donation amount so that they can still upgrade, if
+    desired.
+
+GitHub tries to charge me for an entire year. What gives?::
+    This happens if you have an existing annual billing cycle with GitHub (for
+    example a Pro membership or Marketplace subscription). At the moment,
+    GitHub's billing system only supports annual sponsor payments in that case.
+
+Can I support you without getting any rewards/merchandise?::
+    Absolutely! Any merchandise is optional. Before sending out merchandise
+    I'll distribute forms asking for size/address/etc. - those forms will have
+    an option to not get any merch at all.
+
+Can I select my own amount rather than using the predefined tiers?::
+    At the bottom of the tier list, GitHub allows specifying a custom donation amount.
+
+When will rewards be shipped?::
+    Due to COVID-19, the Swiss Post currently
+    https://service.post.ch/vgkklp/info/informationen/Verkehrseinschraenkungen?lang=en[only
+    accepts priority letters for many countries], including the US. Especially for the
+    t-shirts, the difference between economy and priority shipments is quite
+    significant. For the shirts, I estimate I'd spend a total of $250 to $1500 on
+    *extra* postage. Thus, shipping is currently on hold until the shipping situation
+    resolves. There's currently no ETA for that happening, but rest assured everyone
+    will be notified (if contact details are available) once there are news.
+
+I'd like some stickers, but I can't donate anything because of my financial situation.::
+    Please mailto:mail@qutebrowser.org[get in touch]! As long as this doesn't
+    get abused, I'd happily send stickers for free.
+
+We're a company interested in sponsoring qutebrowser, can you invoice us for the sponsored amount?::
+    You will receive a confirmation mail including a PDF receipt from GitHub
+    when sponsoring qutebrowser. If you really need an invoice, I can bill
+    you via my company, https://bruhin.software/[Bruhin Software]. Please
+    mailto:mail@qutebrowser.org[get in touch] to discuss details!
+
+Can you share details on the stickers?::
+    There are two sticker designs: Rectangular stickers (with text) and round
+    vinyl stickers. Those are the same as during the 2016/2017 crowdfundings.
++
+image:https://qutebrowser.org/img/sponsors/stickers.jpg["stickers",width=300,link="https://qutebrowser.org/img/sponsors/stickers.jpg"]
+
+Can you share details on the swag?::
+    A limited number of metal buttons and magnets is available:
++
+image:https://qutebrowser.org/img/sponsors/swag.jpg["swag",width=300,link="https://qutebrowser.org/img/sponsors/swag.jpg"]
++
+It's planned to order more swag, depending on the exact demand. Possibilities
+would include:
++
+- qutebrowser pens (refillable)
+- notebooks (the paper kind)
+- USB-sticks (for the "expensive swag" reward).
+
+Can you share details on the t-shirts?::
+    The shirts will be
+    https://www.bc-collection.eu/en/t-shirts/bc-e190-tu03t[B&C #E190] shirts
+    which are the successor to the "Exact 190" shirts distributed in the
+    previous crowdfundings: 100% cotton and relatively thick/heavy.
++
+Sizes from XS and 5XL are available, most of them also as a fitted (women) cut.
+Up to 40 colors are available from the supplier - there will be a selection of
+recommended/tested colors, but any available color can be selected on your own
+risk.
++
+The print will be a white silk-screen print, with the same design as in the
+2016 crowdfunding:
++
+image:https://qutebrowser.org/img/sponsors/shirt.jpg["shirt",width=300,link="https://qutebrowser.org/img/sponsors/shirt.jpg"]
+
+[[privacy]]
+== Privacy Policy
+
+Being a mostly volunteer-run project, qutebrowser does not have the resources
+for a full legalese version of a privacy policy. Instead, this overview should
+answer the most common questions.
+
+For any privacy questions, please contact mailto:privacy@qutebrowser.org[].
+
+=== Website
+
+The qutebrowser.org website does not use any cookies or trackers. It does not
+store any logs, except in rare situations when those are explicitly (and
+temporarily) enabled to debug website issues. Even if enabled, IP addresses are
+partially redacted in the logs. As soon as debugging is finished, any logs
+are removed.
+
+Note that some services related to qutebrowser are stored on third-party
+services such as GitHub. By using their websites, you're subject to their
+privacy policies.
+
+=== Crash reports
+
+When qutebrowser crashes or you use the `:report` command, you have the
+possibility to send a crash report. If you decide to do so, your crash report
+is stored on qutebrowser's server, where qutebrowser's maintainer (Florian Bruhin / The
+Compiler) can access it. Before February 2021, other core qutebrowser developers (a
+maximum of four people total) could access the reports as well (access was restricted
+based on the sensitive nature of those reports, not because of any known issues with
+those individuals).
+
+If you select the option to include a debug log with your report, it's possible
+that sensitive information is contained in your report. You can show and edit
+the log in the crash report window to redact any such information as you see
+fit. Additionally, qutebrowser tries to avoid logging information such as
+passwords entirely (by not logging any input going to websites).
+
+Currently, crash reports are stored indefinitely for technical reasons. With a
+https://github.com/The-Compiler/crashbin/[new tool designed for crash reports],
+it'll become possible to delete crashreports after the underlying issue is
+fixed, but that tool needs some more work before qutebrowser can use it.
+
+=== Application
+
+Without any user interaction, qutebrowser can be expected to make no
+unsolicited requests. It does not contain any telemetry code.
+
+The QtWebEngine library (on which qutebrowser is based on) strips out any
+Chromium features which talk to Google servers, so any unsolicited requests
+should be treated as a bug.
+
+While qutebrowser uses DuckDuckGo as the default search page, no advertising
+deal exists between DuckDuckGo and qutebrowser. Note that by visiting
+DuckDuckGo, you're subject to their privacy policy.
+
+With regard to websites you visit, qutebrowser tries to strike a balance
+between usability/compatibility and privacy. There are various `content.*`
+settings which can be used to tweak such behavior, reduce fingerprinting or
+disable various features (usually at a cost of website compatibility).
