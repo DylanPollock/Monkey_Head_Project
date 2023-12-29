@@ -1,7 +1,8 @@
 @echo off
+setlocal enabledelayedexpansion
 cls
 color 0A
-echo [****|     GenCore Deployment   |****]
+echo [****|     GenCore (Windows 10 Pro x64)   |****]
 echo.
 
 :start
@@ -11,7 +12,7 @@ echo [****|     1. Full Setup                |****]
 echo [****|     2. 'Mini' Setup              |****]
 echo [****|     3. Cleanup Files             |****]
 echo [****|     4. Launch Terminal           |****]
-echo [****|     5. Update Python & Debian    |****]
+echo [****|     5. Update Python Packages    |****]
 echo [****|     6. Create Build              |****]
 echo [****|     7. Create Volume             |****]
 echo [****|     8. Create Container          |****]
@@ -26,7 +27,7 @@ if "%action%"=="1" goto full_setup
 if "%action%"=="2" goto mini_setup
 if "%action%"=="3" goto cleanup_files
 if "%action%"=="4" goto launch_terminal
-if "%action%"=="5" goto update_python_debian
+if "%action%"=="5" goto update_python_packages
 if "%action%"=="6" goto create_build
 if "%action%"=="7" goto create_volume
 if "%action%"=="8" goto create_container
@@ -43,14 +44,14 @@ echo [****|     Performing Full Setup   |****]
 
 :: Step 1: Verify Python Installation
 echo [****| Step 1: Verifying Python installation |****]
-python --version
-
-:: Check the exit code of the Python command
+where python >nul 2>&1
 if %errorlevel% neq 0 (
     echo [****| Python is not installed or not added to PATH. |****]
-    echo [****| Please install Python and add it to the PATH.  |****]
+    echo [****| Please install Python manually and ensure it's in the PATH. |****]
+    echo [****| You can download Python from https://www.python.org/downloads/. |****]
+    echo [****| After installation, re-run the script. |****]
     pause
-    goto menu
+    goto end
 ) else (
     echo [****| Python is installed. |****]
 )
@@ -63,6 +64,10 @@ set ENVIRONMENT=Testing
 echo [****| Environment variables set successfully |****]
 
 :: Additional steps for full setup can be added here...
+:: Example: Setting up a Python virtual environment
+echo [****| Setting up Python virtual environment |****]
+python -m venv GenCoreEnv
+echo [****| Python virtual environment setup completed |****]
 
 goto full_setup_completed
 
@@ -72,6 +77,12 @@ echo [****| Full Setup completed successfully |****]
 pause
 goto menu
 
+:end
+cls
+echo [****| Thank you for using GenCore. Exiting now. |****]
+pause
+exit /b
+
 :mini_setup
 cls
 echo [****| Setting up 'Mini' Environment |****]
@@ -79,10 +90,10 @@ echo [****| Setting up 'Mini' Environment |****]
 :: Step 1: Install minimal necessary software
 echo [****| Step 1: Installing minimal required software |****]
 :: Using 'pip' to install minimal necessary software packages.
-python -m pip install python3.11-slim python3.11-venv
+python -m pip install requests beautifulsoup4 lxml
 
 :: Check the exit code of the installation command
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo [****| Error during minimal software installation  |****]
     echo [****| Exiting 'Mini' Environment Setup.           |****]
     pause
@@ -95,9 +106,10 @@ if %errorlevel% neq 0 (
 echo [****| Step 2: Configuring specific settings |****]
 :: Configuration commands for the 'Mini' environment.
 :: Example: set MINI_ENV_SETTING=value
+set MINI_ENV_SETTING=Minimal
 
 :: Check the exit code of the configuration step
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo [****| Error during configuration for 'Mini' Environment |****]
     echo [****| Exiting 'Mini' Environment Setup.                 |****]
     pause
@@ -106,7 +118,8 @@ if %errorlevel% neq 0 (
     echo [****| Step 2: Configuration for 'Mini' Environment completed successfully |****]
 )
 
-:: Return to the main menu after 'Mini' environment setup is complete
+:: Additional steps for 'Mini' setup can be added here...
+
 goto mini_setup_completed
 
 :mini_setup_completed
@@ -122,7 +135,7 @@ echo [****| Cleaning up Files |****]
 :: Step 1: Execute cleanup commands
 echo [****| Step 1: Executing cleanup commands |****]
 :: Cleanup temporary files
-::del /f /q C:\path\to\temp\*.tmp
+del /f /q %temp%\*
 
 :: Cleanup log files
 ::del /f /q C:\path\to\logs\*.log
@@ -141,7 +154,7 @@ del /f /q %temp%\*
 :: Example: del /f /q C:\Windows\SoftwareDistribution\Download\*
 
 :: Check the exit code of the cleanup commands
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo [****| Error during cleanup process |****]
     echo [****| Exiting Cleanup Files.      |****]
     pause
@@ -160,7 +173,7 @@ pause
 goto menu
 
 :: Check the exit code of the cleanup commands
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo [****| Error during cleanup process |****]
     echo [****| Exiting Cleanup Files.       |****]
     pause
@@ -178,7 +191,6 @@ echo [****| Cleanup completed successfully |****]
 pause
 goto menu
 
-
 :launch_terminal
 cls
 echo [****| Launching Terminal |****]
@@ -189,7 +201,7 @@ echo [****| Step 1: Launching terminal |****]
 start cmd /k
 
 :: Check the exit code of the launch command
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo [****| Error launching terminal |****]
     echo [****| Exiting Launch Terminal. |****]
     pause
@@ -207,194 +219,31 @@ echo [****| Terminal launched successfully |****]
 pause
 goto menu
 
-:update_python_debian
+:update_python_packages
 cls
-echo [****| Updating Python & Debian |****]
+echo [****| Updating Python Packages |****]
 
 :: Step 1: Update Python packages
-::echo [****| Step 1: Updating Python packages |****]
+echo [****| Step 1: Updating Python packages |****]
 :: Using 'pip' to update Python and related packages.
-::pip install --upgrade pip
-::pip install --upgrade setuptools
+python -m pip install --upgrade pip
+python -m pip install --upgrade setuptools
 
 :: Check the exit code of the Python package update command
-::if %errorlevel% neq 0 (
-::    echo [****| Error updating Python packages |****]
-::    echo [****| Exiting Update Python & Debian. |****]
-::    pause
-::    goto menu
-::) else (
-::    echo [****| Step 1: Python packages updated successfully |****]
-::)
-
-:: Step 2: Apply Debian system updates
-echo [****| Step 2: Applying Debian system updates |****]
-:: Using 'apt-get' to update the Debian system.
-apt-get update
-apt-get upgrade -y
-apt-get dist-upgrade -y
-
-:: Check the exit code of the Debian system update command
-if %errorlevel% neq 0 (
-    echo [****| Error applying Debian system updates |****]
-    echo [****| Exiting Update Python & Debian. |****]
+if !errorlevel! neq 0 (
+    echo [****| Error updating Python packages |****]
+    echo [****| Exiting Update Python Packages. |****]
     pause
     goto menu
 ) else (
-    echo [****| Step 2: Debian system updates applied successfully |****]
+    echo [****| Step 1: Python packages updated successfully |****]
 )
 
 :: Return to the main menu after update is complete
-goto update_python_debian_completed
+goto update_python_packages_completed
 
-:update_python_debian_completed
+:update_python_packages_completed
 cls
-echo [****| Python & Debian updated successfully |****]
+echo [****| Python Packages updated successfully |****]
 pause
 goto menu
-
-:create_build
-cls
-echo [****| Creating Build |****]
-
-:: Step 1: Compile code and assemble resources
-echo [****| Step 1: Compiling code and assembling resources |****]
-:: Example build commands (customize these commands according to your build process)
-:: For compiling a Java application
-:: javac MyApplication.java
-
-:: For a .NET application
-:: msbuild /t:build /p:Configuration=Release MySolution.sln
-
-:: For a Node.js application
-:: npm run build
-
-:: For Python applications, a build step may not be required, but you can include any pre-deployment tasks.
-:: Example: python setup.py install
-
-:: Check the exit code of the build command
-if %errorlevel% neq 0 (
-    echo [****| Error during build creation |****]
-    echo [****| Exiting Build Creation. |****]
-    pause
-    goto menu
-) else (
-    echo [****| Step 1: Build created successfully |****]
-)
-
-:: Return to the main menu after build creation is complete
-goto create_build_completed
-
-:create_build_completed
-cls
-echo [****| Build created successfully |****]
-pause
-goto menu
-
-:create_volume
-cls
-echo [****| Creating Volume |****]
-
-:: Step 1: Initialize and configure storage volumes
-echo [****| Step 1: Initializing and configuring storage volumes |****]
-:: Example command to create a Docker volume
-:docker volume create gencore-volume
-
-:: For Windows disk volumes, you might use diskpart or PowerShell commands
-:: Example using diskpart (this requires a script file or manual input)
-:: diskpart /s C:\path\to\diskpart_script.txt
-
-:: Example using PowerShell to create and format a new volume (Admin privileges required)
-:: powershell -Command "New-Volume -DiskNumber 1 -FileSystem NTFS -FriendlyName 'MyVolume'"
-
-:: Check the exit code of the volume creation command
-if %errorlevel% neq 0 (
-    echo [****| Error during volume creation |****]
-    echo [****| Exiting Volume Creation. |****]
-    pause
-    goto menu
-) else (
-    echo [****| Step 1: Volume created successfully |****]
-)
-
-:: Return to the main menu after volume creation is complete
-goto create_volume_completed
-
-:create_volume_completed
-cls
-echo [****| Volume created successfully |****]
-pause
-goto menu
-
-
-:create_container
-cls
-echo [****| Creating Container |****]
-
-:: Step 1: Deploy and start Docker containers
-echo [****| Step 1: Deploying and starting Docker containers |****]
-
-:: Pull the latest version of the image (if required)
-:: Uncomment the following line if you need to pull the image from a registry
-:: docker pull gencore-image:latest
-
-:: Run the Docker container
-docker run -d --name gencore-container gencore-image:latest
-
-:: Check the exit code of the Docker run command
-if %errorlevel% neq 0 (
-    echo [****| Error during container deployment |****]
-    echo [****| Exiting Container Deployment.     |****]
-    pause
-    goto menu
-) else (
-    echo [****| Docker container deployed and started successfully |****]
-)
-
-:: Return to the main menu after container deployment is complete
-goto create_container_completed
-
-:create_container_completed
-cls
-echo [****| Container created and running |****]
-pause
-goto menu
-
-
-:kubernetes
-cls
-echo [****| Kubernetes Setup |****]
-
-:: Step 1: Apply Kubernetes configurations from gencore.yaml
-echo [****| Step 1: Applying Kubernetes configurations |****]
-kubectl apply -f gencore.yaml
-
-:: Check the exit code of the Kubernetes apply command
-if %errorlevel% neq 0 (
-    echo [****| Error during Kubernetes configuration application |****]
-    echo [****| Exiting Kubernetes Setup. |****]
-    pause
-    goto menu
-) else (
-    echo [****| Kubernetes configurations applied successfully |****]
-)
-
-:: Step 2: Verify Deployment and Service
-echo [****| Step 2: Verifying Deployment and Service |****]
-kubectl get deployments
-kubectl get services
-
-:: Return to the main menu after Kubernetes setup is complete
-goto kubernetes_setup_completed
-
-:kubernetes_setup_completed
-cls
-echo [****| Kubernetes setup completed successfully |****]
-pause
-goto menu
-
-:end
-cls
-echo [****| Thank you for using GenCore. Exiting now. |****]
-pause
-exit /b
