@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: gencore-pvc
+  name: gencore
 spec:
   accessModes:
     - ReadWriteOnce
@@ -14,7 +14,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gencore-deployment
+  name: gencore
 spec:
   replicas: 1
   selector:
@@ -42,7 +42,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: gencore-service
+  name: gencore
 spec:
   selector:
     app: gencore
