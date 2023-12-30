@@ -1,0 +1,1 @@
+Please respond to user with either 'PASS', 'FAIL', or 'RETRY' options. You may give details but must include those "Magic Words".

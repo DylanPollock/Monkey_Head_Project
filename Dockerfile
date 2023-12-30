@@ -1,3 +1,6 @@
+# Project Folder: 'C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject\'
+# Note: This file will be located in root folder (or 'Project Folder').
+
 # Use Debian Trixie as the base image
 FROM debian:trixie
 
