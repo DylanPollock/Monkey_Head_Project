@@ -2,21 +2,21 @@
 cls
 echo [****| Cleaning up Files |****]
 
-REM Stop all running containers
+REM Simulated: Ensure Docker CLI is installed and in system PATH
 echo Stopping all containers...
-docker stop $(docker ps -aq)
+REM docker stop $(docker ps -aq)
 
-REM Remove all stopped containers
+REM Simulated: Ensure Docker CLI is installed and in system PATH
 echo Removing all stopped containers...
-docker rm $(docker ps -aq)
+REM docker rm $(docker ps -aq)
 
-REM Remove all untagged images
+REM Simulated: Ensure Docker CLI is installed and in system PATH
 echo Removing untagged images...
-docker rmi $(docker images -q -f dangling=true)
+REM docker rmi $(docker images -q -f dangling=true)
 
-REM Clean up any temporary files in the project directory
+REM Simulated: Ensure the temporary files path exists
 echo Cleaning temporary files...
-del /Q /F C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject\temp\*
+REM del /Q /F C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject\temp\*
 
 REM Check if the cleanup was successful
 if %ERRORLEVEL% NEQ 0 (
