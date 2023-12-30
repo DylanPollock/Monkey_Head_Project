@@ -8,7 +8,7 @@ echo.
 :start
 :menu
 cls
-echo [****|     1. Kubernetes Setup               |****]
+echo [****|     1. 'Full' Setup (with Kubernetes) |****]
 echo [****|     2. 'Mini' Setup                   |****]
 echo [****|     3. Cleanup Files                  |****]
 echo [****|     4. Launch Terminal                |****]
