@@ -1,1 +1,0 @@
-https://github.com/DLRP1995/py-gpt-gencore.git
