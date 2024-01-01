@@ -51,7 +51,7 @@ The MonkeyHeadProject incorporates various components, each significant in build
 
 - **GENCORE (original Operating system)**: Foundation of our custom AI OS, built on Debian 'Trixie'.
 
-- **H.O.G. (Hand Of God, original program)**: The only program completely human-written, ensuring essential oversight.
+- **H.O.G. plus  U.C.M. (Hand Of God, Universal Code Manager, original program)**: The only program completely human-written, ensuring essential oversight. Translates spoken words or text into actionable code in various languages.
 
 - **LINUX (Debian Trixie slim)**: Basis for our OS, chosen for its stability and flexibility.
 
@@ -80,8 +80,6 @@ The MonkeyHeadProject incorporates various components, each significant in build
 - **SPARK (AI agent)**: The AI component you're currently interacting with.
 
 - **TEXT2PYTHON**: Converts spoken words into actionable Python scripts or code.
-
-- **U.C.M. (Universal Code Manager, original program)**: Translates spoken words or text into actionable code in various languages, monitored by H.O.G.
 
 - **USER**: Represents the human counterpart and user interaction component.
 
