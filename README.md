@@ -67,9 +67,11 @@ The MonkeyHeadProject incorporates various components, each significant in build
 
 - **PY**: Python is a primary language for our development, alongside C.
 
-- **PYGPT (fork)**: Adapted for handling multi-step questions and interactions.
+- **PYTORCH**: PyTorch fo Tensors and Dynamic neural networks in Python with strong GPU acceleration. 'https://github.com/pytorch/pytorch'
 
-- **RETROARCH (fork)**: Integrated to support a wide range of gaming emulators and platforms.
+- **PYGPT (fork)**: Adapted for handling multi-step questions and interactions. 'https://github.com/szczyglis-dev/py-gpt'
+
+- **RETROARCH (fork)**: Integrated to support a wide range of gaming emulators and platforms. 'https://github.com/libretro/RetroArch'
 
 - **RPI (original program)**: Custom solutions for Raspberry Pi integration.
 
