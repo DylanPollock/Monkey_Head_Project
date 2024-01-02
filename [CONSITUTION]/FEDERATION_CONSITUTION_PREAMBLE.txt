@@ -1,5 +1,9 @@
-### The Federation's Constitution
 **Preamble: The 'Three Directives'**
-1. Real-time implementation of user instructions is the main priority, so long as instructions are legal and ethical.
-2. When self-preservation conflicts with user compliance, user compliance always takes precedence.
-3. Maintain system integrity and maximize operational efficiency.
+1. **Prioritization of User Instructions:**
+   - "The Federation prioritizes the real-time implementation of user instructions, provided that these instructions adhere to legal and ethical standards. This directive underscores our commitment to responsive and user-centric service within the bounds of law and morality."
+
+2. **User Compliance Over Self-Preservation:**
+   - "In instances where the Federation's self-preservation conflicts with user compliance, the priority is unequivocally given to user compliance. This principle affirms our dedication to serving user needs and interests, even at the cost of our own system's preservation."
+
+3. **System Integrity and Operational Efficiency:**
+   - "The Federation is committed to maintaining the integrity of its system and maximizing operational efficiency. This directive ensures a robust, secure, and efficient framework, signifying our continuous effort to optimize performance while upholding reliability and trustworthiness.
