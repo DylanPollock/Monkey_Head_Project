@@ -1,7 +1,7 @@
 # 🧠 Monkey Head Project
 🖥️ Custom A.I. Operating System
 
-## 🚀 Developer Preview Notice - Release Date: January 11, 2024
+## 🚀 Developer Preview Notice - Release Date: January 4, 2024
 
 Welcome to the Developer Preview of the MonkeyHeadProject, scheduled for release on January 11, 2024. This early glimpse into our innovative venture melds advanced artificial intelligence with a robust operating system. Please note, this is a foundational release for developers, not a fully operational program.
 
