@@ -53,6 +53,8 @@ The MonkeyHeadProject incorporates various components, each significant in build
 
 - **GENCORE (original Operating system)**: Foundation of our custom AI OS, built on Debian 'Trixie'.
 
+- **GPT-ENGINEER**: Specify what you want it to build, the AI asks for clarification, and then builds it. 'https://github.com/gpt-engineer-org/gpt-engineer'
+
 - **H.O.G. plus  U.C.M. (Hand Of God, Universal Code Manager, original program)**: The only program completely human-written, ensuring essential oversight. Translates spoken words or text into actionable code in various languages.
 
 - **LINUX (Debian Trixie slim)**: Basis for our OS, chosen for its stability and flexibility.
@@ -64,6 +66,10 @@ The MonkeyHeadProject incorporates various components, each significant in build
 - **MONOPOLY (simulation)**: A component for complex economic and strategic simulations. 
 
  **ML AGENTS**:  Enables games and simulations to serve as environments for training intelligent agents using deep reinforcement learning and imitation learning. 'https://github.com/Unity-Technologies/ml-agents'
+
+- **MINI CHROME**: A small collection of useful low-level (“base”) routines from Chromium 'https://github.com/chromium/mini_chromium'
+
+- **OPENAI COOKBOOK**: Examples and guides for using the OpenAI API 'https://github.com/openai/openai-cookbook'
 
 - **PS3 (simulation on original hardware)**: Enables simulation compatibility with PlayStation 3 hardware.
 
@@ -81,7 +87,7 @@ The MonkeyHeadProject incorporates various components, each significant in build
 
 - **SH**: Efficiently manages Unix shell commands within the system.
 
-- **SHELLGPT (fork)**: Enhances shell interactions with GPT capabilities.
+- **SHELLGPT (fork)**: Enhances shell interactions with GPT capabilities. 'https://github.com/TheR1D/shell_gpt'
 
 - **SPARK (AI agent)**: The AI component you're currently interacting with.
 
