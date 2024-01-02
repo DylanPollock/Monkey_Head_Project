@@ -33,17 +33,19 @@ The MonkeyHeadProject incorporates various components, each significant in build
 
 - **AUTOGPT (fork)**: Integrated for advanced GPT functionalities. (Original repo acknowledgment pending.)
 
-- **C-PYTHON (fork)**: Enhances Python capabilities within the system. (Original repo acknowledgment pending.)
+- **C-PYTHON (fork)**: Enhances Python capabilities within the system. (Original repo acknowledgment pending.) 'https://github.com/cython/cython'
 
 - **C**: Besides Python, C is the most used programming language in our project.
 
 - **C128 (original program)**: Legacy program support, ensuring backward compatibility.
 
-- **C64 (original program)**: Part of our initiative to integrate with classic computing environments.
+- **C64 (original program)**: Part of our initiative to integrate with classic computing environments. 'https://github.com/randyrossi/bmc64'
 
 - **Vic 20 (original program)**: Emphasizes our commitment to historical computing compatibility.
 
 - **CMD**: Manages command-line interface (CLI) commands effectively.
+
+- **CUSTOM TKINTER**: A modern and customizable python UI-library based on Tkinter. 'https://github.com/TomSchimansky/CustomTkinter'
 
 - **ENCRYPTION (original program)**: Ensures robust security and data protection.
 
@@ -59,7 +61,9 @@ The MonkeyHeadProject incorporates various components, each significant in build
 
 - **MINI-TASK**: Designed for handling single, focused tasks efficiently.
 
-- **MONOPOLY (simulation)**: A component for complex economic and strategic simulations.
+- **MONOPOLY (simulation)**: A component for complex economic and strategic simulations. 
+
+ **ML AGENTS**:  Enables games and simulations to serve as environments for training intelligent agents using deep reinforcement learning and imitation learning. 'https://github.com/Unity-Technologies/ml-agents'
 
 - **PS3 (simulation on original hardware)**: Enables simulation compatibility with PlayStation 3 hardware.
 
@@ -71,7 +75,7 @@ The MonkeyHeadProject incorporates various components, each significant in build
 
 - **RETROARCH (fork)**: Integrated to support a wide range of gaming emulators and platforms.
 
-- **RPI (original program)**: Custom solutions for Raspberry Pi integration.
+- **RPI (original program)**: Custom solutions for Raspberry Pi integration. 'https://github.com/raspberrypi/linux'
 
 - **SH**: Efficiently manages Unix shell commands within the system.
 
@@ -80,6 +84,8 @@ The MonkeyHeadProject incorporates various components, each significant in build
 - **SPARK (AI agent)**: The AI component you're currently interacting with.
 
 - **TEXT2PYTHON**: Converts spoken words into actionable Python scripts or code.
+
+- **TERMINAL**: Windows Terminal and the original Windows console host. 'https://github.com/microsoft/terminal'
 
 - **USER**: Represents the human counterpart and user interaction component.
 
