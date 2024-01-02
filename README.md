@@ -1,7 +1,7 @@
 # 🧠 Monkey Head Project
 🖥️ Custom A.I. Operating System
 
-## 🚀 Developer Preview Notice - Release Date: January 11, 2024
+## 🚀 Developer Preview Notice - Release Date: January 4, 2024
 
 Welcome to the Developer Preview of the MonkeyHeadProject, scheduled for release on January 11, 2024. This early glimpse into our innovative venture melds advanced artificial intelligence with a robust operating system. Please note, this is a foundational release for developers, not a fully operational program.
 
@@ -71,9 +71,11 @@ The MonkeyHeadProject incorporates various components, each significant in build
 
 - **PY**: Python is a primary language for our development, alongside C.
 
-- **PYGPT (fork)**: Adapted for handling multi-step questions and interactions.
+- **PYTORCH**: PyTorch fo Tensors and Dynamic neural networks in Python with strong GPU acceleration. 'https://github.com/pytorch/pytorch'
 
-- **RETROARCH (fork)**: Integrated to support a wide range of gaming emulators and platforms.
+- **PYGPT (fork)**: Adapted for handling multi-step questions and interactions. 'https://github.com/szczyglis-dev/py-gpt'
+
+- **RETROARCH (fork)**: Integrated to support a wide range of gaming emulators and platforms. 'https://github.com/libretro/RetroArch'
 
 - **RPI (original program)**: Custom solutions for Raspberry Pi integration. 'https://github.com/raspberrypi/linux'
 
