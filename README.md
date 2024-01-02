@@ -31,7 +31,7 @@ The MonkeyHeadProject is an ambitious initiative to create an advanced custom AI
 ## 🧬 Project Components and Acknowledgments
 The MonkeyHeadProject incorporates various components, each significant in building the comprehensive functionality of our AI Operating System. Below is a list of these functions, along with credits to original repositories we have forked:
 
-- **AUTOGPT (fork)**: Integrated for advanced GPT functionalities. (Original repo acknowledgment pending.)
+- **AUTOGPT (fork)**: Integrated for advanced GPT functionalities. (Original repo acknowledgment pending.) 'https://github.com/Significant-Gravitas/AutoGPT'
 
 - **C-PYTHON (fork)**: Enhances Python capabilities within the system. (Original repo acknowledgment pending.) 'https://github.com/cython/cython'
 
@@ -91,7 +91,7 @@ The MonkeyHeadProject incorporates various components, each significant in build
 
 - **USER**: Represents the human counterpart and user interaction component.
 
-- **VLC (fork)**: Integrated for media playback and streaming functionalities.
+- **VLC (fork)**: Integrated for media playback and streaming functionalities. 'https://github.com/videolan/vlc'
 
 Each of these components plays a vital role in the MonkeyHeadProject. We extend our thanks to all the original creators and communities behind these tools for their foundational work that has enabled us to build upon them.
 
