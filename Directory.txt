@@ -1,38 +1,36 @@
-Project Folder Structure: C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject
+Directory: C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject
 
---- Directories ---
-.devcontainer (Directory)
-.git (Directory)
-.vscode (Directory)
-[BAT] (Directory)
-[CONFIG] (Directory)
-[CONSTITUTION] (Directory)
-[DEBIAN] (Directory)
-[DOCKER] (Directory)
-[GITHUB] (Directory)
-[INSTALL] (Directory)
-[LAB] (Directory)
-[MEMORY] (Directory)
-[MINI] (Directory)
-[OS] (Directory)
-[PROFILE] (Directory)
-[PROMPTS] (Directory)
-[PYTHON] (Directory)
-[REPO] (Directory)
-[RPI] (Directory)
-[WIN10] (Directory)
-
---- Files ---
-.dockerignore (File)
-.gitignore (File)
-CONTRIBUTING.md (File)
-desktop.ini (File)
-Dockerfile (File)
-GenCore.py (File)
-gencore.yaml (File)
-LICENSE (File)
-README.md (File)
-requirements.txt (File)
-Setup.bat (File)
-Setup.sh (File)
-VSCode-GenCore.code-profile (File)
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+l----          2023-12-27  4:59 AM                .devcontainer
+l----          2023-12-28  8:46 AM                .vscode
+la---          2023-12-31  8:45 PM                [BAT]
+la---          2023-12-28  8:32 AM                [CONFIG]
+la---          2023-12-28  6:38 PM                [CONSITUTION]
+la---          2023-12-30 10:46 AM                [DEBIAN]
+la---          2023-12-30  9:05 AM                [DOCKER]
+la---          2023-12-29  7:54 PM                [GITHUB]
+l----          2023-12-31  5:38 PM                [INSTALL]
+la---          2023-12-27  5:00 AM                [LAB]
+la---          2024-01-02  3:55 PM                [MEMORY]
+la---          2023-12-30  9:05 AM                [MINI]
+la---          2023-12-27  5:00 AM                [OS]
+la---          2024-01-01 12:07 PM                [PROFILE]
+la---          2023-12-31  5:45 PM                [PROMPTS]
+la---          2023-12-31  5:57 PM                [PYTHON]
+l----          2024-01-01  3:03 PM                [REPO]
+la---          2023-12-30 10:46 AM                [RPI]
+la---          2023-12-30 10:46 AM                [WIN10]
+la---          2024-01-01 11:43 AM            132 .dockerignore
+la---          2024-01-01 11:49 AM           1295 .gitignore
+la---          2024-01-01 11:48 AM           1448 CONTRIBUTING.md
+la---          2024-01-02 12:49 PM            822 Directory.txt
+la---          2024-01-01 11:59 AM           1186 Dockerfile
+la---          2024-01-01 11:59 AM              0 GenCore.py
+la---          2024-01-01 12:10 PM            957 gencore.yaml
+la---          2024-01-01 12:08 PM          35821 LICENSE
+la---          2024-01-02  4:08 PM          11333 README.md
+la---          2024-01-02 12:55 PM           1868 requirements.txt
+la---          2024-01-01  1:46 PM           4754 Setup.bat
+la---          2024-01-01  1:49 PM           2497 Setup.sh
+la---          2023-12-27  3:26 AM          58077 VSCode-GenCore.code-profile
