@@ -141,57 +141,69 @@ A heartfelt thank you to all contributors to the MonkeyHeadProject. Your experti
 ## 📁 Project File Structure
 [A detailed breakdown of the project file structure will be added soon...]
 
-## 🛠️ Installation and Usage: GenCore AI/OS
-The MonkeyHeadProject introduces the GenCore AI/OS, a versatile operating system adaptable to a wide range of hardware setups. Below are detailed guidelines for installation and usage, specifying the requirements for the GenCore HostOS, SubOS, and NanoOS.
+### 🛠️ Installation and Usage: GenCore AI/OS
+The MonkeyHeadProject's GenCore AI/OS is a sophisticated, adaptable operating system tailored for diverse hardware. Detailed below are the installation and usage instructions, specifying the requirements for GenCore HostOS, SubOS, NanoOS, and AtomOS.
 
-### GenCore HostOS Requirements and Installation
+#### GenCore HostOS Requirements and Installation
 **Hardware Requirements:**
-- **Storage**: Minimum 512 GB.
+- **Storage**: Minimum 256 GB.
 - **RAM**: Minimum 16 GB DDR4.
-- **Processor**: 4 physical cores (2.5 GHz recommended), such as "Intel(R) Core(TM) i5-3210M CPU @ 2.50GHz", divided into two logical halves (one for the HostOS and one for the SubOS).
+- **Processor**: 4 physical cores (2.5 GHz recommended), such as "Intel(R) Core(TM) i5-3210M CPU @ 2.50GHz".
 - **Operating System**: Windows 11 or Windows 10 Pro 64-bit.
 
 **Installation Process:**
-- Download the GenCore HostOS setup file from our official repository.
-- Ensure your system meets the above hardware requirements.
-- Install GenCore HostOS on a dedicated hardware setup or as a dual boot with your existing Windows OS.
-- Follow the setup wizard, allocating the necessary resources to the HostOS.
+- Download GenCore HostOS from our official repository.
+- Ensure compliance with hardware requirements.
+- Install on a dedicated setup or dual boot with existing Windows OS.
+- Follow setup instructions, allocating full processor capabilities to HostOS.
 
-### GenCore SubOS Virtual Environment
+#### GenCore SubOS Virtual Environment
 **Virtual Hardware Requirements:**
-- **Storage**: Minimum 256 GB for each virtual environment.
-- **RAM**: 8 GB for each SubOS.
-- **Processor**: Two physical cores divided into two logical halves (one for the SubOS and one for the NanoOS).
+- **Storage**: Minimum 128 GB per environment.
+- **RAM**: 8 GB per SubOS.
+- **Processor**: 1 full physical core (50% of HostOS capacity).
 
 **Operating System:**
-- Windows 10 Pro 64-bit for each SubOS.
+- Windows 10 Pro 64-bit.
 
-**Setting Up the SubOS:**
-- Use Hyper-V Manager in GenCore HostOS to create a virtual environment.
-- Allocate the necessary resources as per the above specifications.
-- Install Windows 10 Pro 64-bit within this environment.
+**Setup Process:**
+- Create virtual environments using Hyper-V Manager in HostOS.
+- Assign necessary resources.
+- Install Windows 10 Pro 64-bit.
 
-### GenCore NanoOS Virtual Environment
+#### GenCore NanoOS Virtual Environment
 **Virtual Hardware Requirements:**
-- **Storage**: Minimum 128 GB for each Nano environment.
-- **RAM**: 4 GB for each NanoOS.
-- **Processor**: One physical core.
+- **Storage**: Minimum 64 GB per environment.
+- **RAM**: 4 GB per NanoOS.
+- **Processor**: 1/4th of a physical core.
 
-**Creating Nano Environments:**
-- Access Hyper-V or Docker within the GenCore SubOS.
-- Allocate resources as per the above specifications for each Nano environment.
-- Deploy NanoOS instances using VHDX files or Docker containers tailored for specific tasks or applications.
+**Setup Process:**
+- In SubOS, use Hyper-V or Docker to create Nano environments.
+- Allocate resources as specified.
+- Deploy NanoOS instances using VHDX or Docker containers.
 
-### Safety and Data Integrity
-- For optimal safety and system integrity, a dedicated hardware setup or an external drive for GenCore HostOS is recommended.
-- Backup important data before installation or making changes to your system.
+#### GenCore AtomOS Environment
+**Virtual Hardware Requirements:**
+- **Storage**: Scaled as per application need.
+- **RAM**: Scaled as per application need.
+- **Processor**: 1/8th of a physical core.
+- **Operating System**: Python 3.12 environment.
 
-### Post-Installation Steps
-- Explore the GenCore AI/OS interface and familiarize yourself with its functionalities.
-- Consult the user manual and tutorials for guidance on maximizing the system's potential.
-- Engage with the community for support and sharing insights.
+**Setup Process:**
+- Establish AtomOS environments within NanoOS using Docker.
+- Allocate 1/8th of a core's processing power.
+- Configure for specific lightweight applications or tasks.
 
-The GenCore AI/OS, as part of the MonkeyHeadProject, represents a significant step in adaptable computing, merging AI capabilities with a flexible operating system across various hardware setups.
+#### Safety and Data Integrity
+- Preferably use a dedicated hardware setup or external drive.
+- Backup essential data before making system changes.
+
+#### Post-Installation Steps
+- Explore and familiarize with the GenCore AI/OS interface.
+- Refer to user manual and tutorials for guidance.
+- Engage with the community for support and idea exchange.
+
+GenCore AI/OS, a key part of the MonkeyHeadProject, is a milestone in adaptable computing, combining AI capabilities with a dynamic operating system across varied hardware environments.
 
 ## Test Hardware Used
 ### MacBook Pro 2012: Main Test Environment
