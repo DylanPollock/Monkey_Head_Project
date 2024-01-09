@@ -38,20 +38,12 @@ The MonkeyHeadProject is a culmination of various innovative components, each pl
    - **Purpose**: Enhances the capabilities of GPT models within our system.
    - **Acknowledgment**: Original work by [Significant-Gravitas](https://github.com/Significant-Gravitas/AutoGPT).
 
-2. **C-PYTHON (Fork)**:
-   - **Purpose**: Boosts Python functionalities, essential for script execution and algorithm optimization.
-   - **Acknowledgment**: Adapted from [Cython](https://github.com/cython/cython).
-
 3. **Legacy Program Support (C128, C64, Vic 20)**:
    - **Purpose**: Ensures backward compatibility, maintaining operability with classic computing environments.
    - **Acknowledgment**: C64 integration inspired by [bmc64](https://github.com/randyrossi/bmc64).
 
 4. **CMD**:
    - **Purpose**: Manages CLI commands effectively, enhancing user interaction and script execution.
-
-5. **CUSTOM TKINTER**:
-   - **Purpose**: Provides a modern, customizable UI library based on Tkinter, elevating user interface design.
-   - **Acknowledgment**: Original development by [TomSchimansky](https://github.com/TomSchimansky/CustomTkinter).
 
 6. **ENCRYPTION**:
    - **Purpose**: Delivers robust security measures for data protection within the system.
@@ -73,24 +65,6 @@ The MonkeyHeadProject is a culmination of various innovative components, each pl
 
 12. **MONOPOLY (Simulation)**:
     - **Purpose**: Facilitates complex economic and strategic simulations, enhancing decision-making and planning capabilities.
-
-13. **ML AGENTS**:
-    - **Purpose**: Facilitates the creation of intelligent agents for games and simulations using advanced learning techniques.
-    - **Acknowledgment**: Inspired by [Unity Technologies](https://github.com/Unity-Technologies/ml-agents).
-
-14. **MINI CHROME**:
-    - **Purpose**: Provides a set of essential low-level routines from Chromium, enhancing base functionalities.
-    - **Acknowledgment**: Adapted from [Mini Chromium](https://github.com/chromium/mini_chromium).
-
-15. **OPENAI COOKBOOK**:
-    - **Purpose**: Offers practical examples and guidance for utilizing the OpenAI API in various applications.
-    - **Acknowledgment**: Original work available at [OpenAI Cookbook](https://github.com/openai/openai-cookbook).
-
-16. **PS3 (Simulation on Original Hardware)**:
-    - **Purpose**: Ensures compatibility with PlayStation 3 hardware for accurate and immersive simulation experiences.
-
-17. **PS2 (Simulation on Original Hardware)**:
-    - **Purpose**: Provides support for PlayStation 2 simulations, preserving the legacy of classic gaming experiences.
 
 18. **PY**:
     - **Purpose**: Python serves as a core programming language, essential for scripting and developing complex algorithms.
@@ -131,9 +105,6 @@ The MonkeyHeadProject is a culmination of various innovative components, each pl
 28. **USER**:
     - **Purpose**: Represents and supports the human interface component, ensuring user-centric interaction and feedback.
 
-29. **VLC (Fork)**:
-    - **Purpose**: Provides media playback and streaming functionalities, integral to the system's multimedia capabilities.
-    - **Acknowledgment**: Forked from [Videolan VLC](https://github.com/videolan/vlc).
 
 ## 🙏 Acknowledgements
 A heartfelt thank you to all contributors to the MonkeyHeadProject. Your expertise and dedication are invaluable to our progress.
