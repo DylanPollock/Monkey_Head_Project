@@ -1,8 +1,4 @@
 # (NOTE: This content has been written or altered by an AI agent & is pending approval from a human counterpart.)
-# Custom folders to ignore
-[REPO]/
-[LAB]/
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

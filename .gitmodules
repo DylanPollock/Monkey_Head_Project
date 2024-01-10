@@ -1,0 +1,6 @@
+[submodule "[REPO]/pygpt-gencore"]
+	path = [REPO]/pygpt-gencore
+	url = https://github.com/DLRP1995/pygpt-gencore.git
+[submodule "[REPO]/shell-gpt-gencore"]
+	path = [REPO]/shell-gpt-gencore
+	url = https://github.com/DLRP1995/shell-gpt-gencore.git
