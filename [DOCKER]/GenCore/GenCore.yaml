@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gencorePV
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  hostPath:
+    path: "V:/"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gencorePVC
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gencoreDeployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gencore
+  template:
+    metadata:
+      labels:
+        app: gencore
+    spec:
+      containers:
+      - name: gencoreContainer
+        image: gencore-image:latest  # Update this with the actual name and tag of your Docker image
+        ports:
+        - containerPort: 95
+        volumeMounts:
+        - name: gencoreVolume
+          mountPath: "/data"
+      volumes:
+      - name: gencoreVolume
+        persistentVolumeClaim:
+          claimName: gencorePVC
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gencoreService
+spec:
+  selector:
+    app: gencore
+  ports:
+  - protocol: TCP
+    port: 95
+    targetPort: 95
+  type: LoadBalancer
