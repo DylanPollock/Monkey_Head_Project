@@ -14,6 +14,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
+    mate-desktop-environment-core \
+    tightvncserver \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -34,8 +36,17 @@ COPY . .
 RUN useradd -m dlrp && chown -R dlrp:dlrp /gencore-workdir
 USER dlrp
 
-# Define the command to run when the container starts
-# CMD ["python3", "GenCore.py"]
+# Set up VNC server
+RUN mkdir /root/.vnc
+RUN echo "dlrp" | vncpasswd -f > /root/.vnc/passwd
+RUN chmod 600 /root/.vnc/passwd
+
+# Set up VNC session startup script
+RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &\n" > /root/.vnc/xstartup
+RUN chmod +x /root/.vnc/xstartup
 
 # Expose the necessary port(s)
-EXPOSE 95
+EXPOSE 5901
+
+# Define the command to run when the container starts
+CMD ["vncserver", "-geometry", "1280x800", "-depth", "24", "-localhost", "no", ":1"]
