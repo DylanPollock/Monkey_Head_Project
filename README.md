@@ -1,111 +1,85 @@
 # 🧠 Monkey Head Project
-🖥️ Adaptable AI/OS (Artificial Intelligence Operating System)
+🖥️ Adaptive AI/OS (Artificial Intelligence Operating System)
 
-## 🚀 Developer Preview Release - January 4, 2024
+## 🚀 Phase 2 Release - June 21, 2024
 
-Welcome to the Developer Preview of the MonkeyHeadProject, debuting on January 4th, 2024. This pioneering initiative combines advanced artificial intelligence with a versatile operating system, adaptable to a broad spectrum of hardware and software platforms. This release serves as an introductory platform for developers and is not the final operational version.
+Welcome to Phase 2 of the MonkeyHeadProject, launching on June 21st, 2024. This phase continues to evolve our unique blend of advanced AI with a dynamic operating system, now even better suited to various hardware and software environments. While this version introduces new functionalities, it remains a development platform for the community.
 
-### Preview Highlights:
-- 🏗️ Flexible infrastructure and foundational files accessible on GitHub.
-- 📜 In-depth documentation articulating the project’s vision, adaptability of AI units, and extensive system capabilities.
-- 🧪 Preliminary code and adaptable system architecture blueprints.
+### Release Highlights:
+- 🏗️ Enhanced infrastructure and access to updated files on GitHub.
+- 📜 Expanded documentation detailing AI adaptability and comprehensive system functionalities.
+- 🧪 Updated code and system architecture blueprints demonstrating advanced adaptability.
 
 ### Target Audience:
-- 👩‍💻 Developers, researchers, and enthusiasts in the domains of AI, operating systems, and hardware adaptability.
-- 🧠 Visionaries interested in the fusion of AI, ethical technology development, and mythological narratives.
+- 👩‍💻 Developers, researchers, and tech enthusiasts interested in AI, operating systems, and adaptable technologies.
+- 🧠 Innovators keen on merging AI with ethical tech development and enriched tech narratives.
 
-Your exploration, feedback, and contributions are invaluable during this pivotal phase of the MonkeyHeadProject.
+Your insights and contributions are crucial as we advance through this vital phase of the MonkeyHeadProject.
 
-## 🔍 Project Synopsis
-The MonkeyHeadProject is a bold endeavor to engineer an advanced, adaptable AI Operating System (AIOS). This system is designed to seamlessly blend AI technology with various operating system functionalities, facilitating a state-of-the-art, adaptable experience across diverse platforms. Part of the larger Monkey Head Initiative, this project integrates AI units inspired by mythological figures into a unified, flexible ecosystem.
+## 🔍 Project Overview
+The MonkeyHeadProject aspires to create an adaptable AI Operating System (AIOS) that integrates seamlessly with different OS functionalities, providing a sophisticated, adaptive user experience across diverse platforms. It's a key part of our broader initiative to incorporate AI inspired by mythological motifs into a versatile tech ecosystem.
 
-## 🌟 Core Concepts
-- **Adaptive AI Integration**: Featuring AI units like 'Spark-4', 'Volt-4', 'Zap-4', & 'Watt-4', each tailored for effective adaptation in different tech environments.
-- **Customizable User Interface**: Built for diverse technical requirements, ensuring peak performance on a range of hardware setups.
-- **GENCORE System**: Based on Debian 'Trixie', emphasizing security and adaptability across varied technological landscapes.
-- **Broad Compatibility**: Configured to operate on Linux, macOS, Windows, and other potential platforms for widespread usability.
-- **Dynamic System Architecture**: Designed to support an array of hardware configurations, utilizing robust motherboards and Intel Optane Memory for enhanced performance.
-- **Eco-Efficient and Customizable**: Incorporating eco-friendly components and adaptable cooling systems to align with specific hardware needs.
-- **Open Source Empowerment**: Encouraging community-driven development under GNU GPL V3 for innovative and versatile advancements.
+## 🌟 Core Innovations
+- **Enhanced AI Integration**: Introducing 'Spark-4', 'Volt-4', 'Zap-4', & 'Watt-4', each designed for optimal performance in various environments.
+- **Refined User Interface**: Tailored for diverse technical needs to ensure superior functionality on multiple hardware configurations.
+- **GENCORE System**: A robust system based on Debian 'Trixie', prioritizing security and flexibility.
+- **Comprehensive Compatibility**: Supports Linux, macOS, Windows, and potentially more, ensuring broad accessibility.
+- **Advanced System Architecture**: Supports diverse hardware with robust motherboards and Intel Optane Memory for peak performance.
+- **Eco-Smart and Customizable**: Features eco-friendly components and adaptable cooling solutions for specific hardware requirements.
+- **Community-Driven Development**: Promotes open innovation under GNU GPL V3 for versatile tech advancements.
 
-## 🧬 Project Components and Acknowledgments
+## 🧬 Project Components and Appreciation
 
-The MonkeyHeadProject is a culmination of various innovative components, each playing a vital role in shaping our adaptable AIOS. This section acknowledges the diversity and significance of these components, along with our gratitude to the original repositories and creators who have laid the groundwork for our advancements.
+We recognize the intricate components and collaborations that shape our adaptable AIOS, highlighting our contributors' diversity and significance.
 
 ### Key Components
 
 1. **AUTOGPT (Fork)**: 
-   - **Purpose**: Enhances the capabilities of GPT models within our system.
-   - **Acknowledgment**: Original work by [Significant-Gravitas](https://github.com/Significant-Gravitas/AutoGPT).
-
-2. **C-PYTHON (Fork)**:
-   - **Purpose**: Boosts Python functionalities, essential for script execution and algorithm optimization.
-   - **Acknowledgment**: Adapted from [Cython](https://github.com/cython/cython).
+   - **Purpose**: To boost GPT model capabilities within our ecosystem.
+   - **Acknowledgment**: Inspired by [Significant-Gravitas](https://github.com/Significant-Gravitas/AutoGPT).
 
 3. **Legacy Program Support (C128, C64, Vic 20)**:
-   - **Purpose**: Ensures backward compatibility, maintaining operability with classic computing environments.
-   - **Acknowledgment**: C64 integration inspired by [bmc64](https://github.com/randyrossi/bmc64).
+   - **Purpose**: Maintains compatibility with classic computing platforms.
+   - **Acknowledgment**: C64 functionality inspired by [bmc64](https://github.com/randyrossi/bmc64).
 
 4. **CMD**:
-   - **Purpose**: Manages CLI commands effectively, enhancing user interaction and script execution.
-
-5. **CUSTOM TKINTER**:
-   - **Purpose**: Provides a modern, customizable UI library based on Tkinter, elevating user interface design.
-   - **Acknowledgment**: Original development by [TomSchimansky](https://github.com/TomSchimansky/CustomTkinter).
+   - **Purpose**: Enhances command-line interface operations and script executions.
 
 6. **ENCRYPTION**:
-   - **Purpose**: Delivers robust security measures for data protection within the system.
+   - **Purpose**: Provides top-tier security features for data protection.
 
 7. **FEDERATION**:
-   - **Purpose**: Aligns with the Federation's constitutional guidelines, integrating legal and ethical governance structures.
+   - **Purpose**: Adheres to the Federation's guidelines for ethical and legal frameworks.
 
-8. **GENCORE (Original Operating System)**:
-   - **Purpose**: Serves as the foundation for our custom AIOS, built on Debian 'Trixie', emphasizing flexibility and security.
+8. **GENCORE (Base System)**:
+   - **Purpose**: The foundational system for our AIOS, developed on Debian 'Trixie'.
 
 9. **H.O.G. and U.C.M. (Hand Of God, Universal Code Manager)**:
-   - **Purpose**: Translates spoken words or text into actionable code, monitored by human oversight for accuracy and ethical compliance.
+   - **Purpose**: Converts verbal or textual inputs into executable code with human oversight.
 
 10. **LINUX (Debian Trixie slim)**:
-    - **Purpose**: Provides a stable and flexible base OS, crucial for system reliability.
+    - **Purpose**: Ensures system stability and flexibility.
 
 11. **MINI-INSTALL and MINI-TASK**:
-    - **Purpose**: Offers minimal installation options and efficient handling of focused tasks, promoting system modularity.
+    - **Purpose**: Facilitates minimal installations and task-specific operations for enhanced modularity.
 
 12. **MONOPOLY (Simulation)**:
-    - **Purpose**: Facilitates complex economic and strategic simulations, enhancing decision-making and planning capabilities.
-
-13. **ML AGENTS**:
-    - **Purpose**: Facilitates the creation of intelligent agents for games and simulations using advanced learning techniques.
-    - **Acknowledgment**: Inspired by [Unity Technologies](https://github.com/Unity-Technologies/ml-agents).
-
-14. **MINI CHROME**:
-    - **Purpose**: Provides a set of essential low-level routines from Chromium, enhancing base functionalities.
-    - **Acknowledgment**: Adapted from [Mini Chromium](https://github.com/chromium/mini_chromium).
-
-15. **OPENAI COOKBOOK**:
-    - **Purpose**: Offers practical examples and guidance for utilizing the OpenAI API in various applications.
-    - **Acknowledgment**: Original work available at [OpenAI Cookbook](https://github.com/openai/openai-cookbook).
-
-16. **PS3 (Simulation on Original Hardware)**:
-    - **Purpose**: Ensures compatibility with PlayStation 3 hardware for accurate and immersive simulation experiences.
-
-17. **PS2 (Simulation on Original Hardware)**:
-    - **Purpose**: Provides support for PlayStation 2 simulations, preserving the legacy of classic gaming experiences.
+    - **Purpose**: Enables complex simulations to aid strategic decision-making.
 
 18. **PY**:
-    - **Purpose**: Python serves as a core programming language, essential for scripting and developing complex algorithms.
+    - **Purpose**: Python underpins scripting and complex algorithm development.
 
 19. **PYTORCH**:
-    - **Purpose**: Empowers the system with PyTorch's capabilities for Tensors and dynamic neural networks, with GPU acceleration.
-    - **Acknowledgment**: Based on the innovative work by [PyTorch](https://github.com/pytorch/pytorch).
+    - **Purpose**: Empowers advanced neural network functionalities with GPU support.
+    - **Acknowledgment**: Innovations by [PyTorch](https://github.com/pytorch/pytorch).
 
 20. **PYGPT (Fork)**:
-    - **Purpose**: Customized for handling complex, multi-step questions and interactions.
-    - **Acknowledgment**: Forked from [szczyglis-dev/py-gpt](https://github.com/szczyglis-dev/py-gpt).
+    - **Purpose**: Customized to manage intricate multi-step queries and interactions.
+    - **Acknowledgment**: Adapted from [szczyglis-dev/py-gpt](https://github.com/szczyglis-dev/py-gpt).
 
 21. **RETROARCH (Fork)**:
-    - **Purpose**: Integrated to support an extensive range of gaming emulators, enhancing the gaming module of our system.
-    - **Acknowledgment**: Forked from [RetroArch](https://github.com/libretro/RetroArch).
+    - **Purpose**: Supports a wide array of gaming emulators within our system.
+    - **Acknowledgment**: Based on [RetroArch](https://github.com/libretro/RetroArch]).
 
 22. **RPI (Original Program)**:
     - **Purpose**: Provides customized solutions for integrating and optimizing Raspberry Pi within our system.
@@ -131,9 +105,6 @@ The MonkeyHeadProject is a culmination of various innovative components, each pl
 28. **USER**:
     - **Purpose**: Represents and supports the human interface component, ensuring user-centric interaction and feedback.
 
-29. **VLC (Fork)**:
-    - **Purpose**: Provides media playback and streaming functionalities, integral to the system's multimedia capabilities.
-    - **Acknowledgment**: Forked from [Videolan VLC](https://github.com/videolan/vlc).
 
 ## 🙏 Acknowledgements
 A heartfelt thank you to all contributors to the MonkeyHeadProject. Your expertise and dedication are invaluable to our progress.
@@ -141,57 +112,69 @@ A heartfelt thank you to all contributors to the MonkeyHeadProject. Your experti
 ## 📁 Project File Structure
 [A detailed breakdown of the project file structure will be added soon...]
 
-## 🛠️ Installation and Usage: GenCore AI/OS
-The MonkeyHeadProject introduces the GenCore AI/OS, a versatile operating system adaptable to a wide range of hardware setups. Below are detailed guidelines for installation and usage, specifying the requirements for the GenCore HostOS, SubOS, and NanoOS.
+### 🛠️ Installation and Usage: GenCore AI/OS
+The MonkeyHeadProject's GenCore AI/OS is a sophisticated, adaptable operating system tailored for diverse hardware. Detailed below are the installation and usage instructions, specifying the requirements for GenCore HostOS, SubOS, NanoOS, and AtomOS.
 
-### GenCore HostOS Requirements and Installation
+#### GenCore HostOS Requirements and Installation
 **Hardware Requirements:**
-- **Storage**: Minimum 512 GB.
+- **Storage**: Minimum 256 GB.
 - **RAM**: Minimum 16 GB DDR4.
-- **Processor**: 4 physical cores (2.5 GHz recommended), such as "Intel(R) Core(TM) i5-3210M CPU @ 2.50GHz", divided into two logical halves (one for the HostOS and one for the SubOS).
+- **Processor**: 4 physical cores (2.5 GHz recommended), such as "Intel(R) Core(TM) i5-3210M CPU @ 2.50GHz".
 - **Operating System**: Windows 11 or Windows 10 Pro 64-bit.
 
 **Installation Process:**
-- Download the GenCore HostOS setup file from our official repository.
-- Ensure your system meets the above hardware requirements.
-- Install GenCore HostOS on a dedicated hardware setup or as a dual boot with your existing Windows OS.
-- Follow the setup wizard, allocating the necessary resources to the HostOS.
+- Download GenCore HostOS from our official repository.
+- Ensure compliance with hardware requirements.
+- Install on a dedicated setup or dual boot with existing Windows OS.
+- Follow setup instructions, allocating full processor capabilities to HostOS.
 
-### GenCore SubOS Virtual Environment
+#### GenCore SubOS Virtual Environment
 **Virtual Hardware Requirements:**
-- **Storage**: Minimum 256 GB for each virtual environment.
-- **RAM**: 8 GB for each SubOS.
-- **Processor**: Two physical cores divided into two logical halves (one for the SubOS and one for the NanoOS).
+- **Storage**: Minimum 128 GB per environment.
+- **RAM**: 8 GB per SubOS.
+- **Processor**: 1 full physical core (50% of HostOS capacity).
 
 **Operating System:**
-- Windows 10 Pro 64-bit for each SubOS.
+- Windows 10 Pro 64-bit.
 
-**Setting Up the SubOS:**
-- Use Hyper-V Manager in GenCore HostOS to create a virtual environment.
-- Allocate the necessary resources as per the above specifications.
-- Install Windows 10 Pro 64-bit within this environment.
+**Setup Process:**
+- Create virtual environments using Hyper-V Manager in HostOS.
+- Assign necessary resources.
+- Install Windows 10 Pro 64-bit.
 
-### GenCore NanoOS Virtual Environment
+#### GenCore NanoOS Virtual Environment
 **Virtual Hardware Requirements:**
-- **Storage**: Minimum 128 GB for each Nano environment.
-- **RAM**: 4 GB for each NanoOS.
-- **Processor**: One physical core.
+- **Storage**: Minimum 64 GB per environment.
+- **RAM**: 4 GB per NanoOS.
+- **Processor**: 1/4th of a physical core.
 
-**Creating Nano Environments:**
-- Access Hyper-V or Docker within the GenCore SubOS.
-- Allocate resources as per the above specifications for each Nano environment.
-- Deploy NanoOS instances using VHDX files or Docker containers tailored for specific tasks or applications.
+**Setup Process:**
+- In SubOS, use Hyper-V or Docker to create Nano environments.
+- Allocate resources as specified.
+- Deploy NanoOS instances using VHDX or Docker containers.
 
-### Safety and Data Integrity
-- For optimal safety and system integrity, a dedicated hardware setup or an external drive for GenCore HostOS is recommended.
-- Backup important data before installation or making changes to your system.
+#### GenCore AtomOS Environment
+**Virtual Hardware Requirements:**
+- **Storage**: Scaled as per application need.
+- **RAM**: Scaled as per application need.
+- **Processor**: 1/8th of a physical core.
+- **Operating System**: Python 3.12 environment.
 
-### Post-Installation Steps
-- Explore the GenCore AI/OS interface and familiarize yourself with its functionalities.
-- Consult the user manual and tutorials for guidance on maximizing the system's potential.
-- Engage with the community for support and sharing insights.
+**Setup Process:**
+- Establish AtomOS environments within NanoOS using Docker.
+- Allocate 1/8th of a core's processing power.
+- Configure for specific lightweight applications or tasks.
 
-The GenCore AI/OS, as part of the MonkeyHeadProject, represents a significant step in adaptable computing, merging AI capabilities with a flexible operating system across various hardware setups.
+#### Safety and Data Integrity
+- Preferably use a dedicated hardware setup or external drive.
+- Backup essential data before making system changes.
+
+#### Post-Installation Steps
+- Explore and familiarize with the GenCore AI/OS interface.
+- Refer to user manual and tutorials for guidance.
+- Engage with the community for support and idea exchange.
+
+GenCore AI/OS, a key part of the MonkeyHeadProject, is a milestone in adaptable computing, combining AI capabilities with a dynamic operating system across varied hardware environments.
 
 ## Test Hardware Used
 ### MacBook Pro 2012: Main Test Environment

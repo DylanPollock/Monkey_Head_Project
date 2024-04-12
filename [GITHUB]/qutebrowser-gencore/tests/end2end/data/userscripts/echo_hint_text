@@ -1,3 +1,0 @@
-#!/bin/bash
-
-echo "message-info '$QUTE_SELECTED_TEXT'" >> "$QUTE_FIFO"
