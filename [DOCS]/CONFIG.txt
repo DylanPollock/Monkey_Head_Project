@@ -1,0 +1,152 @@
+# CONFIG.txt - Monkey Head Project Configuration
+
+######################################################
+# General Settings
+######################################################
+[general]
+# The name of the application
+app_name = Monkey Head Project
+
+# The environment in which the application is running
+# Options: development, testing, production
+environment = development
+
+# The base URL of the application
+base_url = http://localhost:8000
+
+######################################################
+# Database Configuration
+######################################################
+[database]
+# Database type: Options are sqlite, postgresql, mysql, etc.
+db_type = postgresql
+
+# Database connection details
+db_host = localhost
+db_port = 5432
+db_name = monkey_head_db
+db_user = db_user
+db_password = securepassword
+
+# Connection pool settings
+db_pool_min_size = 1
+db_pool_max_size = 10
+
+######################################################
+# Logging Configuration
+######################################################
+[logging]
+# Logging level: Options are DEBUG, INFO, WARNING, ERROR, CRITICAL
+log_level = DEBUG
+
+# Log file location
+log_file = /var/log/monkey_head_project/app.log
+
+# Maximum size of log file before it gets rotated (in bytes)
+log_max_bytes = 10485760  # 10MB
+
+# Number of backup log files to keep
+log_backup_count = 5
+
+######################################################
+# Application Settings
+######################################################
+[app]
+# Secret key for session management and other security purposes
+secret_key = your_secret_key_here
+
+# Path to the directory where uploaded files are stored
+upload_folder = /var/monkey_head_project/uploads
+
+# Maximum file upload size (in bytes)
+max_content_length = 16777216  # 16MB
+
+# Enable or disable debugging mode
+debug = True
+
+######################################################
+# Email Configuration
+######################################################
+[email]
+# Email server settings
+smtp_server = smtp.example.com
+smtp_port = 587
+smtp_username = your_email@example.com
+smtp_password = your_email_password
+
+# Email address for sending notifications
+notification_email = notify@example.com
+
+######################################################
+# Security Settings
+######################################################
+[security]
+# Enable or disable HTTPS
+use_https = False
+
+# Path to SSL certificate and key files (required if use_https is True)
+ssl_cert_file = /path/to/certificate.crt
+ssl_key_file = /path/to/private.key
+
+# Password hashing algorithm
+password_hashing_algorithm = bcrypt
+
+######################################################
+# API Configuration
+######################################################
+[api]
+# API rate limiting settings
+rate_limit_enabled = True
+rate_limit = 1000  # requests per hour
+
+# API key settings
+api_key_header_name = X-API-KEY
+api_key_length = 32
+
+######################################################
+# Cache Settings
+######################################################
+[cache]
+# Cache type: Options are none, redis, memcached, etc.
+cache_type = redis
+
+# Redis configuration (if cache_type is redis)
+redis_host = localhost
+redis_port = 6379
+redis_db = 0
+redis_password = your_redis_password
+
+# Cache timeout in seconds
+cache_timeout = 300
+
+######################################################
+# Session Configuration
+######################################################
+[session]
+# Session type: Options are filesystem, redis, memcached, etc.
+session_type = filesystem
+
+# Session timeout in seconds
+session_timeout = 3600
+
+# Directory for storing session files (if session_type is filesystem)
+session_file_dir = /var/monkey_head_project/sessions
+
+######################################################
+# External Services
+######################################################
+[external_services]
+# Configuration for external services integration
+# Example: AWS S3 settings for file storage
+aws_access_key_id = your_aws_access_key
+aws_secret_access_key = your_aws_secret_key
+aws_s3_bucket_name = your_bucket_name
+aws_region = us-west-2
+
+######################################################
+# Custom Settings
+######################################################
+[custom]
+# Add any other custom settings for your application here
+custom_setting_1 = value1
+custom_setting_2 = value2
