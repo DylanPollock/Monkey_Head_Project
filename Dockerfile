@@ -2,7 +2,7 @@
 FROM debian:trixie-slim
 
 # Define maintainer or author of the Dockerfile
-LABEL maintainer="admin@gencore.com"
+LABEL maintainer="admin@dlrp.ca"
 
 # Set environment variables to minimize issues and configure Python not to create .pyc files
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -13,10 +13,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Adding '&& apt-get clean' to remove unnecessary files and free space
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
+    python3-dev \
     python3-pip \
+    python3-venv \
     mate-desktop-environment-core \
     tightvncserver \
-    # Uncomment the following lines if additional packages are needed
+    # Additional libraries for AI development
+    # NLTK and PyTorch installation
+    && pip3 install nltk \
+    && pip3 install torch torchvision torchaudio \
+    # Uncomment to install other necessary libraries or tools
     # curl \
     # vim \
     && apt-get clean \
@@ -29,7 +35,7 @@ WORKDIR /gencore-workdir
 COPY requirements.txt ./
 
 # Install Python dependencies from the requirements file
-# RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the project files into the container
 COPY . .
@@ -49,7 +55,7 @@ RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &" > /root/.vnc/xstartu
 RUN chmod +x /root/.vnc/xstartup
 
 # Expose the necessary port(s)
-EXPOSE 5901
+EXPOSE 4488
 
 # Define the command to run when the container starts
 CMD ["vncserver", "-geometry", "1280x800", "-depth", "24", "-localhost", "no", ":1"]
