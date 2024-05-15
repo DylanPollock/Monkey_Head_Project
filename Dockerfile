@@ -59,3 +59,5 @@ EXPOSE 4488
 
 # Define the command to run when the container starts
 CMD ["vncserver", "-geometry", "1280x800", "-depth", "24", "-localhost", "no", ":1"]
+
+# (NOTE: This content has been written or altered by an AI agent & is pending approval from a human counterpart.)

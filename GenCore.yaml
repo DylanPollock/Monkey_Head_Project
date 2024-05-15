@@ -90,3 +90,4 @@ spec:
   # externalTrafficPolicy: Local
   # Load balancer IP can be specified if you want to set a specific IP
   # loadBalancerIP: 192.168.50.1
+  # (NOTE: This content has been written or altered by an AI agent & is pending approval from a human counterpart.)
