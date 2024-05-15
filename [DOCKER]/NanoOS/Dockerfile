@@ -2,7 +2,7 @@
 FROM debian:trixie-slim
 
 # Define maintainer or author of the Dockerfile
-LABEL maintainer="admin@dlrp.com"
+LABEL maintainer="admin@nanoos.com"
 
 # Set environment variables to minimize issues and configure Python not to create .pyc files
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Set up the working directory inside the container
-WORKDIR /gencore-workdir
+WORKDIR /nanoos-workdir
 
 # Copy the project's requirements file first to leverage Docker cache
 COPY requirements.txt ./
@@ -33,7 +33,7 @@ COPY . .
 
 # Non-root User:
 # Correcting user creation and usage
-RUN useradd -m dlrp && chown -R dlrp:dlrp /gencore-workdir
+RUN useradd -m dlrp && chown -R dlrp:dlrp /nanoos-workdir
 USER dlrp
 
 # Set up VNC server
@@ -42,7 +42,7 @@ RUN echo "dlrp" | vncpasswd -f > /root/.vnc/passwd
 RUN chmod 600 /root/.vnc/passwd
 
 # Set up VNC session startup script
-RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &\n" > /root/.vnc/xstartup
+RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &" > /root/.vnc/xstartup
 RUN chmod +x /root/.vnc/xstartup
 
 # Expose the necessary port(s)

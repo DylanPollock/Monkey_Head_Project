@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: gencorePV
+  name: nanoosPV
 spec:
   capacity:
     storage: 1Gi
@@ -15,7 +15,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: gencorePVC
+  name: nanoosPVC
 spec:
   accessModes:
     - ReadWriteOnce
@@ -28,40 +28,40 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gencoreDeployment
+  name: nanoosDeployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: gencore
+      app: nanoos
   template:
     metadata:
       labels:
-        app: gencore
+        app: nanoos
     spec:
       containers:
-      - name: gencoreContainer
-        image: gencore-image:latest  # Update this with the actual name and tag of your Docker image
+      - name: nanoosContainer
+        image: nanoos-image:latest  # Update this with the actual name and tag of your Docker image
         ports:
-        - containerPort: 95
+        - containerPort: 5901
         volumeMounts:
-        - name: gencoreVolume
+        - name: nanoosVolume
           mountPath: "/data"
       volumes:
-      - name: gencoreVolume
+      - name: nanoosVolume
         persistentVolumeClaim:
-          claimName: gencorePVC
+          claimName: nanoosPVC
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: gencoreService
+  name: nanoosService
 spec:
   selector:
-    app: gencore
+    app: nanoos
   ports:
   - protocol: TCP
-    port: 95
-    targetPort: 95
+    port: 5901
+    targetPort: 5901
   type: LoadBalancer

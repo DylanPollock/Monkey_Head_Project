@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: subosPV
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  hostPath:
+    path: "V:/"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: subosPVC
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subosDeployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subos
+  template:
+    metadata:
+      labels:
+        app: subos
+    spec:
+      containers:
+      - name: subosContainer
+        image: subos-image:latest  # Update this with the actual name and tag of your Docker image
+        ports:
+        - containerPort: 5901
+        volumeMounts:
+        - name: subosVolume
+          mountPath: "/data"
+      volumes:
+      - name: subosVolume
+        persistentVolumeClaim:
+          claimName: subosPVC
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subosService
+spec:
+  selector:
+    app: subos
+  ports:
+  - protocol: TCP
+    port: 5901
+    targetPort: 5901
+  type: LoadBalancer

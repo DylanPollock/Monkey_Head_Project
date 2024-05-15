@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hostosPV
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  hostPath:
+    path: "V:/"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hostosPVC
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hostosDeployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hostos
+  template:
+    metadata:
+      labels:
+        app: hostos
+    spec:
+      containers:
+      - name: hostosContainer
+        image: hostos-image:latest  # Update this with the actual name and tag of your Docker image
+        ports:
+        - containerPort: 5901
+        volumeMounts:
+        - name: hostosVolume
+          mountPath: "/data"
+      volumes:
+      - name: hostosVolume
+        persistentVolumeClaim:
+          claimName: hostosPVC
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hostosService
+spec:
+  selector:
+    app: hostos
+  ports:
+  - protocol: TCP
+    port: 5901
+    targetPort: 5901
+  type: LoadBalancer
