@@ -47,24 +47,23 @@ The development of the Monkey Head Project adheres to an agile and systematic ap
 
 The Monkey Head Project is more than just a technical endeavor; it is a dynamic platform for innovation, ethical debate, and community collaboration in robotics. As it continues to evolve, it remains dedicated to pushing the boundaries of what can be achieved by an individual, powered by passion and the collective wisdom of the global tech community.
 
----
+**Off-The-Cuff Discussion**
+1.) the thesis
+ The thesis would be a single individual has the agility to build an autonomous robot.
 
-1.) the theisis
- The thesisis would be a single indavidual has the abillaty to build an atonomus robot.
-
-2.) breathing new lif into old tech
+2.) breathing new life into old tech
 
 3.)We will have to set the goal post to have something to aim for.
 
-4.)Hewy will be the prodotype 
+4.) Huey will be the prototype 
 
 5.)Phill will be a production model
 
-6.)Will be utlize state of the art software as well as the newest or preview relses operating sistem.
+6.)Will be utilize state of the art software as well as the newest or preview relies operating systems.
 
-7.)Budget will be a concer so reusing and recylcing parts will be essential.
+7.)Budget will be a concern so reusing and recalking parts will be essential.
 
-8.)Procces will be thurly doccumented and used as a jump pad.
+8.)Procces will be thurly documented and used as a jump pad.
 
 9.)Once the money head projects scop cuncludes we will focus on bring in ai cafee to life welst also continuing the computer consolting.
 
