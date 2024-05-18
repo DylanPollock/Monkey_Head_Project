@@ -25,10 +25,12 @@ echo [****|    10. Start System              |****]
 echo [****|    11. Setup HostOS              |****]
 echo [****|    12. Setup SubOS               |****]
 echo [****|    13. Setup NanoOS              |****]
+echo [****|    14. Kubernetes Management     |****]
+echo [****|    15. Status                    |****]
 echo [****|     [E]xit Program               |****]
 echo.
 
-set /p action="Please select an option (1-13, E/e to exit): "
+set /p action="Please select an option (1-15, E/e to exit): "
 echo.
 
 if "%action%"=="1" goto full_setup
@@ -44,6 +46,8 @@ if "%action%"=="10" goto start_system
 if "%action%"=="11" goto setup_hostos
 if "%action%"=="12" goto setup_subos
 if "%action%"=="13" goto setup_nanoos
+if "%action%"=="14" goto kubernetes_management
+if "%action%"=="15" goto status
 if /i "%action%"=="E" goto end
 
 echo [****|     Invalid Selection. Choose a valid option:   |****]
@@ -113,6 +117,16 @@ goto menu
 :setup_nanoos
 echo [****| Setting up NanoOS |****]
 call 13_NANOOS.bat
+goto menu
+
+:kubernetes_management
+echo [****| Kubernetes Management |****]
+call 14_KUBERNETES_MANAGE.bat
+goto menu
+
+:status
+echo [****| Checking System Status |****]
+call 15_STATUS.bat
 goto menu
 
 :end
