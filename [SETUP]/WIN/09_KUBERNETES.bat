@@ -10,12 +10,29 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b %ERRORLEVEL%
 )
 
-REM Deploy to Kubernetes using the gencore.yaml configuration
-kubectl apply -f C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject\gencore.yaml
+REM Initialize Kubernetes cluster (example using Minikube)
+echo [****| Initializing Kubernetes cluster with Minikube |****]
+minikube start
+if %ERRORLEVEL% NEQ 0 (
+    echo [****| Error: Minikube initialization failed with error code %ERRORLEVEL%. |****]
+    pause
+    exit /b %ERRORLEVEL%
+)
 
-REM Check if the Kubernetes deployment was successful
+REM Apply Kubernetes configuration
+echo [****| Deploying to Kubernetes using gencore.yaml configuration |****]
+kubectl apply -f C:\Users\admin\OneDrive\Desktop\MonkeyHeadProject\gencore.yaml
 if %ERRORLEVEL% NEQ 0 (
     echo [****| Error: Kubernetes deployment failed with error code %ERRORLEVEL%. |****]
+    pause
+    exit /b %ERRORLEVEL%
+)
+
+REM Check the status of the deployment
+echo [****| Checking deployment status |****]
+kubectl rollout status deployment/gencore-deployment
+if %ERRORLEVEL% NEQ 0 (
+    echo [****| Error: Deployment rollout failed with error code %ERRORLEVEL%. |****]
     pause
     exit /b %ERRORLEVEL%
 )
