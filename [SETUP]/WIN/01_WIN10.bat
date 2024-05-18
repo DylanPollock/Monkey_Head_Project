@@ -22,10 +22,13 @@ echo [****|     7. Manage Containers         |****]
 echo [****|     8. Manage Volumes            |****]
 echo [****|     9. Deploy with Kubernetes    |****]
 echo [****|    10. Start System              |****]
+echo [****|    11. Setup HostOS              |****]
+echo [****|    12. Setup SubOS               |****]
+echo [****|    13. Setup NanoOS              |****]
 echo [****|     [E]xit Program               |****]
 echo.
 
-set /p action="Please select an option (1-10, E/e to exit): "
+set /p action="Please select an option (1-13, E/e to exit): "
 echo.
 
 if "%action%"=="1" goto full_setup
@@ -38,6 +41,9 @@ if "%action%"=="7" goto manage_containers
 if "%action%"=="8" goto manage_volumes
 if "%action%"=="9" goto deploy_kubernetes
 if "%action%"=="10" goto start_system
+if "%action%"=="11" goto setup_hostos
+if "%action%"=="12" goto setup_subos
+if "%action%"=="13" goto setup_nanoos
 if /i "%action%"=="E" goto end
 
 echo [****|     Invalid Selection. Choose a valid option:   |****]
@@ -46,7 +52,7 @@ goto menu
 
 :full_setup
 echo [****| Performing Full Setup |****]
-call 01_FULL.bat
+call 02_FULL.bat
 goto menu
 
 :mini_setup
@@ -61,37 +67,52 @@ goto menu
 
 :launch_terminal
 echo [****| Launching Terminal |****]
-call launch_terminal.bat
+call 04_TERMINAL.bat
 goto menu
 
 :update_python_packages
 echo [****| Updating Python Packages |****]
-call update_python_packages.bat
+call 05_UPDATE.bat
 goto menu
 
 :build_system
 echo [****| Building System |****]
-call build_system.bat
+call 06_BUILD.bat
 goto menu
 
 :manage_containers
 echo [****| Managing Containers |****]
-call manage_containers.bat
+call 07_CONTAINER.bat
 goto menu
 
 :manage_volumes
 echo [****| Managing Volumes |****]
-call manage_volumes.bat
+call 08_VOLUME.bat
 goto menu
 
 :deploy_kubernetes
 echo [****| Deploying with Kubernetes |****]
-call deploy_kubernetes.bat
+call 09_KUBERNETES.bat
 goto menu
 
 :start_system
 echo [****| Starting System |****]
-call start_system.bat
+call 10_START.bat
+goto menu
+
+:setup_hostos
+echo [****| Setting up HostOS |****]
+call 11_HOSTOS.bat
+goto menu
+
+:setup_subos
+echo [****| Setting up SubOS |****]
+call 12_SUBOS.bat
+goto menu
+
+:setup_nanoos
+echo [****| Setting up NanoOS |****]
+call 13_NANOOS.bat
 goto menu
 
 :end
