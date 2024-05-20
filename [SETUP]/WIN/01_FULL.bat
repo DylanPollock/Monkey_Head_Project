@@ -7,7 +7,7 @@ cd /d "%~dp0"
 :: Clear screen and set color
 cls
 color 0A
-echo [****|     02_FULL.bat - Full Development Environment Setup   |****]
+echo [****|     01_FULL.bat - Full Development Environment Setup   |****]
 echo.
 
 :: Function to ensure the script is running with administrative privileges
@@ -24,9 +24,15 @@ goto :eof
 :checkError
 if %errorlevel% neq 0 (
     echo Error: %1 failed with error code %errorlevel%.
+    call :logError "%1"
     pause
     exit /b %errorlevel%
 )
+goto :eof
+
+:: Function to log errors
+:logError
+echo %date% %time% - Error: %1 failed with error code %errorlevel% >> error_log.txt
 goto :eof
 
 :: Function to perform initial system checks
@@ -38,6 +44,14 @@ call :checkError "Windows 10 Check"
 REM Check for available disk space
 for /f "tokens=3" %%a in ('dir /-C %SystemDrive% ^| findstr /R "bytes free$"') do set FreeSpace=%%a
 echo Free space on %SystemDrive%: %FreeSpace%
+REM Check for internet connectivity
+ping -n 1 google.com >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Error: No internet connection detected.
+    call :logError "Internet Connectivity Check"
+    pause
+    exit /b %errorlevel%
+)
 REM Check for required software (e.g., PowerShell, Git)
 powershell -command "Get-Command git -ErrorAction SilentlyContinue" >nul
 call :checkError "Git Availability Check"
@@ -55,13 +69,13 @@ if exist "%ProgramData%\chocolatey\bin\choco.exe" (
 )
 goto :eof
 
-:: Function to update system
+:: Function to update system files and health
 :updateSystem
 echo Updating system...
 powershell -Command "Start-Process 'powershell' -ArgumentList 'sfc /scannow' -Verb RunAs"
 call :checkError "sfc /scannow"
 powershell -Command "Start-Process 'powershell' -ArgumentList 'DISM /Online /Cleanup-Image /RestoreHealth' -Verb RunAs"
-call :checkError "DISM /Online /Cleanup-Image /RestoreHealth"
+call :checkError "DISM RestoreHealth"
 goto :eof
 
 :: Function to install common tools
@@ -78,54 +92,43 @@ goto :eof
 :: Function to install additional tools
 :installAdditionalTools
 echo Installing additional tools...
+choco install -y python
+call :checkError "Python Installation"
 choco install -y docker-desktop
-call :checkError "Docker Desktop Installation"
-choco install -y python3
-call :checkError "Python3 Installation"
-choco install -y googlechrome
-call :checkError "Google Chrome Installation"
+call :checkError "Docker Installation"
 goto :eof
 
-:: Function to clone repository
+:: Function to clone the repository
 :cloneRepository
 echo Cloning repository...
-REM Change the repository URL to your desired repository
-git clone https://github.com/example/repository.git
-call :checkError "Repository Cloning"
+if not exist "%USERPROFILE%\Source" mkdir "%USERPROFILE%\Source"
+cd "%USERPROFILE%\Source"
+git clone https://github.com/your/repo.git
+call :checkError "Git Clone"
 goto :eof
 
 :: Function to set up Python environment
 :setupPythonEnv
-echo Setting up Python virtual environment...
-cd repository
-call :checkError "Changing Directory to repository"
+echo Setting up Python environment...
+cd "%USERPROFILE%\Source\repo"
 python -m venv venv
 call :checkError "Python Virtual Environment Setup"
 venv\Scripts\activate
-call :checkError "Activating Virtual Environment"
-pip install --upgrade pip
-call :checkError "Upgrading pip"
+call :checkError "Activate Python Virtual Environment"
 pip install -r requirements.txt
-call :checkError "Installing Python Dependencies"
+call :checkError "Install Python Requirements"
 goto :eof
 
-:: Function to configure Git (Optional)
+:: Function to configure Git
 :configureGit
 echo Configuring Git...
 git config --global user.name "Your Name"
-call :checkError "Git User Name Configuration"
+call :checkError "Git Config Username"
 git config --global user.email "your.email@example.com"
-call :checkError "Git User Email Configuration"
+call :checkError "Git Config Email"
 goto :eof
 
-:: Function to set up PowerShell for better script execution (Optional)
-:setupPowerShell
-echo Setting up PowerShell...
-powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
-call :checkError "PowerShell Execution Policy"
-goto :eof
-
-:: Function to create common directories (Optional)
+:: Function to create common directories
 :createDirectories
 echo Creating common directories...
 mkdir %USERPROFILE%\Projects
@@ -169,42 +172,45 @@ REM choco install -y azure-cli
 REM call :checkError "Azure CLI Installation"
 goto :eof
 
-:: Ensure the script runs with administrative privileges
+:: Main Execution Flow
+echo Ensuring script runs with administrative privileges...
 call :ensureAdmin
 
-:: Perform initial system checks
+echo Performing initial system checks...
 call :systemCheck
 
-:: Install Chocolatey if not already installed
+echo Installing Chocolatey if not already installed...
 call :installChocolatey
 
-:: Update system files and health
+echo Updating system files and health...
 call :updateSystem
 
-:: Install common tools
+echo Installing common tools...
 call :installCommonTools
 
-:: Install additional tools
+echo Installing additional tools...
 call :installAdditionalTools
 
-:: Clone the repository
+echo Cloning the repository...
 call :cloneRepository
 
-:: Set up Python environment
+echo Setting up Python environment...
 call :setupPythonEnv
 
-:: Configure Git
+echo Configuring Git...
 call :configureGit
 
-:: Create common directories
+echo Creating common directories...
 call :createDirectories
 
-:: Update environment variables
+echo Updating environment variables...
 call :updateEnvVariables
 
-:: Install optional tools
+echo Installing optional tools...
 call :installOptionalTools
 
 echo [****| Full setup complete! |****]
 pause
 exit /b 0
+
+endlocal
