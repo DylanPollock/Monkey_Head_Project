@@ -7,7 +7,7 @@ cd /d "%~dp0"
 :: Clear screen and set color
 cls
 color 0A
-echo [****|     WIN10.bat - GenCore AI/OS Deployment on Windows 10 Pro x64   |****]
+echo [****|     WIN10.bat - GenCore AI/OS Deployment on Windows 11 Pro x64   |****]
 echo.
 
 :: Function to ensure the script is running with administrative privileges
