@@ -80,32 +80,135 @@ choco install -y vscode
 call :checkError "VSCode Installation"
 goto :eof
 
-:: Function to install optional tools
-:installOptionalTools
-echo Installing optional tools...
-REM Uncomment the tools you need
-REM choco install -y postman
-REM call :checkError "Postman Installation"
-REM choco install -y slack
-REM call :checkError "Slack Installation"
-REM choco install -y zoom
-REM call :checkError "Zoom Installation"
-REM choco install -y 7zip
-REM call :checkError "7zip Installation"
-REM choco install -y wget
-REM call :checkError "Wget Installation"
-REM choco install -y curl
-REM call :checkError "Curl Installation"
-REM choco install -y terraform
-REM call :checkError "Terraform Installation"
-REM choco install -y kubectl
-REM call :checkError "kubectl Installation"
-REM choco install -y minikube
-REM call :checkError "Minikube Installation"
-REM choco install -y awscli
-REM call :checkError "AWS CLI Installation"
-REM choco install -y azure-cli
-REM call :checkError "Azure CLI Installation"
+:: Function to install additional tools
+:installAdditionalTools
+echo Installing additional tools...
+choco install -y python
+call :checkError "Python Installation"
+choco install -y docker-desktop
+call :checkError "Docker Installation"
+goto :eof
+
+:: Function to update Python packages
+:update_python_packages
+echo [****| Updating Python Packages |****]
+call :ensureAdmin
+call 05_UPDATE.bat
+call :checkError "Update Python Packages"
+goto :eof
+
+:: Function to build the system
+:build_system
+echo [****| Building System |****]
+call :ensureAdmin
+call 06_BUILD.bat
+call :checkError "Build System"
+goto :eof
+
+:: Function to manage Docker containers
+:manage_containers
+echo [****| Managing Containers |****]
+call :ensureAdmin
+call 07_CONTAINER.bat
+call :checkError "Manage Containers"
+goto :eof
+
+:: Function to manage Docker volumes
+:manage_volumes
+echo [****| Managing Volumes |****]
+call :ensureAdmin
+call 08_VOLUME.bat
+call :checkError "Manage Volumes"
+goto :eof
+
+:: Function to deploy with Kubernetes
+:deploy_kubernetes
+echo [****| Deploying with Kubernetes |****]
+call :ensureAdmin
+call 09_KUBERNETES.bat
+call :checkError "Deploy Kubernetes"
+goto :eof
+
+:: Function to start the system
+:start_system
+echo [****| Starting System |****]
+call :ensureAdmin
+call 10_START.bat
+call :checkError "Start System"
+goto :eof
+
+:: Function to set up HostOS
+:setup_hostos
+echo [****| Setting up HostOS |****]
+call :ensureAdmin
+call 11_HOSTOS.bat
+call :checkError "Setup HostOS"
+goto :eof
+
+:: Function to set up SubOS
+:setup_subos
+echo [****| Setting up SubOS |****]
+call :ensureAdmin
+call 12_SUBOS.bat
+call :checkError "Setup SubOS"
+goto :eof
+
+:: Function to set up NanoOS
+:setup_nanoos
+echo [****| Setting up NanoOS |****]
+call :ensureAdmin
+call 13_NANOOS.bat
+call :checkError "Setup NanoOS"
+goto :eof
+
+:: Function to manage Kubernetes
+:kubernetes_management
+echo [****| Kubernetes Management |****]
+call :ensureAdmin
+call 14_KUBERNETES_MANAGE.bat
+call :checkError "Kubernetes Management"
+goto :eof
+
+:: Function to check system status
+:status
+echo [****| Checking System Status |****]
+call :ensureAdmin
+REM Call a status script or include status commands here
+REM Example: 
+echo Checking Docker status...
+docker ps
+echo Checking Kubernetes status...
+kubectl get pods
+call :checkError "Check System Status"
+goto :eof
+
+:: Function to backup configurations
+:backup_config
+echo [****| Backing up Configurations |****]
+REM Add backup commands here
+call :checkError "Backup Configurations"
+goto :eof
+
+:: Function to restore configurations
+:restore_config
+echo [****| Restoring Configurations |****]
+REM Add restore commands here
+call :checkError "Restore Configurations"
+goto :eof
+
+:: Function to check and install dependencies
+:check_dependencies
+echo [****| Checking and Installing Dependencies |****]
+REM Add dependency checks and installations here
+call :checkError "Check Dependencies"
+goto :eof
+
+:: Function to launch terminal
+:launch_terminal
+echo [****| Launching Terminal |****]
+call :ensureAdmin
+call 04_TERMINAL.bat
+call :checkError "Launch Terminal"
 goto :eof
 
 :: Main Execution Flow
@@ -120,6 +223,9 @@ call :installChocolatey
 
 echo Installing common tools...
 call :installCommonTools
+
+echo Installing additional tools...
+call :installAdditionalTools
 
 echo Installing optional tools...
 call :installOptionalTools
@@ -177,6 +283,7 @@ call :ensureAdmin
 call :systemCheck
 call :installChocolatey
 call :installCommonTools
+call :installAdditionalTools
 call 02_FULL.bat
 call :checkError "Full Setup"
 goto menu
@@ -187,6 +294,7 @@ call :ensureAdmin
 call :systemCheck
 call :installChocolatey
 call :installCommonTools
+call :installAdditionalTools
 call 02_MINI.bat
 call :checkError "Mini Setup"
 goto menu
@@ -279,7 +387,6 @@ goto menu
 echo [****| Checking System Status |****]
 call :ensureAdmin
 REM Call a status script or include status commands here
-REM Example: 
 echo Checking Docker status...
 docker ps
 echo Checking Kubernetes status...
