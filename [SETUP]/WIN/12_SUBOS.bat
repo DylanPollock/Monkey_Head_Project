@@ -1,19 +1,177 @@
 @echo off
+setlocal enabledelayedexpansion
+
+:: Change to the script's own directory
+cd /d "%~dp0"
+
+:: Clear screen and set color
 cls
-echo [****| Setting up SubOS |****]
+color 0A
+echo [****|     12_SUBOS.bat - SubOS Setup and Configuration   |****]
+echo.
 
-REM Example command to start a SubOS setup
-echo [****| Configuring SubOS environment... |****]
-
-REM Add SubOS setup commands here
-
-REM Check if the SubOS setup was successful
-if %ERRORLEVEL% NEQ 0 (
-    echo [****| Error: SubOS setup failed with error code %ERRORLEVEL%. |****]
+:: Function to ensure the script is running with administrative privileges
+:ensureAdmin
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Please run this script as an administrator.
     pause
-    exit /b %ERRORLEVEL%
+    exit /b %errorlevel%
 )
+goto :eof
 
-echo [****| SubOS Setup completed successfully |****]
+:: Function to check the last command and exit if it failed
+:checkError
+if %errorlevel% neq 0 (
+    echo Error: %1 failed with error code %errorlevel%.
+    echo %DATE% %TIME% - Error: %1 failed with error code %errorlevel% >> subos_error_log.txt
+    pause
+    exit /b %errorlevel%
+)
+goto :eof
+
+:: Function to verify internet connectivity
+:verifyInternet
+echo Verifying internet connectivity...
+ping -n 1 google.com >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Error: No internet connectivity.
+    echo %DATE% %TIME% - Error: No internet connectivity >> subos_error_log.txt
+    pause
+    exit /b %errorlevel%
+) else (
+    echo Internet connectivity verified.
+)
+goto :eof
+
+:: Function to check if a software is installed
+:checkSoftware
+echo Checking for %1 installation...
+where %1 >nul 2>&1
+if %errorlevel% neq 0 (
+    echo %1 is not installed.
+    %2
+) else (
+    echo %1 is already installed.
+)
+goto :eof
+
+:: Function to install required software
+:installSoftware
+echo Installing required software...
+call :checkSoftware "git" "choco install -y git"
+call :checkError "Installing Git"
+call :checkSoftware "node" "choco install -y nodejs"
+call :checkError "Installing Node.js"
+REM Add more software checks and installations as needed
+goto :eof
+
+:: Function to configure system settings
+:configureSystem
+echo Configuring system settings...
+REM Add commands to configure system settings
+REM For example, setting environment variables:
+setx SUBOS_ENV_VAR "SubOSValue"
+call :checkError "Setting Environment Variables"
+goto :eof
+
+:: Function to create necessary directories
+:createDirectories
+echo Creating necessary directories...
+REM Add commands to create necessary directories
+REM For example:
+mkdir C:\SubOSData
+call :checkError "Creating Directories"
+goto :eof
+
+:: Function to update the system
+:updateSystem
+echo Updating the system...
+REM Add commands to update the system
+REM For example:
+choco upgrade all -y
+call :checkError "Updating System"
+goto :eof
+
+:: Function to clean up temporary files
+:cleanupTempFiles
+echo Cleaning up temporary files...
+del /F /Q %TEMP%\*
+call :checkError "Cleaning Up Temporary Files"
+goto :eof
+
+:: Function to restart necessary services
+:restartServices
+echo Restarting necessary services...
+REM Add commands to restart necessary services
+REM For example:
+REM net stop wuauserv && net start wuauserv
+call :checkError "Restarting Services"
+goto :eof
+
+:: Function to check system health
+:checkSystemHealth
+echo Checking system health...
+REM Add commands to check system health
+REM For example, checking disk space:
+wmic logicaldisk get size,freespace,caption
+call :checkError "Checking System Health"
+goto :eof
+
+:: Function to log setup steps
+:logSetupStep
+echo Logging setup step: %1
+echo %DATE% %TIME% - %1 >> subos_log.txt
+goto :eof
+
+:: Ensure the script runs with administrative privileges
+call :ensureAdmin
+
+:: Verify internet connectivity
+call :verifyInternet
+
+:: Log setup step
+call :logSetupStep "Installing Software"
+
+:: Install required software
+call :installSoftware
+
+:: Log setup step
+call :logSetupStep "Configuring System Settings"
+
+:: Configure system settings
+call :configureSystem
+
+:: Log setup step
+call :logSetupStep "Creating Directories"
+
+:: Create necessary directories
+call :createDirectories
+
+:: Log setup step
+call :logSetupStep "Updating System"
+
+:: Update the system
+call :updateSystem
+
+:: Log setup step
+call :logSetupStep "Cleaning Up Temporary Files"
+
+:: Clean up temporary files
+call :cleanupTempFiles
+
+:: Log setup step
+call :logSetupStep "Restarting Services"
+
+:: Restart necessary services
+call :restartServices
+
+:: Log setup step
+call :logSetupStep "Checking System Health"
+
+:: Check system health
+call :checkSystemHealth
+
+echo [****| SubOS setup and configuration complete! |****]
 pause
-exit /b
+exit /b 0
