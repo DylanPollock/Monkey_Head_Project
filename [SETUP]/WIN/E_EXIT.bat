@@ -21,10 +21,15 @@ goto :eof
 :checkError
 if %errorlevel% neq 0 (
     echo Error: %1 failed with error code %errorlevel%.
-    echo %DATE% %TIME% - Error: %1 failed with error code %errorlevel% >> exit_error_log.txt
+    call :logError "%1"
     pause
     exit /b %errorlevel%
 )
+goto :eof
+
+:: Function to log errors
+:logError
+echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0exit_error_log.txt"
 goto :eof
 
 :: Function to stop Docker containers
@@ -34,7 +39,7 @@ docker ps -q >nul 2>&1
 if %errorlevel% neq 0 (
     echo No running Docker containers to stop.
 ) else (
-    docker stop $(docker ps -q) >nul 2>&1
+    for /f "tokens=*" %%i in ('docker ps -q') do docker stop %%i >nul 2>&1
     call :checkError "Stopping Docker Containers"
 )
 goto :eof
@@ -46,7 +51,7 @@ docker ps -a -q >nul 2>&1
 if %errorlevel% neq 0 (
     echo No Docker containers to remove.
 ) else (
-    docker rm $(docker ps -a -q) >nul 2>&1
+    for /f "tokens=*" %%i in ('docker ps -a -q') do docker rm %%i >nul 2>&1
     call :checkError "Removing Docker Containers"
 )
 goto :eof
@@ -54,7 +59,7 @@ goto :eof
 :: Function to stop Minikube
 :stopMinikube
 echo Stopping Minikube...
-minikube status | find "Running" >nul 2>&1
+minikube status | find "host: Running" >nul 2>&1
 if %errorlevel% neq 0 (
     echo Minikube is not running.
 ) else (
@@ -113,7 +118,7 @@ goto :eof
 :: Function to log shutdown steps
 :logShutdownStep
 echo Logging shutdown step: %1
-echo %DATE% %TIME% - %1 >> exit_log.txt
+echo %DATE% %TIME% - %1 >> "%~dp0exit_log.txt"
 goto :eof
 
 :: Ensure the script runs with administrative privileges
@@ -164,3 +169,5 @@ call :cleanupTempFiles
 echo [****| Shutdown and cleanup complete! |****]
 pause
 exit /b 0
+
+endlocal
