@@ -24,9 +24,15 @@ goto :eof
 :checkError
 if %errorlevel% neq 0 (
     echo Error: %1 failed with error code %errorlevel%.
+    call :logError "%1"
     pause
     exit /b %errorlevel%
 )
+goto :eof
+
+:: Function to log errors
+:logError
+echo %date% %time% - Error: %1 failed with error code %errorlevel% >> error_log.txt
 goto :eof
 
 :: Function to remove virtual environment
@@ -116,36 +122,39 @@ docker system prune -a -f --volumes
 call :checkError "Cleaning Up Docker"
 goto :eof
 
-:: Ensure the script runs with administrative privileges
+:: Main Execution Flow
+echo Ensuring script runs with administrative privileges...
 call :ensureAdmin
 
-:: Remove virtual environment
+echo Removing virtual environment...
 call :removeVirtualEnv
 
-:: Remove cloned repository
+echo Removing cloned repository...
 call :removeRepository
 
-:: Remove common directories (Optional)
+echo Removing common directories (Optional)...
 call :removeDirectories
 
-:: Clear environment variables (Optional)
+echo Clearing environment variables (Optional)...
 call :clearEnvVariables
 
-:: Uninstall Chocolatey packages (Optional)
+echo Uninstalling Chocolatey packages (Optional)...
 call :uninstallChocolateyPackages
 
-:: Remove temporary files
+echo Removing temporary files...
 call :removeTempFiles
 
-:: Clear npm cache
+echo Clearing npm cache...
 call :clearNpmCache
 
-:: Clear pip cache
+echo Clearing pip cache...
 call :clearPipCache
 
-:: Cleanup Docker (Optional)
+echo Cleaning up Docker (Optional)...
 call :cleanupDocker
 
 echo [****| Cleanup complete! |****]
 pause
 exit /b 0
+
+endlocal
