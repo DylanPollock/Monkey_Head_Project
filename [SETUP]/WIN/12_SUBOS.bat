@@ -24,10 +24,15 @@ goto :eof
 :checkError
 if %errorlevel% neq 0 (
     echo Error: %1 failed with error code %errorlevel%.
-    echo %DATE% %TIME% - Error: %1 failed with error code %errorlevel% >> subos_error_log.txt
+    call :logError "%1"
     pause
     exit /b %errorlevel%
 )
+goto :eof
+
+:: Function to log errors
+:logError
+echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0subos_error_log.txt"
 goto :eof
 
 :: Function to verify internet connectivity
@@ -36,7 +41,7 @@ echo Verifying internet connectivity...
 ping -n 1 google.com >nul 2>&1
 if %errorlevel% neq 0 (
     echo Error: No internet connectivity.
-    echo %DATE% %TIME% - Error: No internet connectivity >> subos_error_log.txt
+    call :logError "Internet Connectivity"
     pause
     exit /b %errorlevel%
 ) else (
@@ -49,8 +54,9 @@ goto :eof
 echo Checking for %1 installation...
 where %1 >nul 2>&1
 if %errorlevel% neq 0 (
-    echo %1 is not installed.
+    echo %1 is not installed. Installing %1...
     %2
+    call :checkError "Installing %1"
 ) else (
     echo %1 is already installed.
 )
@@ -60,9 +66,7 @@ goto :eof
 :installSoftware
 echo Installing required software...
 call :checkSoftware "git" "choco install -y git"
-call :checkError "Installing Git"
 call :checkSoftware "node" "choco install -y nodejs"
-call :checkError "Installing Node.js"
 REM Add more software checks and installations as needed
 goto :eof
 
@@ -80,15 +84,13 @@ goto :eof
 echo Creating necessary directories...
 REM Add commands to create necessary directories
 REM For example:
-mkdir C:\SubOSData
+if not exist "C:\SubOSData" mkdir C:\SubOSData
 call :checkError "Creating Directories"
 goto :eof
 
 :: Function to update the system
 :updateSystem
 echo Updating the system...
-REM Add commands to update the system
-REM For example:
 choco upgrade all -y
 call :checkError "Updating System"
 goto :eof
@@ -175,3 +177,5 @@ call :checkSystemHealth
 echo [****| SubOS setup and configuration complete! |****]
 pause
 exit /b 0
+
+endlocal
