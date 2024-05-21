@@ -1,6 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
 
+:: Change to the script's own directory
+cd /d "%~dp0"
+
 :: Clear screen and set color
 cls
 color 0A
@@ -35,24 +38,18 @@ goto :eof
 :: Function to stop Docker containers
 :stopDockerContainers
 echo Stopping Docker containers...
-docker ps -q >nul 2>&1
-if %errorlevel% neq 0 (
-    echo No running Docker containers to stop.
-) else (
-    for /f "tokens=*" %%i in ('docker ps -q') do docker stop %%i >nul 2>&1
-    call :checkError "Stopping Docker Containers"
+for /f "tokens=*" %%i in ('docker ps -q') do (
+    docker stop %%i >nul 2>&1
+    call :checkError "Stopping Docker Container %%i"
 )
 goto :eof
 
 :: Function to remove Docker containers
 :removeDockerContainers
 echo Removing Docker containers...
-docker ps -a -q >nul 2>&1
-if %errorlevel% neq 0 (
-    echo No Docker containers to remove.
-) else (
-    for /f "tokens=*" %%i in ('docker ps -a -q') do docker rm %%i >nul 2>&1
-    call :checkError "Removing Docker Containers"
+for /f "tokens=*" %%i in ('docker ps -a -q') do (
+    docker rm %%i >nul 2>&1
+    call :checkError "Removing Docker Container %%i"
 )
 goto :eof
 
