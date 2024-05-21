@@ -24,10 +24,15 @@ goto :eof
 :checkError
 if %errorlevel% neq 0 (
     echo Error: %1 failed with error code %errorlevel%.
-    echo %DATE% %TIME% - Error: %1 failed with error code %errorlevel% >> start_error_log.txt
+    call :logError "%1"
     pause
     exit /b %errorlevel%
 )
+goto :eof
+
+:: Function to log errors
+:logError
+echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0start_error_log.txt"
 goto :eof
 
 :: Function to start Docker service
@@ -192,3 +197,5 @@ call :openBrowser
 echo [****| All services and applications started successfully! |****]
 pause
 exit /b 0
+
+endlocal
