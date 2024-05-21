@@ -32,7 +32,7 @@ goto :eof
 
 :: Function to log errors
 :logError
-echo %date% %time% - Error: %1 failed with error code %errorlevel% >> error_log.txt
+echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0error_log.txt"
 goto :eof
 
 :: Function to remove virtual environment
@@ -154,6 +154,7 @@ echo Cleaning up Docker (Optional)...
 call :cleanupDocker
 
 echo [****| Cleanup complete! |****]
+echo Logs can be found in "%~dp0error_log.txt"
 pause
 exit /b 0
 
