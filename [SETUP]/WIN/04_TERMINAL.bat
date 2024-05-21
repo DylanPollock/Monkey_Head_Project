@@ -69,6 +69,17 @@ if not exist "terminal-settings.json" (
 )
 goto :eof
 
+:: Function to back up existing terminal settings
+:backupExistingSettings
+echo Backing up existing terminal settings...
+if exist "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" (
+    copy /Y "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings_backup.json"
+    call :checkError "Backing Up Existing Terminal Settings"
+) else (
+    echo No existing terminal settings found to back up.
+)
+goto :eof
+
 :: Function to configure Windows Terminal settings
 :configureTerminal
 echo Configuring Windows Terminal settings...
@@ -98,6 +109,7 @@ if exist "%LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe" (
     echo Windows Terminal installed successfully.
 ) else (
     echo Error: Windows Terminal installation failed.
+    call :logError "Windows Terminal Installation Verification"
     pause
     exit /b 1
 )
@@ -111,6 +123,9 @@ call :installTerminal
 
 :: Create default terminal settings if necessary
 call :createDefaultSettings
+
+:: Back up existing terminal settings
+call :backupExistingSettings
 
 :: Configure Windows Terminal settings
 call :configureTerminal
