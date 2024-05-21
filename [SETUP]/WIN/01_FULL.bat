@@ -39,8 +39,8 @@ goto :eof
 :systemCheck
 echo Performing system checks...
 REM Check for Windows version
-ver | find "10" >nul
-call :checkError "Windows 10 Check"
+ver | find "11" >nul
+call :checkError "Windows 11 Check"
 REM Check for available disk space
 for /f "tokens=3" %%a in ('dir /-C %SystemDrive% ^| findstr /R "bytes free$"') do set FreeSpace=%%a
 echo Free space on %SystemDrive%: %FreeSpace%
@@ -148,28 +148,28 @@ goto :eof
 :installOptionalTools
 echo Installing optional tools...
 REM Uncomment the tools you need
-REM choco install -y postman
-REM call :checkError "Postman Installation"
-REM choco install -y slack
-REM call :checkError "Slack Installation"
-REM choco install -y zoom
-REM call :checkError "Zoom Installation"
-REM choco install -y 7zip
-REM call :checkError "7zip Installation"
-REM choco install -y wget
-REM call :checkError "Wget Installation"
-REM choco install -y curl
-REM call :checkError "Curl Installation"
-REM choco install -y terraform
-REM call :checkError "Terraform Installation"
-REM choco install -y kubectl
-REM call :checkError "kubectl Installation"
-REM choco install -y minikube
-REM call :checkError "Minikube Installation"
-REM choco install -y awscli
-REM call :checkError "AWS CLI Installation"
-REM choco install -y azure-cli
-REM call :checkError "Azure CLI Installation"
+choco install -y postman
+call :checkError "Postman Installation"
+choco install -y slack
+call :checkError "Slack Installation"
+choco install -y zoom
+call :checkError "Zoom Installation"
+choco install -y 7zip
+call :checkError "7zip Installation"
+choco install -y wget
+call :checkError "Wget Installation"
+choco install -y curl
+call :checkError "Curl Installation"
+choco install -y terraform
+call :checkError "Terraform Installation"
+choco install -y kubectl
+call :checkError "kubectl Installation"
+choco install -y minikube
+call :checkError "Minikube Installation"
+choco install -y awscli
+call :checkError "AWS CLI Installation"
+choco install -y azure-cli
+call :checkError "Azure CLI Installation"
 goto :eof
 
 :: Main Execution Flow
