@@ -24,10 +24,15 @@ goto :eof
 :checkError
 if %errorlevel% neq 0 (
     echo Error: %1 failed with error code %errorlevel%.
-    echo %DATE% %TIME% - Error: %1 failed with error code %errorlevel% >> nanoos_error_log.txt
+    call :logError "%1"
     pause
     exit /b %errorlevel%
 )
+goto :eof
+
+:: Function to log errors
+:logError
+echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0nanoos_error_log.txt"
 goto :eof
 
 :: Function to verify internet connectivity
@@ -36,7 +41,7 @@ echo Verifying internet connectivity...
 ping -n 1 google.com >nul 2>&1
 if %errorlevel% neq 0 (
     echo Error: No internet connectivity.
-    echo %DATE% %TIME% - Error: No internet connectivity >> nanoos_error_log.txt
+    call :logError "Internet Connectivity"
     pause
     exit /b %errorlevel%
 ) else (
@@ -49,8 +54,9 @@ goto :eof
 echo Checking for %1 installation...
 where %1 >nul 2>&1
 if %errorlevel% neq 0 (
-    echo %1 is not installed.
+    echo %1 is not installed. Installing %1...
     %2
+    call :checkError "Installing %1"
 ) else (
     echo %1 is already installed.
 )
@@ -62,7 +68,7 @@ echo Checking %1 version...
 %1 --version >nul 2>&1
 if %errorlevel% neq 0 (
     echo %1 version check failed.
-    echo %DATE% %TIME% - %1 version check failed >> nanoos_error_log.txt
+    call :logError "%1 Version Check"
 ) else (
     echo %1 version: 
     %1 --version
@@ -73,10 +79,8 @@ goto :eof
 :installSoftware
 echo Installing required software...
 call :checkSoftware "git" "choco install -y git"
-call :checkError "Installing Git"
 call :checkSoftwareVersion "git"
 call :checkSoftware "node" "choco install -y nodejs"
-call :checkError "Installing Node.js"
 call :checkSoftwareVersion "node"
 REM Add more software checks and installations as needed
 goto :eof
@@ -95,15 +99,13 @@ goto :eof
 echo Creating necessary directories...
 REM Add commands to create necessary directories
 REM For example:
-mkdir C:\NanoOSData
+if not exist "C:\NanoOSData" mkdir C:\NanoOSData
 call :checkError "Creating Directories"
 goto :eof
 
 :: Function to update the system
 :updateSystem
 echo Updating the system...
-REM Add commands to update the system
-REM For example:
 choco upgrade all -y
 call :checkError "Updating System"
 goto :eof
@@ -136,7 +138,7 @@ goto :eof
 :: Function to log setup steps
 :logSetupStep
 echo Logging setup step: %1
-echo %DATE% %TIME% - %1 >> nanoos_log.txt
+echo %DATE% %TIME% - %1 >> "%~dp0nanoos_log.txt"
 goto :eof
 
 :: Ensure the script runs with administrative privileges
@@ -190,3 +192,5 @@ call :checkSystemHealth
 echo [****| NanoOS setup and configuration complete! |****]
 pause
 exit /b 0
+
+endlocal
