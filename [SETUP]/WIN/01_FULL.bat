@@ -39,7 +39,7 @@ goto :eof
 :systemCheck
 echo Performing system checks...
 REM Check for Windows version
-ver | find "11" >nul
+ver | find "10" >nul
 call :checkError "Windows 11 Check"
 REM Check for available disk space
 for /f "tokens=3" %%a in ('dir /-C %SystemDrive% ^| findstr /R "bytes free$"') do set FreeSpace=%%a
