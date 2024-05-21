@@ -24,20 +24,34 @@ goto :eof
 :checkError
 if %errorlevel% neq 0 (
     echo Error: %1 failed with error code %errorlevel%.
+    call :logError "%1"
     pause
     exit /b %errorlevel%
 )
+goto :eof
+
+:: Function to log errors
+:logError
+echo %date% %time% - Error: %1 failed with error code %errorlevel% >> error_log.txt
 goto :eof
 
 :: Function to perform initial system checks
 :systemCheck
 echo Performing system checks...
 REM Check for Windows version
-ver | find "10" >nul
-call :checkError "Windows 10 Check"
+ver | find "11" >nul
+call :checkError "Windows 11 Check"
 REM Check for available disk space
 for /f "tokens=3" %%a in ('dir /-C %SystemDrive% ^| findstr /R "bytes free$"') do set FreeSpace=%%a
 echo Free space on %SystemDrive%: %FreeSpace%
+REM Check for internet connectivity
+ping -n 1 google.com >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Error: No internet connection detected.
+    call :logError "Internet Connectivity Check"
+    pause
+    exit /b %errorlevel%
+)
 REM Check for required software (e.g., PowerShell, Git)
 powershell -command "Get-Command git -ErrorAction SilentlyContinue" >nul
 call :checkError "Git Availability Check"
@@ -55,13 +69,13 @@ if exist "%ProgramData%\chocolatey\bin\choco.exe" (
 )
 goto :eof
 
-:: Function to update system
+:: Function to update system files and health
 :updateSystem
 echo Updating system...
 powershell -Command "Start-Process 'powershell' -ArgumentList 'sfc /scannow' -Verb RunAs"
 call :checkError "sfc /scannow"
 powershell -Command "Start-Process 'powershell' -ArgumentList 'DISM /Online /Cleanup-Image /RestoreHealth' -Verb RunAs"
-call :checkError "DISM /Online /Cleanup-Image /RestoreHealth"
+call :checkError "DISM RestoreHealth"
 goto :eof
 
 :: Function to install common tools
@@ -75,10 +89,11 @@ choco install -y vscode
 call :checkError "VSCode Installation"
 goto :eof
 
-:: Function to clone repository
+:: Function to clone the repository
 :cloneRepository
 echo Cloning repository...
-REM Change the repository URL to your desired repository
+if not exist "%USERPROFILE%\Source" mkdir "%USERPROFILE%\Source"
+cd "%USERPROFILE%\Source"
 git clone https://github.com/example/repository.git
 call :checkError "Repository Cloning"
 goto :eof
@@ -86,7 +101,7 @@ goto :eof
 :: Function to set up Python environment
 :setupPythonEnv
 echo Setting up Python virtual environment...
-cd repository
+cd "%USERPROFILE%\Source\repository"
 call :checkError "Changing Directory to repository"
 python -m venv venv
 call :checkError "Python Virtual Environment Setup"
@@ -98,7 +113,7 @@ pip install -r requirements.txt
 call :checkError "Installing Python Dependencies"
 goto :eof
 
-:: Function to configure Git (Optional)
+:: Function to configure Git
 :configureGit
 echo Configuring Git...
 git config --global user.name "Your Name"
@@ -107,7 +122,7 @@ git config --global user.email "your.email@example.com"
 call :checkError "Git User Email Configuration"
 goto :eof
 
-:: Function to create common directories (Optional)
+:: Function to create common directories
 :createDirectories
 echo Creating common directories...
 mkdir %USERPROFILE%\Projects
@@ -134,39 +149,42 @@ REM echo Configuring additional settings...
 REM Add additional configuration commands here
 goto :eof
 
-:: Ensure the script runs with administrative privileges
+:: Main Execution Flow
+echo Ensuring script runs with administrative privileges...
 call :ensureAdmin
 
-:: Perform initial system checks
+echo Performing initial system checks...
 call :systemCheck
 
-:: Install Chocolatey if not already installed
+echo Installing Chocolatey if not already installed...
 call :installChocolatey
 
-:: Update system files and health
+echo Updating system files and health...
 call :updateSystem
 
-:: Install common tools
+echo Installing common tools...
 call :installCommonTools
 
-:: Clone the repository
+echo Cloning the repository...
 call :cloneRepository
 
-:: Set up Python environment
+echo Setting up Python environment...
 call :setupPythonEnv
 
-:: Configure Git
+echo Configuring Git...
 call :configureGit
 
-:: Create common directories
+echo Creating common directories...
 call :createDirectories
 
-:: Update environment variables
+echo Updating environment variables...
 call :updateEnvVariables
 
-:: Perform additional optional setup tasks
+echo Performing additional optional setup tasks...
 call :additionalSetup
 
 echo [****| Minimal setup complete! |****]
 pause
 exit /b 0
+
+endlocal
