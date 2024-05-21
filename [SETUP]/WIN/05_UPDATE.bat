@@ -7,7 +7,7 @@ cd /d "%~dp0"
 :: Clear screen and set color
 cls
 color 0A
-echo [****|     04_TERMINAL.bat - Terminal Setup and Configuration   |****]
+echo [****|     05_UPDATE.bat - Update Installed Packages and Tools   |****]
 echo.
 
 :: Function to ensure the script is running with administrative privileges
@@ -35,120 +35,82 @@ goto :eof
 echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0error_log.txt"
 goto :eof
 
-:: Function to install Windows Terminal if not already installed
-:installTerminal
-echo Checking for Windows Terminal...
-if exist "%LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe" (
-    echo Windows Terminal is already installed.
-) else (
-    echo Installing Windows Terminal...
-    choco install -y microsoft-windows-terminal
-    call :checkError "Windows Terminal Installation"
-)
+:: Function to update Chocolatey itself
+:updateChocolatey
+echo Updating Chocolatey...
+choco upgrade chocolatey -y
+call :checkError "Chocolatey Update"
 goto :eof
 
-:: Function to create default terminal settings if settings file does not exist
-:createDefaultSettings
-echo Checking for terminal settings file...
-if not exist "terminal-settings.json" (
-    echo Creating default terminal settings...
-    (
-        echo {
-        echo "profiles": {
-        echo "defaults": {},
-        echo "list": []
-        echo },
-        echo "schemes": [],
-        echo "actions": [],
-        echo "globals": {}
-        echo }
-    ) > "terminal-settings.json"
-    call :checkError "Creating Default Terminal Settings"
-) else (
-    echo Custom terminal settings file found.
-)
+:: Function to update all installed Chocolatey packages
+:updateChocoPackages
+echo Updating all installed Chocolatey packages...
+choco upgrade all -y
+call :checkError "Chocolatey Packages Update"
 goto :eof
 
-:: Function to back up existing terminal settings
-:backupExistingSettings
-echo Would you like to back up existing terminal settings? (Y/N)
-set /p backupChoice=
-if /i "%backupChoice%"=="Y" (
-    echo Backing up existing terminal settings...
-    if exist "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" (
-        copy /Y "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings_backup.json"
-        call :checkError "Backing Up Existing Terminal Settings"
-    ) else (
-        echo No existing terminal settings found to back up.
-    )
-) else (
-    echo Skipping backup of existing terminal settings.
-)
+:: Function to update npm global packages
+:updateNpmPackages
+echo Updating npm global packages...
+npm update -g
+call :checkError "NPM Global Packages Update"
 goto :eof
 
-:: Function to configure Windows Terminal settings
-:configureTerminal
-echo Configuring Windows Terminal settings...
-copy /Y "terminal-settings.json" "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-call :checkError "Copying Terminal Settings"
+:: Function to update pip packages
+:updatePipPackages
+echo Updating pip packages...
+python -m pip install --upgrade pip
+call :checkError "Pip Update"
+pip list --outdated --format=freeze | findstr /v "^\-e" | for /f "delims==" %%i in ('more') do python -m pip install -U %%i
+call :checkError "Pip Packages Update"
 goto :eof
 
-:: Function to install optional terminal tools and extensions
-:installOptionalTools
-echo Would you like to install optional terminal tools and extensions? (Y/N)
-set /p toolsChoice=
-if /i "%toolsChoice%"=="Y" (
-    echo Installing optional terminal tools and extensions...
-    REM Uncomment and modify the following lines to install additional tools and extensions
-    REM choco install -y posh-git
-    REM call :checkError "Posh-Git Installation"
-    REM choco install -y oh-my-posh
-    REM call :checkError "Oh-My-Posh Installation"
-    REM Install PowerShell modules if needed
-    REM powershell -Command "Install-Module -Name PSReadLine -Force -SkipPublisherCheck"
-    REM call :checkError "PSReadLine Installation"
-    REM powershell -Command "Install-Module -Name Pester -Force -SkipPublisherCheck"
-    REM call :checkError "Pester Installation"
-) else (
-    echo Skipping installation of optional tools and extensions.
-)
+:: Function to update VSCode extensions
+:updateVSCodeExtensions
+echo Updating VSCode extensions...
+for /f %%i in ('code --list-extensions') do code --install-extension %%i
+call :checkError "VSCode Extensions Update"
 goto :eof
 
-:: Function to verify installation
-:verifyInstallation
-echo Verifying Windows Terminal installation...
-if exist "%LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe" (
-    echo Windows Terminal installed successfully.
-) else (
-    echo Error: Windows Terminal installation failed.
-    call :logError "Windows Terminal Installation Verification"
-    pause
-    exit /b 1
-)
+:: Function to update PowerShell modules
+:updatePSModules
+echo Updating PowerShell modules...
+powershell -Command "Get-InstalledModule | ForEach-Object { Update-Module -Name $_.Name -Force }"
+call :checkError "PowerShell Modules Update"
+goto :eof
+
+:: Function to update Docker images
+:updateDockerImages
+echo Updating Docker images...
+docker images --format "{{.Repository}}:{{.Tag}}" | findstr /v "<none>" | for /f "delims=" %%i in ('more') do docker pull %%i
+call :checkError "Docker Images Update"
 goto :eof
 
 :: Ensure the script runs with administrative privileges
 call :ensureAdmin
 
-:: Install Windows Terminal
-call :installTerminal
+:: Update Chocolatey itself
+call :updateChocolatey
 
-:: Create default terminal settings if necessary
-call :createDefaultSettings
+:: Update all installed Chocolatey packages
+call :updateChocoPackages
 
-:: Back up existing terminal settings
-call :backupExistingSettings
+:: Update npm global packages
+call :updateNpmPackages
 
-:: Configure Windows Terminal settings
-call :configureTerminal
+:: Update pip packages
+call :updatePipPackages
 
-:: Install optional terminal tools and extensions
-call :installOptionalTools
+:: Update VSCode extensions
+call :updateVSCodeExtensions
 
-:: Verify installation
-call :verifyInstallation
+:: Update PowerShell modules
+call :updatePSModules
 
-echo [****| Terminal setup complete! |****]
+:: Update Docker images
+call :updateDockerImages
+
+echo [****| Updates complete! |****]
 echo Logs can be found in "%~dp0error_log.txt"
 pause
 exit /b 0

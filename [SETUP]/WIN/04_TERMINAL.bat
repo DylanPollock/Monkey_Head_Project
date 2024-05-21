@@ -71,12 +71,18 @@ goto :eof
 
 :: Function to back up existing terminal settings
 :backupExistingSettings
-echo Backing up existing terminal settings...
-if exist "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" (
-    copy /Y "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings_backup.json"
-    call :checkError "Backing Up Existing Terminal Settings"
+echo Would you like to back up existing terminal settings? (Y/N)
+set /p backupChoice=
+if /i "%backupChoice%"=="Y" (
+    echo Backing up existing terminal settings...
+    if exist "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" (
+        copy /Y "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings_backup.json"
+        call :checkError "Backing Up Existing Terminal Settings"
+    ) else (
+        echo No existing terminal settings found to back up.
+    )
 ) else (
-    echo No existing terminal settings found to back up.
+    echo Skipping backup of existing terminal settings.
 )
 goto :eof
 
@@ -89,17 +95,23 @@ goto :eof
 
 :: Function to install optional terminal tools and extensions
 :installOptionalTools
-echo Installing optional terminal tools and extensions...
-REM Uncomment and modify the following lines to install additional tools and extensions
-REM choco install -y posh-git
-REM call :checkError "Posh-Git Installation"
-REM choco install -y oh-my-posh
-REM call :checkError "Oh-My-Posh Installation"
-REM Install PowerShell modules if needed
-REM powershell -Command "Install-Module -Name PSReadLine -Force -SkipPublisherCheck"
-REM call :checkError "PSReadLine Installation"
-REM powershell -Command "Install-Module -Name Pester -Force -SkipPublisherCheck"
-REM call :checkError "Pester Installation"
+echo Would you like to install optional terminal tools and extensions? (Y/N)
+set /p toolsChoice=
+if /i "%toolsChoice%"=="Y" (
+    echo Installing optional terminal tools and extensions...
+    REM Uncomment and modify the following lines to install additional tools and extensions
+    REM choco install -y posh-git
+    REM call :checkError "Posh-Git Installation"
+    REM choco install -y oh-my-posh
+    REM call :checkError "Oh-My-Posh Installation"
+    REM Install PowerShell modules if needed
+    REM powershell -Command "Install-Module -Name PSReadLine -Force -SkipPublisherCheck"
+    REM call :checkError "PSReadLine Installation"
+    REM powershell -Command "Install-Module -Name Pester -Force -SkipPublisherCheck"
+    REM call :checkError "Pester Installation"
+) else (
+    echo Skipping installation of optional tools and extensions.
+)
 goto :eof
 
 :: Function to verify installation
