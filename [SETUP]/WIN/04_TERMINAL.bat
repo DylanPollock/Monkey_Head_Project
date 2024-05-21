@@ -24,9 +24,15 @@ goto :eof
 :checkError
 if %errorlevel% neq 0 (
     echo Error: %1 failed with error code %errorlevel%.
+    call :logError "%1"
     pause
     exit /b %errorlevel%
 )
+goto :eof
+
+:: Function to log errors
+:logError
+echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0error_log.txt"
 goto :eof
 
 :: Function to install Windows Terminal if not already installed
@@ -46,15 +52,17 @@ goto :eof
 echo Checking for terminal settings file...
 if not exist "terminal-settings.json" (
     echo Creating default terminal settings...
-    echo {
+    (
+        echo {
         echo "profiles": {
-            echo "defaults": {},
-            echo "list": []
+        echo "defaults": {},
+        echo "list": []
         echo },
         echo "schemes": [],
         echo "actions": [],
-        echo "global": {}
-    } > "terminal-settings.json"
+        echo "globals": {}
+        echo }
+    ) > "terminal-settings.json"
     call :checkError "Creating Default Terminal Settings"
 ) else (
     echo Custom terminal settings file found.
@@ -114,5 +122,8 @@ call :installOptionalTools
 call :verifyInstallation
 
 echo [****| Terminal setup complete! |****]
+echo Logs can be found in "%~dp0error_log.txt"
 pause
 exit /b 0
+
+endlocal
