@@ -24,10 +24,15 @@ goto :eof
 :checkError
 if %errorlevel% neq 0 (
     echo Error: %1 failed with error code %errorlevel%.
-    echo %DATE% %TIME% - Error: %1 failed with error code %errorlevel% >> kubernetes_error_log.txt
+    call :logError "%1"
     pause
     exit /b %errorlevel%
 )
+goto :eof
+
+:: Function to log errors
+:logError
+echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0kubernetes_error_log.txt"
 goto :eof
 
 :: Function to install Kubernetes tools if not already installed
@@ -170,3 +175,5 @@ goto menu
 echo [****| Kubernetes management complete! |****]
 pause
 exit /b 0
+
+endlocal
