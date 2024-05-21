@@ -24,10 +24,15 @@ goto :eof
 :checkError
 if %errorlevel% neq 0 (
     echo Error: %1 failed with error code %errorlevel%.
-    echo %DATE% %TIME% - Error: %1 failed with error code %errorlevel% >> docker_error_log.txt
+    call :logError "%1"
     pause
     exit /b %errorlevel%
 )
+goto :eof
+
+:: Function to log errors
+:logError
+echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0docker_error_log.txt"
 goto :eof
 
 :: Function to install Docker if not already installed
@@ -46,7 +51,7 @@ goto :eof
 :: Function to start Docker service
 :startDocker
 echo Starting Docker service...
-sc start com.docker.service
+sc start com.docker.service >nul 2>&1
 call :checkError "Starting Docker Service"
 goto :eof
 
@@ -57,7 +62,7 @@ docker info >nul 2>&1
 if %errorlevel% neq 0 (
     echo Docker daemon is not running. Attempting to start...
     start /B "Docker Daemon" "C:\Program Files\Docker\Docker\Docker Desktop.exe"
-    timeout /t 10
+    timeout /t 10 >nul
     docker info >nul 2>&1
     if %errorlevel% neq 0 (
         echo Error: Docker daemon failed to start.
@@ -181,5 +186,8 @@ call :logDockerStep "Remove Docker Container"
 call :removeDockerContainer
 
 echo [****| Docker container management complete! |****]
+echo Logs can be found in "%~dp0docker_error_log.txt"
 pause
 exit /b 0
+
+endlocal
