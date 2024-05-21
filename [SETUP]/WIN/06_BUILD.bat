@@ -24,9 +24,15 @@ goto :eof
 :checkError
 if %errorlevel% neq 0 (
     echo Error: %1 failed with error code %errorlevel%.
+    call :logError "%1"
     pause
     exit /b %errorlevel%
 )
+goto :eof
+
+:: Function to log errors
+:logError
+echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0error_log.txt"
 goto :eof
 
 :: Function to check for required environment variables
@@ -35,6 +41,7 @@ echo Checking for required environment variables...
 REM Uncomment and modify the following lines to check for specific environment variables
 REM if not defined MY_ENV_VAR (
 REM     echo Error: Environment variable MY_ENV_VAR not set.
+REM     call :logError "Environment variable MY_ENV_VAR not set"
 REM     pause
 REM     exit /b 1
 REM )
@@ -190,5 +197,8 @@ call :logBuildStep "Post Build Cleanup"
 call :postBuildCleanup
 
 echo [****| Build complete! |****]
+echo Logs can be found in "%~dp0error_log.txt"
 pause
 exit /b 0
+
+endlocal
