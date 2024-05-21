@@ -55,7 +55,10 @@ if %errorlevel% neq 0 (
 REM Check for required software
 powershell -command "Get-Command git -ErrorAction SilentlyContinue" >nul
 call :checkError "Git Availability Check"
-REM Add any other necessary checks here
+powershell -command "Get-Command docker -ErrorAction SilentlyContinue" >nul
+call :checkError "Docker Availability Check"
+powershell -command "Get-Command kubectl -ErrorAction SilentlyContinue" >nul
+call :checkError "Kubectl Availability Check"
 goto :eof
 
 :: Function to install Chocolatey if not already installed
@@ -89,125 +92,180 @@ choco install -y docker-desktop
 call :checkError "Docker Installation"
 goto :eof
 
+:: Function to install optional tools
+:installOptionalTools
+echo Installing optional tools...
+choco install -y postman
+call :checkError "Postman Installation"
+choco install -y slack
+call :checkError "Slack Installation"
+choco install -y zoom
+call :checkError "Zoom Installation"
+choco install -y 7zip
+call :checkError "7zip Installation"
+choco install -y wget
+call :checkError "Wget Installation"
+choco install -y curl
+call :checkError "Curl Installation"
+choco install -y terraform
+call :checkError "Terraform Installation"
+choco install -y kubectl
+call :checkError "kubectl Installation"
+choco install -y minikube
+call :checkError "Minikube Installation"
+choco install -y awscli
+call :checkError "AWS CLI Installation"
+choco install -y azure-cli
+call :checkError "Azure CLI Installation"
+goto :eof
+
 :: Function to update Python packages
 :update_python_packages
-echo [****| Updating Python Packages |****]
-call :ensureAdmin
-call 05_UPDATE.bat
+echo Updating Python Packages...
+pip install --upgrade pip
+call :checkError "Pip Upgrade"
+pip install --upgrade -r requirements.txt
 call :checkError "Update Python Packages"
 goto :eof
 
 :: Function to build the system
 :build_system
-echo [****| Building System |****]
-call :ensureAdmin
-call 06_BUILD.bat
+echo Building System...
+REM Add commands to build the system here
+REM Example:
+cd "%USERPROFILE%\Source\repo"
+python setup.py build
 call :checkError "Build System"
 goto :eof
 
 :: Function to manage Docker containers
 :manage_containers
-echo [****| Managing Containers |****]
-call :ensureAdmin
-call 07_CONTAINER.bat
-call :checkError "Manage Containers"
+echo Managing Containers...
+REM Add commands to manage Docker containers here
+REM Example:
+docker-compose up -d
+call :checkError "Start Docker Containers"
+docker ps
+call :checkError "List Running Containers"
 goto :eof
 
 :: Function to manage Docker volumes
 :manage_volumes
-echo [****| Managing Volumes |****]
-call :ensureAdmin
-call 08_VOLUME.bat
-call :checkError "Manage Volumes"
+echo Managing Volumes...
+REM Add commands to manage Docker volumes here
+REM Example:
+docker volume ls
+call :checkError "List Docker Volumes"
+docker volume prune -f
+call :checkError "Prune Docker Volumes"
 goto :eof
 
 :: Function to deploy with Kubernetes
 :deploy_kubernetes
-echo [****| Deploying with Kubernetes |****]
-call :ensureAdmin
-call 09_KUBERNETES.bat
-call :checkError "Deploy Kubernetes"
+echo Deploying with Kubernetes...
+REM Add commands to deploy with Kubernetes here
+REM Example:
+kubectl apply -f deployment.yaml
+call :checkError "Deploy Kubernetes Resources"
+kubectl get pods
+call :checkError "Get Kubernetes Pods"
 goto :eof
 
 :: Function to start the system
 :start_system
-echo [****| Starting System |****]
-call :ensureAdmin
-call 10_START.bat
+echo Starting System...
+REM Add commands to start the system here
+REM Example:
+cd "%USERPROFILE%\Source\repo"
+python main.py
 call :checkError "Start System"
 goto :eof
 
 :: Function to set up HostOS
 :setup_hostos
-echo [****| Setting up HostOS |****]
-call :ensureAdmin
-call 11_HOSTOS.bat
-call :checkError "Setup HostOS"
+echo Setting up HostOS...
+REM Add commands to set up HostOS here
+REM Example:
+choco install -y htop
+call :checkError "Install htop"
 goto :eof
 
 :: Function to set up SubOS
 :setup_subos
-echo [****| Setting up SubOS |****]
-call :ensureAdmin
-call 12_SUBOS.bat
+echo Setting up SubOS...
+REM Add commands to set up SubOS here
+REM Example:
+REM Placeholder for SubOS setup commands
 call :checkError "Setup SubOS"
 goto :eof
 
 :: Function to set up NanoOS
 :setup_nanoos
-echo [****| Setting up NanoOS |****]
-call :ensureAdmin
-call 13_NANOOS.bat
+echo Setting up NanoOS...
+REM Add commands to set up NanoOS here
+REM Example:
+REM Placeholder for NanoOS setup commands
 call :checkError "Setup NanoOS"
 goto :eof
 
 :: Function to manage Kubernetes
 :kubernetes_management
-echo [****| Kubernetes Management |****]
-call :ensureAdmin
-call 14_KUBERNETES_MANAGE.bat
-call :checkError "Kubernetes Management"
+echo Managing Kubernetes...
+REM Add commands to manage Kubernetes here
+REM Example:
+kubectl get nodes
+call :checkError "Get Kubernetes Nodes"
+kubectl get services
+call :checkError "Get Kubernetes Services"
 goto :eof
 
 :: Function to check system status
 :status
-echo [****| Checking System Status |****]
-call :ensureAdmin
+echo Checking System Status...
 REM Call a status script or include status commands here
-REM Example: 
 echo Checking Docker status...
 docker ps
+call :checkError "Check Docker Status"
 echo Checking Kubernetes status...
 kubectl get pods
-call :checkError "Check System Status"
+call :checkError "Check Kubernetes Status"
 goto :eof
 
 :: Function to backup configurations
 :backup_config
-echo [****| Backing up Configurations |****]
-REM Add backup commands here
+echo Backing up Configurations...
+REM Placeholder for backup commands
+REM Example:
+xcopy /E /I /Y %USERPROFILE%\Source\repo\config %USERPROFILE%\Backup\repo\config
 call :checkError "Backup Configurations"
 goto :eof
 
 :: Function to restore configurations
 :restore_config
-echo [****| Restoring Configurations |****]
-REM Add restore commands here
+echo Restoring Configurations...
+REM Placeholder for restore commands
+REM Example:
+xcopy /E /I /Y %USERPROFILE%\Backup\repo\config %USERPROFILE%\Source\repo\config
 call :checkError "Restore Configurations"
 goto :eof
 
 :: Function to check and install dependencies
 :check_dependencies
-echo [****| Checking and Installing Dependencies |****]
-REM Add dependency checks and installations here
-call :checkError "Check Dependencies"
+echo Checking and Installing Dependencies...
+REM Placeholder for dependency checks and installations
+REM Example:
+powershell -command "Get-Command terraform -ErrorAction SilentlyContinue" >nul
+if %errorlevel% neq 0 (
+    choco install -y terraform
+    call :checkError "Install Terraform"
+)
 goto :eof
 
 :: Function to launch terminal
 :launch_terminal
-echo [****| Launching Terminal |****]
+echo Launching Terminal...
 call :ensureAdmin
-call 04_TERMINAL.bat
+start powershell
 call :checkError "Launch Terminal"
 goto :eof
 
@@ -389,27 +447,37 @@ call :ensureAdmin
 REM Call a status script or include status commands here
 echo Checking Docker status...
 docker ps
+call :checkError "Check Docker Status"
 echo Checking Kubernetes status...
 kubectl get pods
-call :checkError "Check System Status"
+call :checkError "Check Kubernetes Status"
 goto menu
 
 :backup_config
 echo [****| Backing up Configurations |****]
-REM Add backup commands here
+REM Placeholder for backup commands
+REM Example:
+xcopy /E /I /Y %USERPROFILE%\Source\repo\config %USERPROFILE%\Backup\repo\config
 call :checkError "Backup Configurations"
 goto menu
 
 :restore_config
 echo [****| Restoring Configurations |****]
-REM Add restore commands here
+REM Placeholder for restore commands
+REM Example:
+xcopy /E /I /Y %USERPROFILE%\Backup\repo\config %USERPROFILE%\Source\repo\config
 call :checkError "Restore Configurations"
 goto menu
 
 :check_dependencies
 echo [****| Checking and Installing Dependencies |****]
-REM Add dependency checks and installations here
-call :checkError "Check Dependencies"
+REM Placeholder for dependency checks and installations
+REM Example:
+powershell -command "Get-Command terraform -ErrorAction SilentlyContinue" >nul
+if %errorlevel% neq 0 (
+    choco install -y terraform
+    call :checkError "Install Terraform"
+)
 goto :eof
 
 :end
