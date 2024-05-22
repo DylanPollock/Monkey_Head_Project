@@ -1,190 +1,150 @@
-@echo off
-setlocal enabledelayedexpansion
+#!/bin/bash
 
-:: Change to the script's own directory
-cd /d "%~dp0"
+# Change to the script's own directory
+cd "$(dirname "$0")"
 
-:: Clear screen and set color
-cls
-color 0A
-echo [****|     02_MINI.bat - Minimal Development Environment Setup   |****]
-echo.
+# Clear screen and set color (only works in some terminals)
+clear
+echo -e "\033[0;32m[****|     02_MINI.sh - Minimal Development Environment Setup   |****]\033[0m"
+echo
 
-:: Function to ensure the script is running with administrative privileges
-:ensureAdmin
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Please run this script as an administrator.
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
+# Function to ensure the script is running with administrative privileges
+ensureAdmin() {
+    if [ "$EUID" -ne 0 ]; then
+        echo "Please run this script as an administrator."
+        exit 1
+    fi
+}
 
-:: Function to check the last command and exit if it failed
-:checkError
-if %errorlevel% neq 0 (
-    echo Error: %1 failed with error code %errorlevel%.
-    call :logError "%1"
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
+# Function to check the last command and exit if it failed
+checkError() {
+    if [ $? -ne 0 ]; then
+        echo "Error: $1 failed with error code $?."
+        logError "$1"
+        exit 1
+    fi
+}
 
-:: Function to log errors
-:logError
-echo %date% %time% - Error: %1 failed with error code %errorlevel% >> error_log.txt
-goto :eof
+# Function to log errors
+logError() {
+    echo "$(date) - Error: $1 failed with error code $?" >> error_log.txt
+}
 
-:: Function to perform initial system checks
-:systemCheck
-echo Performing system checks...
-REM Check for Windows version
-ver | find "11" >nul
-call :checkError "Windows 11 Check"
-REM Check for available disk space
-for /f "tokens=3" %%a in ('dir /-C %SystemDrive% ^| findstr /R "bytes free$"') do set FreeSpace=%%a
-echo Free space on %SystemDrive%: %FreeSpace%
-REM Check for internet connectivity
-ping -n 1 google.com >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Error: No internet connection detected.
-    call :logError "Internet Connectivity Check"
-    pause
-    exit /b %errorlevel%
-)
-REM Check for required software (e.g., PowerShell, Git)
-powershell -command "Get-Command git -ErrorAction SilentlyContinue" >nul
-call :checkError "Git Availability Check"
-REM Add any other necessary checks here
-goto :eof
+# Function to perform initial system checks
+systemCheck() {
+    echo "Performing system checks..."
+    # Check for Debian version
+    lsb_release -d | grep "Debian GNU/Linux 13" > /dev/null
+    checkError "Debian 13 Check"
+    # Check for available disk space
+    FreeSpace=$(df / | tail -1 | awk '{print $4}')
+    echo "Free space on /: $FreeSpace KB"
+    # Check for internet connectivity
+    ping -c 1 google.com > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "Error: No internet connection detected."
+        logError "Internet Connectivity Check"
+        exit 1
+    fi
+    # Check for required software
+    which git > /dev/null 2>&1
+    checkError "Git Availability Check"
+}
 
-:: Function to install Chocolatey if not already installed
-:installChocolatey
-if exist "%ProgramData%\chocolatey\bin\choco.exe" (
-    echo Chocolatey is already installed.
-) else (
-    echo Installing Chocolatey...
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
-    call :checkError "Chocolatey Installation"
-)
-goto :eof
+# Function to install necessary packages using apt
+installAptPackages() {
+    echo "Installing necessary packages..."
+    apt update && apt install -y git nodejs npm python3 python3-venv
+    checkError "Apt Packages Installation"
+}
 
-:: Function to update system files and health
-:updateSystem
-echo Updating system...
-powershell -Command "Start-Process 'powershell' -ArgumentList 'sfc /scannow' -Verb RunAs"
-call :checkError "sfc /scannow"
-powershell -Command "Start-Process 'powershell' -ArgumentList 'DISM /Online /Cleanup-Image /RestoreHealth' -Verb RunAs"
-call :checkError "DISM RestoreHealth"
-goto :eof
+# Function to clone the repository
+cloneRepository() {
+    echo "Cloning repository..."
+    if [ ! -d "$HOME/Source" ]; then
+        mkdir -p "$HOME/Source"
+    fi
+    cd "$HOME/Source"
+    git clone https://github.com/example/repository.git
+    checkError "Git Clone"
+}
 
-:: Function to install common tools
-:installCommonTools
-echo Installing common tools...
-choco install -y git
-call :checkError "Git Installation"
-choco install -y nodejs
-call :checkError "NodeJS Installation"
-choco install -y vscode
-call :checkError "VSCode Installation"
-goto :eof
+# Function to set up Python environment
+setupPythonEnv() {
+    echo "Setting up Python environment..."
+    cd "$HOME/Source/repository"
+    python3 -m venv venv
+    checkError "Python Virtual Environment Setup"
+    source venv/bin/activate
+    checkError "Activate Python Virtual Environment"
+    pip install --upgrade pip
+    checkError "Upgrading pip"
+    pip install -r requirements.txt
+    checkError "Installing Python Dependencies"
+}
 
-:: Function to clone the repository
-:cloneRepository
-echo Cloning repository...
-if not exist "%USERPROFILE%\Source" mkdir "%USERPROFILE%\Source"
-cd "%USERPROFILE%\Source"
-git clone https://github.com/example/repository.git
-call :checkError "Repository Cloning"
-goto :eof
+# Function to configure Git
+configureGit() {
+    echo "Configuring Git..."
+    git config --global user.name "Your Name"
+    checkError "Git Config Username"
+    git config --global user.email "your.email@example.com"
+    checkError "Git Config Email"
+}
 
-:: Function to set up Python environment
-:setupPythonEnv
-echo Setting up Python virtual environment...
-cd "%USERPROFILE%\Source\repository"
-call :checkError "Changing Directory to repository"
-python -m venv venv
-call :checkError "Python Virtual Environment Setup"
-venv\Scripts\activate
-call :checkError "Activating Virtual Environment"
-pip install --upgrade pip
-call :checkError "Upgrading pip"
-pip install -r requirements.txt
-call :checkError "Installing Python Dependencies"
-goto :eof
+# Function to create common directories
+createDirectories() {
+    echo "Creating common directories..."
+    mkdir -p "$HOME/Projects"
+    checkError "Creating Projects Directory"
+    mkdir -p "$HOME/Tools"
+    checkError "Creating Tools Directory"
+}
 
-:: Function to configure Git
-:configureGit
-echo Configuring Git...
-git config --global user.name "Your Name"
-call :checkError "Git User Name Configuration"
-git config --global user.email "your.email@example.com"
-call :checkError "Git User Email Configuration"
-goto :eof
+# Function to update environment variables (Optional)
+updateEnvVariables() {
+    echo "Updating environment variables..."
+    export PATH="$PATH:$HOME/Tools"
+    checkError "Updating PATH Environment Variable"
+}
 
-:: Function to create common directories
-:createDirectories
-echo Creating common directories...
-mkdir %USERPROFILE%\Projects
-call :checkError "Creating Projects Directory"
-mkdir %USERPROFILE%\Tools
-call :checkError "Creating Tools Directory"
-goto :eof
+# Function to perform additional optional setup tasks (Optional)
+additionalSetup() {
+    echo "Performing additional setup tasks..."
+    # Uncomment the tasks you need
+    # echo "Installing Python packages..."
+    # pip install some-package
+    # checkError "Python Package Installation"
+    # echo "Configuring additional settings..."
+    # Add additional configuration commands here
+}
 
-:: Function to update environment variables (Optional)
-:updateEnvVariables
-echo Updating environment variables...
-setx PATH "%PATH%;%USERPROFILE%\Tools"
-call :checkError "Updating PATH Environment Variable"
-goto :eof
+# Main Execution Flow
+echo "Ensuring script runs with administrative privileges..."
+ensureAdmin
 
-:: Function to perform additional optional setup tasks (Optional)
-:additionalSetup
-echo Performing additional setup tasks...
-REM Uncomment the tasks you need
-REM echo Installing Python packages...
-REM pip install some-package
-REM call :checkError "Python Package Installation"
-REM echo Configuring additional settings...
-REM Add additional configuration commands here
-goto :eof
+echo "Performing initial system checks..."
+systemCheck
 
-:: Main Execution Flow
-echo Ensuring script runs with administrative privileges...
-call :ensureAdmin
+echo "Installing necessary packages..."
+installAptPackages
 
-echo Performing initial system checks...
-call :systemCheck
+echo "Cloning the repository..."
+cloneRepository
 
-echo Installing Chocolatey if not already installed...
-call :installChocolatey
+echo "Setting up Python environment..."
+setupPythonEnv
 
-echo Updating system files and health...
-call :updateSystem
+echo "Configuring Git..."
+configureGit
 
-echo Installing common tools...
-call :installCommonTools
+echo "Creating common directories..."
+createDirectories
 
-echo Cloning the repository...
-call :cloneRepository
+echo "Updating environment variables..."
+updateEnvVariables
 
-echo Setting up Python environment...
-call :setupPythonEnv
+echo "Performing additional optional setup tasks..."
+additionalSetup
 
-echo Configuring Git...
-call :configureGit
-
-echo Creating common directories...
-call :createDirectories
-
-echo Updating environment variables...
-call :updateEnvVariables
-
-echo Performing additional optional setup tasks...
-call :additionalSetup
-
-echo [****| Minimal setup complete! |****]
-pause
-exit /b 0
-
-endlocal
+echo -e "\033[0;32m[****| Minimal setup complete! |****]\033[0m"
