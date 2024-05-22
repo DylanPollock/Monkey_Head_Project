@@ -1,156 +1,146 @@
-@echo off
-setlocal enabledelayedexpansion
+#!/bin/bash
 
-:: Change to the script's own directory
-cd /d "%~dp0"
+# Change to the script's own directory
+cd "$(dirname "$0")"
 
-:: Clear screen and set color
-cls
-color 0A
-echo [****|     04_TERMINAL.bat - Terminal Setup and Configuration   |****]
-echo.
+# Clear screen and set color
+clear
+echo -e "\033[0;32m[****|     04_TERMINAL.sh - Terminal Setup and Configuration   |****]\033[0m"
+echo
 
-:: Function to ensure the script is running with administrative privileges
-:ensureAdmin
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Please run this script as an administrator.
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
+# Function to ensure the script is running with administrative privileges
+ensureAdmin() {
+    if [ "$EUID" -ne 0 ]; then
+        echo "Please run this script as an administrator."
+        exit 1
+    fi
+}
 
-:: Function to check the last command and exit if it failed
-:checkError
-if %errorlevel% neq 0 (
-    echo Error: %1 failed with error code %errorlevel%.
-    call :logError "%1"
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
+# Function to check the last command and exit if it failed
+checkError() {
+    if [ $? -ne 0 ]; then
+        echo "Error: $1 failed with error code $?."
+        logError "$1"
+        exit 1
+    fi
+}
 
-:: Function to log errors
-:logError
-echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0error_log.txt"
-goto :eof
+# Function to log errors
+logError() {
+    echo "$(date) - Error: $1 failed with error code $?" >> "$(dirname "$0")/error_log.txt"
+}
 
-:: Function to install Windows Terminal if not already installed
-:installTerminal
-echo Checking for Windows Terminal...
-if exist "%LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe" (
-    echo Windows Terminal is already installed.
-) else (
-    echo Installing Windows Terminal...
-    choco install -y microsoft-windows-terminal
-    call :checkError "Windows Terminal Installation"
-)
-goto :eof
+# Function to install Windows Terminal if not already installed
+installTerminal() {
+    echo "Checking for Windows Terminal..."
+    if command -v wt &> /dev/null; then
+        echo "Windows Terminal is already installed."
+    else
+        echo "Installing Windows Terminal..."
+        sudo apt update
+        sudo apt install -y gnome-terminal
+        checkError "Windows Terminal Installation"
+    fi
+}
 
-:: Function to create default terminal settings if settings file does not exist
-:createDefaultSettings
-echo Checking for terminal settings file...
-if not exist "terminal-settings.json" (
-    echo Creating default terminal settings...
-    (
-        echo {
-        echo "profiles": {
-        echo "defaults": {},
-        echo "list": []
-        echo },
-        echo "schemes": [],
-        echo "actions": [],
-        echo "globals": {}
-        echo }
-    ) > "terminal-settings.json"
-    call :checkError "Creating Default Terminal Settings"
-) else (
-    echo Custom terminal settings file found.
-)
-goto :eof
+# Function to create default terminal settings if settings file does not exist
+createDefaultSettings() {
+    echo "Checking for terminal settings file..."
+    if [ ! -f "terminal-settings.json" ]; then
+        echo "Creating default terminal settings..."
+        cat <<EOT > "terminal-settings.json"
+{
+    "profiles": {
+        "defaults": {},
+        "list": []
+    },
+    "schemes": [],
+    "actions": [],
+    "globals": {}
+}
+EOT
+        checkError "Creating Default Terminal Settings"
+    else
+        echo "Custom terminal settings file found."
+    fi
+}
 
-:: Function to back up existing terminal settings
-:backupExistingSettings
-echo Would you like to back up existing terminal settings? (Y/N)
-set /p backupChoice=
-if /i "%backupChoice%"=="Y" (
-    echo Backing up existing terminal settings...
-    if exist "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" (
-        copy /Y "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings_backup.json"
-        call :checkError "Backing Up Existing Terminal Settings"
-    ) else (
-        echo No existing terminal settings found to back up.
-    )
-) else (
-    echo Skipping backup of existing terminal settings.
-)
-goto :eof
+# Function to back up existing terminal settings
+backupExistingSettings() {
+    read -p "Would you like to back up existing terminal settings? (Y/N): " backupChoice
+    if [[ "$backupChoice" =~ ^[Yy]$ ]]; then
+        echo "Backing up existing terminal settings..."
+        if [ -f "$HOME/.config/gnome-terminal/settings.json" ]; then
+            cp "$HOME/.config/gnome-terminal/settings.json" "$HOME/.config/gnome-terminal/settings_backup.json"
+            checkError "Backing Up Existing Terminal Settings"
+        else
+            echo "No existing terminal settings found to back up."
+        fi
+    else
+        echo "Skipping backup of existing terminal settings."
+    fi
+}
 
-:: Function to configure Windows Terminal settings
-:configureTerminal
-echo Configuring Windows Terminal settings...
-copy /Y "terminal-settings.json" "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-call :checkError "Copying Terminal Settings"
-goto :eof
+# Function to configure Windows Terminal settings
+configureTerminal() {
+    echo "Configuring Windows Terminal settings..."
+    mkdir -p "$HOME/.config/gnome-terminal"
+    cp "terminal-settings.json" "$HOME/.config/gnome-terminal/settings.json"
+    checkError "Copying Terminal Settings"
+}
 
-:: Function to install optional terminal tools and extensions
-:installOptionalTools
-echo Would you like to install optional terminal tools and extensions? (Y/N)
-set /p toolsChoice=
-if /i "%toolsChoice%"=="Y" (
-    echo Installing optional terminal tools and extensions...
-    REM Uncomment and modify the following lines to install additional tools and extensions
-    REM choco install -y posh-git
-    REM call :checkError "Posh-Git Installation"
-    REM choco install -y oh-my-posh
-    REM call :checkError "Oh-My-Posh Installation"
-    REM Install PowerShell modules if needed
-    REM powershell -Command "Install-Module -Name PSReadLine -Force -SkipPublisherCheck"
-    REM call :checkError "PSReadLine Installation"
-    REM powershell -Command "Install-Module -Name Pester -Force -SkipPublisherCheck"
-    REM call :checkError "Pester Installation"
-) else (
-    echo Skipping installation of optional tools and extensions.
-)
-goto :eof
+# Function to install optional terminal tools and extensions
+installOptionalTools() {
+    read -p "Would you like to install optional terminal tools and extensions? (Y/N): " toolsChoice
+    if [[ "$toolsChoice" =~ ^[Yy]$ ]]; then
+        echo "Installing optional terminal tools and extensions..."
+        sudo apt update
+        sudo apt install -y git
+        checkError "Git Installation"
+        sudo apt install -y zsh
+        checkError "Zsh Installation"
+        # Uncomment and modify the following lines to install additional tools and extensions
+        # sudo apt install -y posh-git
+        # checkError "Posh-Git Installation"
+        # sudo apt install -y oh-my-zsh
+        # checkError "Oh-My-Zsh Installation"
+    else
+        echo "Skipping installation of optional tools and extensions."
+    fi
+}
 
-:: Function to verify installation
-:verifyInstallation
-echo Verifying Windows Terminal installation...
-if exist "%LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe" (
-    echo Windows Terminal installed successfully.
-) else (
-    echo Error: Windows Terminal installation failed.
-    call :logError "Windows Terminal Installation Verification"
-    pause
-    exit /b 1
-)
-goto :eof
+# Function to verify installation
+verifyInstallation() {
+    echo "Verifying Windows Terminal installation..."
+    if command -v gnome-terminal &> /dev/null; then
+        echo "Windows Terminal installed successfully."
+    else
+        echo "Error: Windows Terminal installation failed."
+        logError "Windows Terminal Installation Verification"
+        exit 1
+    fi
+}
 
-:: Ensure the script runs with administrative privileges
-call :ensureAdmin
+# Ensure the script runs with administrative privileges
+ensureAdmin
 
-:: Install Windows Terminal
-call :installTerminal
+# Install Windows Terminal
+installTerminal
 
-:: Create default terminal settings if necessary
-call :createDefaultSettings
+# Create default terminal settings if necessary
+createDefaultSettings
 
-:: Back up existing terminal settings
-call :backupExistingSettings
+# Back up existing terminal settings
+backupExistingSettings
 
-:: Configure Windows Terminal settings
-call :configureTerminal
+# Configure Windows Terminal settings
+configureTerminal
 
-:: Install optional terminal tools and extensions
-call :installOptionalTools
+# Install optional terminal tools and extensions
+installOptionalTools
 
-:: Verify installation
-call :verifyInstallation
+# Verify installation
+verifyInstallation
 
-echo [****| Terminal setup complete! |****]
-echo Logs can be found in "%~dp0error_log.txt"
-pause
-exit /b 0
-
-endlocal
+echo -e "\033[0;32m[****| Terminal setup complete! |****]\033[0m"
+echo "Logs can be found in $(dirname "$0")/error_log.txt"
