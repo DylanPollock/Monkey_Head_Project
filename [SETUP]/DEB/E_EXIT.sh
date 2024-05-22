@@ -1,170 +1,158 @@
-@echo off
-setlocal enabledelayedexpansion
+#!/bin/bash
 
-:: Change to the script's own directory
-cd /d "%~dp0"
+# Change to the script's own directory
+cd "$(dirname "$0")"
 
-:: Clear screen and set color
-cls
-color 0A
-echo [****|     E_EXIT.bat - Shutdown and Cleanup   |****]
-echo.
+# Clear screen and set color
+clear
+echo -e "\033[0;32m[****|     E_EXIT.sh - Shutdown and Cleanup   |****]\033[0m"
+echo
 
-:: Function to ensure the script is running with administrative privileges
-:ensureAdmin
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Please run this script as an administrator.
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
+# Function to ensure the script is running with administrative privileges
+ensureAdmin() {
+    if [ "$EUID" -ne 0 ]; then
+        echo "Please run this script as an administrator."
+        exit 1
+    fi
+}
 
-:: Function to check the last command and exit if it failed
-:checkError
-if %errorlevel% neq 0 (
-    echo Error: %1 failed with error code %errorlevel%.
-    call :logError "%1"
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
+# Function to check the last command and exit if it failed
+checkError() {
+    if [ $? -ne 0 ]; then
+        echo "Error: $1 failed with error code $?."
+        logError "$1"
+        exit 1
+    fi
+}
 
-:: Function to log errors
-:logError
-echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0exit_error_log.txt"
-goto :eof
+# Function to log errors
+logError() {
+    echo "$(date) - Error: $1 failed with error code $?" >> "$(dirname "$0")/exit_error_log.txt"
+}
 
-:: Function to stop Docker containers
-:stopDockerContainers
-echo Stopping Docker containers...
-for /f "tokens=*" %%i in ('docker ps -q') do (
-    docker stop %%i >nul 2>&1
-    call :checkError "Stopping Docker Container %%i"
-)
-goto :eof
+# Function to stop Docker containers
+stopDockerContainers() {
+    echo "Stopping Docker containers..."
+    for container_id in $(docker ps -q); do
+        docker stop "$container_id" > /dev/null 2>&1
+        checkError "Stopping Docker Container $container_id"
+    done
+}
 
-:: Function to remove Docker containers
-:removeDockerContainers
-echo Removing Docker containers...
-for /f "tokens=*" %%i in ('docker ps -a -q') do (
-    docker rm %%i >nul 2>&1
-    call :checkError "Removing Docker Container %%i"
-)
-goto :eof
+# Function to remove Docker containers
+removeDockerContainers() {
+    echo "Removing Docker containers..."
+    for container_id in $(docker ps -a -q); do
+        docker rm "$container_id" > /dev/null 2>&1
+        checkError "Removing Docker Container $container_id"
+    done
+}
 
-:: Function to stop Minikube
-:stopMinikube
-echo Stopping Minikube...
-minikube status | find "host: Running" >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Minikube is not running.
-) else (
-    minikube stop >nul 2>&1
-    call :checkError "Stopping Minikube"
-)
-goto :eof
+# Function to stop Minikube
+stopMinikube() {
+    echo "Stopping Minikube..."
+    if minikube status | grep -q "host: Running"; then
+        minikube stop > /dev/null 2>&1
+        checkError "Stopping Minikube"
+    else
+        echo "Minikube is not running."
+    fi
+}
 
-:: Function to stop application services
-:stopAppServices
-echo Stopping application services...
-docker-compose ps >nul 2>&1
-if %errorlevel% neq 0 (
-    echo No application services to stop.
-) else (
-    docker-compose down >nul 2>&1
-    call :checkError "Stopping Application Services"
-)
-goto :eof
+# Function to stop application services
+stopAppServices() {
+    echo "Stopping application services..."
+    if docker-compose ps > /dev/null 2>&1; then
+        docker-compose down > /dev/null 2>&1
+        checkError "Stopping Application Services"
+    else
+        echo "No application services to stop."
+    fi
+}
 
-:: Function to stop database service (if applicable)
-:stopDatabaseService
-echo Stopping database service...
-REM Add commands to check and stop database service
-REM For example:
-REM sc query MySQL | find "RUNNING" >nul 2>&1
-REM if %errorlevel% neq 0 (
-REM     echo MySQL service is not running.
-REM ) else (
-REM     net stop MySQL
-REM     call :checkError "Stopping MySQL Service"
-REM )
-goto :eof
+# Function to stop database service (if applicable)
+stopDatabaseService() {
+    echo "Stopping database service..."
+    # Add commands to check and stop database service
+    # For example:
+    # if systemctl is-active --quiet mysql; then
+    #     systemctl stop mysql
+    #     checkError "Stopping MySQL Service"
+    # else
+    #     echo "MySQL service is not running."
+    # fi
+}
 
-:: Function to stop web server (if applicable)
-:stopWebServer
-echo Stopping web server...
-REM Add commands to check and stop web server
-REM For example:
-REM sc query Apache2.4 | find "RUNNING" >nul 2>&1
-REM if %errorlevel% neq 0 (
-REM     echo Apache2.4 web server is not running.
-REM ) else (
-REM     net stop Apache2.4
-REM     call :checkError "Stopping Apache2.4 Web Server"
-REM )
-goto :eof
+# Function to stop web server (if applicable)
+stopWebServer() {
+    echo "Stopping web server..."
+    # Add commands to check and stop web server
+    # For example:
+    # if systemctl is-active --quiet apache2; then
+    #     systemctl stop apache2
+    #     checkError "Stopping Apache2 Web Server"
+    # else
+    #     echo "Apache2 web server is not running."
+    # fi
+}
 
-:: Function to clean up temporary files
-:cleanupTempFiles
-echo Cleaning up temporary files...
-del /F /Q %TEMP%\* >nul 2>&1
-call :checkError "Cleaning Up Temporary Files"
-goto :eof
+# Function to clean up temporary files
+cleanupTempFiles() {
+    echo "Cleaning up temporary files..."
+    rm -rf /tmp/*
+    checkError "Cleaning Up Temporary Files"
+}
 
-:: Function to log shutdown steps
-:logShutdownStep
-echo Logging shutdown step: %1
-echo %DATE% %TIME% - %1 >> "%~dp0exit_log.txt"
-goto :eof
+# Function to log shutdown steps
+logShutdownStep() {
+    echo "Logging shutdown step: $1"
+    echo "$(date) - $1" >> "$(dirname "$0")/exit_log.txt"
+}
 
-:: Ensure the script runs with administrative privileges
-call :ensureAdmin
+# Ensure the script runs with administrative privileges
+ensureAdmin
 
-:: Log shutdown step
-call :logShutdownStep "Stopping Docker Containers"
+# Log shutdown step
+logShutdownStep "Stopping Docker Containers"
 
-:: Stop Docker containers
-call :stopDockerContainers
+# Stop Docker containers
+stopDockerContainers
 
-:: Log shutdown step
-call :logShutdownStep "Removing Docker Containers"
+# Log shutdown step
+logShutdownStep "Removing Docker Containers"
 
-:: Remove Docker containers
-call :removeDockerContainers
+# Remove Docker containers
+removeDockerContainers
 
-:: Log shutdown step
-call :logShutdownStep "Stopping Minikube"
+# Log shutdown step
+logShutdownStep "Stopping Minikube"
 
-:: Stop Minikube
-call :stopMinikube
+# Stop Minikube
+stopMinikube
 
-:: Log shutdown step
-call :logShutdownStep "Stopping Application Services"
+# Log shutdown step
+logShutdownStep "Stopping Application Services"
 
-:: Stop application services
-call :stopAppServices
+# Stop application services
+stopAppServices
 
-:: Log shutdown step
-call :logShutdownStep "Stopping Database Service"
+# Log shutdown step
+logShutdownStep "Stopping Database Service"
 
-:: Stop database service (if applicable)
-call :stopDatabaseService
+# Stop database service (if applicable)
+stopDatabaseService
 
-:: Log shutdown step
-call :logShutdownStep "Stopping Web Server"
+# Log shutdown step
+logShutdownStep "Stopping Web Server"
 
-:: Stop web server (if applicable)
-call :stopWebServer
+# Stop web server (if applicable)
+stopWebServer
 
-:: Log shutdown step
-call :logShutdownStep "Cleaning Up Temporary Files"
+# Log shutdown step
+logShutdownStep "Cleaning Up Temporary Files"
 
-:: Clean up temporary files
-call :cleanupTempFiles
+# Clean up temporary files
+cleanupTempFiles
 
-echo [****| Shutdown and cleanup complete! |****]
-pause
-exit /b 0
-
-endlocal
+echo -e "\033[0;32m[****| Shutdown and cleanup complete! |****]\033[0m"
+echo "Logs can be found in $(dirname "$0")/exit_error_log.txt"
