@@ -30,16 +30,16 @@ logError() {
     echo "$(date) - Error: $1 failed with error code $?" >> "$(dirname "$0")/error_log.txt"
 }
 
-# Function to install Windows Terminal if not already installed
+# Function to install gnome-terminal if not already installed
 installTerminal() {
-    echo "Checking for Windows Terminal..."
-    if command -v wt &> /dev/null; then
-        echo "Windows Terminal is already installed."
+    echo "Checking for gnome-terminal..."
+    if command -v gnome-terminal &> /dev/null; then
+        echo "gnome-terminal is already installed."
     else
-        echo "Installing Windows Terminal..."
+        echo "Installing gnome-terminal..."
         sudo apt update
         sudo apt install -y gnome-terminal
-        checkError "Windows Terminal Installation"
+        checkError "gnome-terminal Installation"
     fi
 }
 
@@ -81,9 +81,9 @@ backupExistingSettings() {
     fi
 }
 
-# Function to configure Windows Terminal settings
+# Function to configure gnome-terminal settings
 configureTerminal() {
-    echo "Configuring Windows Terminal settings..."
+    echo "Configuring gnome-terminal settings..."
     mkdir -p "$HOME/.config/gnome-terminal"
     cp "terminal-settings.json" "$HOME/.config/gnome-terminal/settings.json"
     checkError "Copying Terminal Settings"
@@ -111,12 +111,12 @@ installOptionalTools() {
 
 # Function to verify installation
 verifyInstallation() {
-    echo "Verifying Windows Terminal installation..."
+    echo "Verifying gnome-terminal installation..."
     if command -v gnome-terminal &> /dev/null; then
-        echo "Windows Terminal installed successfully."
+        echo "gnome-terminal installed successfully."
     else
-        echo "Error: Windows Terminal installation failed."
-        logError "Windows Terminal Installation Verification"
+        echo "Error: gnome-terminal installation failed."
+        logError "gnome-terminal Installation Verification"
         exit 1
     fi
 }
@@ -124,7 +124,7 @@ verifyInstallation() {
 # Ensure the script runs with administrative privileges
 ensureAdmin
 
-# Install Windows Terminal
+# Install gnome-terminal
 installTerminal
 
 # Create default terminal settings if necessary
@@ -133,7 +133,7 @@ createDefaultSettings
 # Back up existing terminal settings
 backupExistingSettings
 
-# Configure Windows Terminal settings
+# Configure gnome-terminal settings
 configureTerminal
 
 # Install optional terminal tools and extensions
