@@ -1,118 +1,108 @@
-@echo off
-setlocal enabledelayedexpansion
+#!/bin/bash
 
-:: Change to the script's own directory
-cd /d "%~dp0"
+# Change to the script's own directory
+cd "$(dirname "$0")"
 
-:: Clear screen and set color
-cls
-color 0A
-echo [****|     05_UPDATE.bat - Update Installed Packages and Tools   |****]
-echo.
+# Clear screen and set color
+clear
+echo -e "\033[0;32m[****|     05_UPDATE.sh - Update Installed Packages and Tools   |****]\033[0m"
+echo
 
-:: Function to ensure the script is running with administrative privileges
-:ensureAdmin
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Please run this script as an administrator.
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
+# Function to ensure the script is running with administrative privileges
+ensureAdmin() {
+    if [ "$EUID" -ne 0 ]; then
+        echo "Please run this script as an administrator."
+        exit 1
+    fi
+}
 
-:: Function to check the last command and exit if it failed
-:checkError
-if %errorlevel% neq 0 (
-    echo Error: %1 failed with error code %errorlevel%.
-    call :logError "%1"
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
+# Function to check the last command and exit if it failed
+checkError() {
+    if [ $? -ne 0 ]; then
+        echo "Error: $1 failed with error code $?."
+        logError "$1"
+        exit 1
+    fi
+}
 
-:: Function to log errors
-:logError
-echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0error_log.txt"
-goto :eof
+# Function to log errors
+logError() {
+    echo "$(date) - Error: $1 failed with error code $?" >> "$(dirname "$0")/error_log.txt"
+}
 
-:: Function to update Chocolatey itself
-:updateChocolatey
-echo Updating Chocolatey...
-choco upgrade chocolatey -y
-call :checkError "Chocolatey Update"
-goto :eof
+# Function to update the system itself
+updateSystem() {
+    echo "Updating system..."
+    sudo apt update && sudo apt upgrade -y
+    checkError "System Update"
+}
 
-:: Function to update all installed Chocolatey packages
-:updateChocoPackages
-echo Updating all installed Chocolatey packages...
-choco upgrade all -y
-call :checkError "Chocolatey Packages Update"
-goto :eof
+# Function to update npm global packages
+updateNpmPackages() {
+    echo "Updating npm global packages..."
+    npm update -g
+    checkError "NPM Global Packages Update"
+}
 
-:: Function to update npm global packages
-:updateNpmPackages
-echo Updating npm global packages...
-npm update -g
-call :checkError "NPM Global Packages Update"
-goto :eof
+# Function to update pip packages
+updatePipPackages() {
+    echo "Updating pip packages..."
+    python3 -m pip install --upgrade pip
+    checkError "Pip Update"
+    outdated=$(pip list --outdated --format=freeze | grep -v "^\-e")
+    for pkg in $outdated; do
+        python3 -m pip install -U "${pkg%%=*}"
+        checkError "Pip Packages Update"
+    done
+}
 
-:: Function to update pip packages
-:updatePipPackages
-echo Updating pip packages...
-python -m pip install --upgrade pip
-call :checkError "Pip Update"
-pip list --outdated --format=freeze | findstr /v "^\-e" | for /f "delims==" %%i in ('more') do python -m pip install -U %%i
-call :checkError "Pip Packages Update"
-goto :eof
+# Function to update VSCode extensions
+updateVSCodeExtensions() {
+    echo "Updating VSCode extensions..."
+    extensions=$(code --list-extensions)
+    for ext in $extensions; do
+        code --install-extension "$ext"
+        checkError "VSCode Extensions Update"
+    done
+}
 
-:: Function to update VSCode extensions
-:updateVSCodeExtensions
-echo Updating VSCode extensions...
-for /f %%i in ('code --list-extensions') do code --install-extension %%i
-call :checkError "VSCode Extensions Update"
-goto :eof
+# Function to update PowerShell modules
+updatePSModules() {
+    echo "Updating PowerShell modules..."
+    pwsh -Command "Get-InstalledModule | ForEach-Object { Update-Module -Name \$_ -Force }"
+    checkError "PowerShell Modules Update"
+}
 
-:: Function to update PowerShell modules
-:updatePSModules
-echo Updating PowerShell modules...
-powershell -Command "Get-InstalledModule | ForEach-Object { Update-Module -Name $_.Name -Force }"
-call :checkError "PowerShell Modules Update"
-goto :eof
+# Function to update Docker images
+updateDockerImages() {
+    echo "Updating Docker images..."
+    images=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>")
+    for img in $images; do
+        docker pull "$img"
+        checkError "Docker Images Update"
+    done
+}
 
-:: Function to update Docker images
-:updateDockerImages
-echo Updating Docker images...
-docker images --format "{{.Repository}}:{{.Tag}}" | findstr /v "<none>" | for /f "delims=" %%i in ('more') do docker pull %%i
-call :checkError "Docker Images Update"
-goto :eof
+# Ensure the script runs with administrative privileges
+ensureAdmin
 
-:: Ensure the script runs with administrative privileges
-call :ensureAdmin
+# Update the system itself
+updateSystem
 
-:: Update Chocolatey itself
-call :updateChocolatey
+# Update npm global packages
+updateNpmPackages
 
-:: Update all installed Chocolatey packages
-call :updateChocoPackages
+# Update pip packages
+updatePipPackages
 
-:: Update npm global packages
-call :updateNpmPackages
+# Update VSCode extensions
+updateVSCodeExtensions
 
-:: Update pip packages
-call :updatePipPackages
+# Update PowerShell modules
+updatePSModules
 
-:: Update VSCode extensions
-call :updateVSCodeExtensions
+# Update Docker images
+updateDockerImages
 
-:: Update PowerShell modules
-call :updatePSModules
-
-:: Update Docker images
-call :updateDockerImages
-
-echo [****| Updates complete! |****]
-echo Logs can be found in "%~dp0error_log.txt"
-pause
-exit /b 0
-
-endlocal
+echo -e "\033[0;32m[****| Updates complete! |****]\033[0m"
+echo "Logs can be found in $(dirname "$0")/error_log.txt"
