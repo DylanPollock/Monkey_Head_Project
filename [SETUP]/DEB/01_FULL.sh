@@ -51,36 +51,11 @@ systemCheck() {
     checkError "Git Availability Check"
 }
 
-# Function to install Chocolatey if not already installed
-installChocolatey() {
-    if command -v choco > /dev/null 2>&1; then
-        echo "Chocolatey is already installed."
-    else
-        echo "Installing Chocolatey..."
-        wget https://chocolatey.org/install.sh -O install_choco.sh
-        bash install_choco.sh
-        checkError "Chocolatey Installation"
-    fi
-}
-
-# Function to install common tools
-installCommonTools() {
-    echo "Installing common tools..."
-    choco install -y git
-    checkError "Git Installation"
-    choco install -y nodejs
-    checkError "NodeJS Installation"
-    choco install -y vscode
-    checkError "VSCode Installation"
-}
-
-# Function to install additional tools
-installAdditionalTools() {
-    echo "Installing additional tools..."
-    choco install -y python
-    checkError "Python Installation"
-    choco install -y docker-desktop
-    checkError "Docker Installation"
+# Function to install necessary packages using apt
+installAptPackages() {
+    echo "Installing necessary packages..."
+    apt update && apt install -y git nodejs npm python3 python3-venv docker.io
+    checkError "Apt Packages Installation"
 }
 
 # Function to clone the repository
@@ -134,29 +109,8 @@ updateEnvVariables() {
 # Function to install optional tools
 installOptionalTools() {
     echo "Installing optional tools..."
-    # Uncomment the tools you need
-    choco install -y postman
-    checkError "Postman Installation"
-    choco install -y slack
-    checkError "Slack Installation"
-    choco install -y zoom
-    checkError "Zoom Installation"
-    choco install -y 7zip
-    checkError "7zip Installation"
-    choco install -y wget
-    checkError "Wget Installation"
-    choco install -y curl
-    checkError "Curl Installation"
-    choco install -y terraform
-    checkError "Terraform Installation"
-    choco install -y kubectl
-    checkError "kubectl Installation"
-    choco install -y minikube
-    checkError "Minikube Installation"
-    choco install -y awscli
-    checkError "AWS CLI Installation"
-    choco install -y azure-cli
-    checkError "Azure CLI Installation"
+    apt install -y postman slack-desktop zoom 7zip wget curl terraform kubectl minikube awscli azure-cli
+    checkError "Optional Tools Installation"
 }
 
 # Main Execution Flow
@@ -166,14 +120,8 @@ ensureAdmin
 echo "Performing initial system checks..."
 systemCheck
 
-echo "Installing Chocolatey if not already installed..."
-installChocolatey
-
-echo "Installing common tools..."
-installCommonTools
-
-echo "Installing additional tools..."
-installAdditionalTools
+echo "Installing necessary packages..."
+installAptPackages
 
 echo "Cloning the repository..."
 cloneRepository
