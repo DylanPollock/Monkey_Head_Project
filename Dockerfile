@@ -9,8 +9,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 # Update the package repository and install necessary packages
-# Using 'apt-get install -y --no-install-recommends' to keep the installation small
-# Adding '&& apt-get clean' to remove unnecessary files and free space
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-dev \
@@ -58,11 +56,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 # Define the command to run when the container starts
 CMD ["vncserver", "-geometry", "1280x800", "-depth", "24", "-localhost", "no", ":1"]
 
-# Custom script to run on container start
-COPY gencore_setup.sh /usr/local/bin/gencore_setup.sh
-RUN chmod +x /usr/local/bin/gencore_setup.sh
-
-# Ensure the script runs with administrative privileges
+# Function to ensure the script is running with administrative privileges
 RUN echo '
 ensureAdmin() {
     if [[ $EUID -ne 0 ]]; then
@@ -251,8 +245,66 @@ setup_subos() {
     echo "SubOS setup is a placeholder."
     checkError "Setup SubOS"
 }
+
+# Set up NanoOS
+setup_nanoos() {
+    echo "Setting up NanoOS..."
+    # Add commands to set up NanoOS here
+    echo "NanoOS setup is a placeholder."
+    checkError "Setup NanoOS"
+}
+
+# Manage Kubernetes
+kubernetes_management() {
+    echo "Managing Kubernetes..."
+    kubectl get nodes
+    checkError "Get Kubernetes Nodes"
+    kubectl get services
+    checkError "Get Kubernetes Services"
+}
+
+# Check system status
+status() {
+    echo "Checking System Status..."
+    echo "Checking Docker status..."
+    docker ps
+    checkError "Check Docker Status"
+    echo "Checking Kubernetes status..."
+    kubectl get pods
+    checkError "Check Kubernetes Status"
+}
+
+# Backup configurations
+backup_config() {
+    echo "Backing up Configurations..."
+    mkdir -p "$HOME/Backup/repo/config"
+    cp -r "$HOME/Source/repo/config" "$HOME/Backup/repo/config"
+    checkError "Backup Configurations"
+}
+
+# Restore configurations
+restore_config() {
+    echo "Restoring Configurations..."
+    cp -r "$HOME/Backup/repo/config" "$HOME/Source/repo/config"
+    checkError "Restore Configurations"
+}
+
+# Check and install dependencies
+check_dependencies() {
+    echo "Checking and Installing Dependencies..."
+    if ! command -v terraform &> /dev/null; then
+        apt-get install -y terraform
+        checkError "Install Terraform"
+    fi
+}
+
+# Launch terminal
+launch_terminal() {
+    echo "Launching Terminal..."
+    ensureAdmin
+    open -a Terminal .
+    checkError "Launch Terminal"
+}
 ' > /usr/local/bin/gencore_setup.sh
 
 RUN chmod +x /usr/local/bin/gencore_setup.sh
-
-# (NOTE: This content has been written or altered by an AI agent & is pending approval from a human counterpart.)

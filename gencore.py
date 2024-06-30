@@ -1,266 +1,246 @@
-#!/usr/bin/env python3
-
 import os
-import sys
-import datetime
-import configparser
-import openai
-import platform
-import logging 
+import logging
+from flask import Flask, jsonify
 import subprocess
-import socket
-import psutil
-import tempfile
-import json
-import requests
-from bs4 import BeautifulSoup
-from contextlib import contextmanager
 
-from CLI.cli_print import print_message
+app = Flask(__name__)
 
-logging.basicConfig(filename='gizmo_record.log', level=logging.DEBUG)
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Define GenCore class.
-class GenCore:
-    def __init__(self, gizmo_code, default_config):
-        self.current_folder = os.getcwd()
-        self.parent_folder = os.path.dirname(self.current_folder)
-        self.volume_names = {
-            "GENCORE": [],
-            "MEMORY": [],
-            "BOOKS": [],
-            "CONFIG": ["config_manager.py"],
-            "CLI": ["gizmo_cli.py"],
-            "GUI": ["gizmo_gui.py"],
-            "SPLITTER": ["text_splitter.py"],
-            "FORMATTER": ["text_formatter.py"],
-            "MONOPOLY": ["monopoly_simulator.py"],
-            "BananaBrain": ["banana_brain.py"],
-            "AGREEMENT": []
-        }
-        default_config = {
-            "General": {
-                "Encoding": "utf-8",
-                "MaxRetries": 3,
-                "Temperature": 0.2,
-                "TokenLimit": 8192
-            },
-            "Paths": {
-                "MemoryFile": "MEMORY/Core_Memory.txt",
-                "ConfigFile": "CONFIG/Config_Settings.ini",
-                "MemoryFilePath": "MEMORY/Core_History"
-            },
-            "Libraries": [
-                "os", "sys", "datetime", "configparser", "openai", "platform",
-                "logging", "subprocess", "socket", "psutil", "tempfile",
-                "requests", "bs4.BeautifulSoup", "contextlib"
-            ],
-            "MessageTypes": [
-                "initialization", "status", "info", "error", "debug", "alert",
-                "user_input", "query", "summary", "warning", "fatal_error",
-                "shutdown"
-            ],
-            "API": {
-                "APIKey": "Your-API-Key-Here",
-                "GPTModel": ["gpt-4", "gpt-3.5-turbo"]
-            },
-            "Role": {
-                "RoleDescription": "Your name is Gizmo, and you're an AI Lab Assistant..."
-            }
-        }
-        self.default_config = default_config
-        self.buffer = []
-        self.load_config_and_memory()
-        self.setup_environment()
-        self.initial_message()
-        
-    def graceful_exit(self):
-        self.print_message("Cleaning up resources...", "status")
-        self.print_message("Exiting the program.", "status")
-        sys.exit()
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify(status="healthy"), 200
 
-    def initial_message(self):
-        program_name = os.path.basename(__file__).replace('.py', '')
-        formatted_program_name = ' '.join(word.capitalize() for word in program_name.split('_'))
-        
-        title_message = f"[Initialization] Monkey Head Project: {formatted_program_name} Initialized"
-        init_message = f"Starting '{formatted_program_name}.py'..."
-        
-        common_prefix = "Monkey Head Project: Gizmo / BananaBrain"
-        
-        print(f"{common_prefix} - {formatted_program_name}")
-        self.print_message(title_message, "initialization")
-        self.print_message(init_message, "initialization")
+@app.route('/ready', methods=['GET'])
+def readiness_check():
+    return jsonify(status="ready"), 200
 
-    def ensure_folder_exists(self, folder_path):
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
+def ensure_admin():
+    if os.geteuid() != 0:
+        logger.error("Please run this script as root or with sudo.")
+        raise PermissionError("Please run this script as root or with sudo.")
 
-    def setup_folders_and_files(self):
-        self.ensure_folder_exists(os.path.join(self.parent_folder, self.level_1))
+def check_error(command, description):
+    if command.returncode != 0:
+        error_message = f"Error: {description} failed with error code {command.returncode}."
+        logger.error(error_message)
+        raise RuntimeError(error_message)
 
-        for folder, py_files in self.level_2_folders.items():
-            folder_path = os.path.join(self.parent_folder, self.level_1, folder)
-            self.ensure_folder_exists(folder_path)
+def log_error(description):
+    logger.error(f"{description} failed with error code {command.returncode}")
 
-            for py_file in py_files:
-                return
+def system_check():
+    logger.info("Performing system checks...")
+    # Check for Debian version
+    with open('/etc/os-release') as f:
+        if "Debian GNU/Linux 13" not in f.read():
+            error_message = "Debian Trixie Check failed"
+            log_error(error_message)
+            raise RuntimeError(error_message)
 
-    def create_python_file(self, folder_path, py_file_name, code_content):
-        py_file_path = os.path.join(folder_path, py_file_name)
-        if not os.path.exists(py_file_path):
-            with open(py_file_path, 'w') as f:
-                f.write(code_content)
-        
-    @contextmanager
-    def load_config(self, config_path=None):
-        if config_path is None:
-            config_path = self.config_file
-        config = configparser.ConfigParser()
-        config.read(config_path)
-        self.validate_config(config)
-        self.validate_model(config)
-        try:
-            yield config
-        finally:
-            with open(config_path, "w") as configfile:
-                config.write(configfile)
+    # Check for available disk space
+    free_space = subprocess.check_output(['df', '/']).splitlines()[-1].split()[3]
+    logger.info(f"Free space on /: {free_space}K")
 
-    def reload_config(self):
-        with self.load_config(self.config_file) as config:
-            self.api_key = self.get_api_key(config)
-            role_description, model, temperature, file_path = self.get_settings(config)
+    # Check for internet connectivity
+    ping = subprocess.run(['ping', '-c', '1', 'google.com'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if ping.returncode != 0:
+        error_message = "Internet Connectivity Check failed"
+        log_error(error_message)
+        raise RuntimeError(error_message)
 
-    def get_api_key(self, config):
-        api_key = config.get('openai', 'api_key', fallback=os.environ.get("OPENAI_API_KEY"))
-        if not api_key:
-            self.print_message("API key is missing. Please add it to the config file or set the OPENAI_API_KEY environment variable.", "error")
-            self.graceful_exit()
-        return api_key
+    # Check for required software (e.g., Git)
+    git_check = subprocess.run(['which', 'git'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(git_check, "Git Availability Check")
 
-    def get_settings(self, config):
-        if 'settings' not in config.sections():
-            self.print_message("Missing 'settings' section. Add it with the necessary keys.", "error")
-            raise ValueError()
-        default_role_description = config.get("settings", "default_role_description")
-        default_model = config.get("settings", "default_model")
-        default_temperature = config.getfloat("settings", "default_temperature")
-        file_path = config.get("settings", "file_path")
-        return default_role_description, default_model, default_temperature, file_path
+def update_system():
+    logger.info("Updating system...")
+    update = subprocess.run(['apt-get', 'update'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(update, "System Update")
 
-    def validate_question(self, question: str):
-        if not question.strip():
-            self.print_message("The question cannot be empty. Please enter a valid question.", "error")
-            raise ValueError()
-        if len(question.split()) > self.token_limit:
-            self.print_message("The question is too long. Please enter a question with fewer tokens.", "error")
-            raise ValueError()
+    upgrade = subprocess.run(['apt-get', 'upgrade', '-y'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(upgrade, "System Upgrade")
 
-    def validate_model(self, model: str):
-        if model not in self.gpt_model:
-            self.print_message(f"The model '{model}' is not valid. Please enter a valid model.", "error")
-            raise ValueError()
+def install_common_tools():
+    logger.info("Installing common tools...")
+    git_install = subprocess.run(['apt-get', 'install', '-y', 'git', 'nodejs'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(git_install, "Common Tools Installation")
 
-    
+def install_additional_tools():
+    logger.info("Installing additional tools...")
+    additional_tools_install = subprocess.run(['apt-get', 'install', '-y', 'python3', 'python3-venv', 'docker.io'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(additional_tools_install, "Additional Tools Installation")
 
-    def get_user_input(self):
-        return self.print_message(f"INPUT: ", "user_input")
+def install_optional_tools():
+    logger.info("Installing optional tools...")
+    optional_tools_install = subprocess.run(['apt-get', 'install', '-y', 'postman', 'slack', 'zoom', 'wget', 'curl', 'terraform', 'kubectl', 'minikube', 'awscli', 'azure-cli'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(optional_tools_install, "Optional Tools Installation")
 
-    def get_openai_answer(self):
-        input_content = self.get_user_input()
-        openai.api_key = self.api_key
-        if isinstance(input_content, list): 
-            messages = input_content
-        else:  
-            messages = [{"role": "system", "content": "You're an AI Assistant."}, {"role": "user", "content": input_content}]
-        response = openai.Completion.create(
-            engine=self.gpt_model[0],
-            prompt=input_content,
-            max_tokens=150
-        )
-        return response.choices[0].text.strip()
-    
-    def add_to_buffer(self, role: str, content: str):
-        timestamp = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-        memory_entry = f"{timestamp} - {role}: {content}"
-        
-        self.buffer.append(memory_entry)
-        self.save_to_memory_file(memory_entry)
+def clone_repository():
+    logger.info("Cloning repository...")
+    os.makedirs(os.path.expanduser("~/Source"), exist_ok=True)
+    clone = subprocess.run(['git', 'clone', 'https://github.com/your/repo.git', os.path.expanduser("~/Source/repo")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(clone, "Git Clone")
 
-    def get_history(self):
-        return self.buffer
+def setup_python_env():
+    logger.info("Setting up Python environment...")
+    os.chdir(os.path.expanduser("~/Source/repo"))
+    venv_create = subprocess.run(['python3', '-m', 'venv', 'venv'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(venv_create, "Python Virtual Environment Setup")
 
-    def save_to_memory_file(self, memory_entry: str):
-        with open(self.memory_file, "a") as file:
-            file.write(f"{memory_entry}\n")
-        self.print_message(f"Saved entry to memory file: {memory_entry}", "status")
+    activate_venv = subprocess.run(['source', 'venv/bin/activate'], shell=True, executable='/bin/bash')
+    check_error(activate_venv, "Activate Python Virtual Environment")
 
-    def load_from_memory_file(self):
-        try:
-            with open(self.memory_file, "r") as file:
-                self.buffer = file.readlines()
-            self.buffer = [line.strip() for line in self.buffer]
-        except FileNotFoundError:
-            self.print_message("Memory file not found. Creating a new one.", "warning")
-            self.buffer = []
+    install_requirements = subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(install_requirements, "Install Python Requirements")
 
-    def generate_answer(self, question: str):
-        self.validate_question(question)
+def configure_git():
+    logger.info("Configuring Git...")
+    git_config_name = subprocess.run(['git', 'config', '--global', 'user.name', "Your Name"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(git_config_name, "Git Config Username")
 
-        self.add_to_buffer("user", question)
-        conversation_history = self.get_history()
+    git_config_email = subprocess.run(['git', 'config', '--global', 'user.email', "your.email@example.com"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(git_config_email, "Git Config Email")
 
-        with self.load_config(self.config_file) as config:
-            api_key = self.get_api_key(config)
-            model = self.gpt_model
-            temperature = self.temperature
-            
-        answer = self.get_openai_answer(conversation_history, api_key, model, temperature)
+def create_directories():
+    logger.info("Creating common directories...")
+    os.makedirs(os.path.expanduser("~/Projects"), exist_ok=True)
+    os.makedirs(os.path.expanduser("~/Tools"), exist_ok=True)
 
-        self.add_to_buffer("assistant", answer)
-        return answer
-            
-    def main(self):
-        try:
-            self.ensure_folders_exist()
+def update_env_variables():
+    logger.info("Updating environment variables...")
+    os.environ["PATH"] += os.pathsep + os.path.expanduser("~/Tools")
+    # Persist the change across sessions
+    with open(os.path.expanduser("~/.bashrc"), "a") as bashrc:
+        bashrc.write("\nexport PATH=$PATH:$HOME/Tools\n")
 
-            with self.load_config() as config:
-                api_key = self.get_api_key(config)
-                role_description, model, temperature, file_path = self.get_settings(config)
-                self.add_to_buffer("system", role_description)
-                
-                while True:
-                    question = self.print_message("Enter a question or type 'quit' to exit or 'reload config' to reload the configuration", "user_input").strip()
-                    
-                    if question.lower() == 'quit':
-                        self.graceful_exit()
-                        break
-                    elif question.lower() == 'reload config':
-                        self.reload_config()
-                        self.print_message("Configuration reloaded.", "status")
-                        continue
+def update_python_packages():
+    logger.info("Updating Python Packages...")
+    upgrade_pip = subprocess.run(['pip', 'install', '--upgrade', 'pip'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(upgrade_pip, "Pip Upgrade")
 
-                    self.validate_question(question)
-                    answer = self.generate_answer(question)
-                    
-                    self.print_message(answer, "info")
-                    self.add_to_buffer("user", question)
-                    self.add_to_buffer("assistant", answer)
-        except Exception as e:
-            self.print_message(f"An exception occurred: {e}", "error")
-            self.handle_exception(type(e), "main")
-            self.graceful_exit()
+    update_packages = subprocess.run(['pip', 'install', '--upgrade', '-r', 'requirements.txt'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(update_packages, "Update Python Packages")
 
+def build_system():
+    logger.info("Building System...")
+    os.chdir(os.path.expanduser("~/Source/repo"))
+    build = subprocess.run(['python', 'setup.py', 'build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(build, "Build System")
+
+def manage_containers():
+    logger.info("Managing Containers...")
+    os.chdir(os.path.expanduser("~/Source/repo"))
+    start_containers = subprocess.run(['docker-compose', 'up', '-d'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(start_containers, "Start Docker Containers")
+
+    list_containers = subprocess.run(['docker', 'ps'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(list_containers, "List Running Containers")
+
+def manage_volumes():
+    logger.info("Managing Volumes...")
+    list_volumes = subprocess.run(['docker', 'volume', 'ls'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(list_volumes, "List Docker Volumes")
+
+    prune_volumes = subprocess.run(['docker', 'volume', 'prune', '-f'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(prune_volumes, "Prune Docker Volumes")
+
+def deploy_kubernetes():
+    logger.info("Deploying with Kubernetes...")
+    os.chdir(os.path.expanduser("~/Source/repo"))
+    deploy = subprocess.run(['kubectl', 'apply', '-f', 'deployment.yaml'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(deploy, "Deploy Kubernetes Resources")
+
+    get_pods = subprocess.run(['kubectl', 'get', 'pods'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(get_pods, "Get Kubernetes Pods")
+
+def start_system():
+    logger.info("Starting System...")
+    os.chdir(os.path.expanduser("~/Source/repo"))
+    start = subprocess.run(['python', 'main.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(start, "Start System")
+
+def setup_hostos():
+    logger.info("Setting up HostOS...")
+    install_htop = subprocess.run(['apt-get', 'install', '-y', 'htop'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(install_htop, "Install htop")
+
+def setup_subos():
+    logger.info("Setting up SubOS...")
+    # Add commands to set up SubOS here
+    logger.info("SubOS setup is a placeholder.")
+    check_error(subprocess.CompletedProcess(args=[], returncode=0), "Setup SubOS")
+
+def setup_nanoos():
+    logger.info("Setting up NanoOS...")
+    # Add commands to set up NanoOS here
+    logger.info("NanoOS setup is a placeholder.")
+    check_error(subprocess.CompletedProcess(args=[], returncode=0), "Setup NanoOS")
+
+def kubernetes_management():
+    logger.info("Managing Kubernetes...")
+    get_nodes = subprocess.run(['kubectl', 'get', 'nodes'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(get_nodes, "Get Kubernetes Nodes")
+
+    get_services = subprocess.run(['kubectl', 'get', 'services'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(get_services, "Get Kubernetes Services")
+
+def status():
+    logger.info("Checking System Status...")
+    logger.info("Checking Docker status...")
+    docker_status = subprocess.run(['docker', 'ps'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(docker_status, "Check Docker Status")
+
+    logger.info("Checking Kubernetes status...")
+    kubernetes_status = subprocess.run(['kubectl', 'get', 'pods'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(kubernetes_status, "Check Kubernetes Status")
+
+def backup_config():
+    logger.info("Backing up Configurations...")
+    backup_dir = os.path.expanduser("~/Backup/repo/config")
+    os.makedirs(backup_dir, exist_ok=True)
+    backup = subprocess.run(['cp', '-r', os.path.expanduser("~/Source/repo/config"), backup_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(backup, "Backup Configurations")
+
+def restore_config():
+    logger.info("Restoring Configurations...")
+    restore = subprocess.run(['cp', '-r', os.path.expanduser("~/Backup/repo/config"), os.path.expanduser("~/Source/repo/config")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_error(restore, "Restore Configurations")
+
+def check_dependencies():
+    logger.info("Checking and Installing Dependencies...")
+    terraform_check = subprocess.run(['which', 'terraform'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if terraform_check.returncode != 0:
+        install_terraform = subprocess.run(['apt-get', 'install', '-y', 'terraform'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        check_error(install_terraform, "Install Terraform")
 
 if __name__ == '__main__':
-    pyhton_code = {
-        "config_manager.py": "# Code to handle custom config files",
-        "gizmo_cli.py": "# Code for CLI communication",
-        "gizmo_gui.py": "# Code for GUI communication",
-        "text_splitter.py": "# Code to split books into pieces",
-        "text_formatter.py": "# Code to format book information",
-        "monopoly_simulator.py": "# Code for Monopoly simulator with GPT interface",
-        "banana_brain.py": "# Code for neural network related tasks"
-    }
-    core = GenCore()
-    core.main()
+    ensure_admin()
+    system_check()
+    update_system()
+    install_common_tools()
+    install_additional_tools()
+    install_optional_tools()
+    clone_repository()
+    setup_python_env()
+    configure_git()
+    create_directories()
+    update_env_variables()
+    update_python_packages()
+    build_system()
+    manage_containers()
+    manage_volumes()
+    deploy_kubernetes()
+    start_system()
+    setup_hostos()
+    setup_subos()
+    setup_nanoos()
+    kubernetes_management()
+    status()
+    backup_config()
+    restore_config()
+    check_dependencies()
+
+    app.run(host='0.0.0.0', port=4488)

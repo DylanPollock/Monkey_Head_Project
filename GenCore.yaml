@@ -10,9 +10,7 @@ spec:
   storageClassName: standard
   hostPath:
     path: "/data/gencore"
-  # Ensuring PV is retained even if the PVC is deleted
   persistentVolumeReclaimPolicy: Retain
-  # Adding node affinity to ensure PV is created on specific nodes if required
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -70,7 +68,6 @@ spec:
           value: "1"
         - name: PYTHONUNBUFFERED
           value: "1"
-        # Adding liveness and readiness probes for health checks
         livenessProbe:
           httpGet:
             path: /health
@@ -101,7 +98,4 @@ spec:
     port: 4488
     targetPort: 4488
   type: LoadBalancer
-  # External traffic policy to ensure network traffic is routed properly
   externalTrafficPolicy: Local
-  # Uncomment and set the load balancer IP if you want to set a specific IP
-  # loadBalancerIP: 192.168.50.1
