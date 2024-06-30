@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: gencorePV
+  name: gencore-pv
 spec:
   capacity:
     storage: 1Gi
@@ -15,7 +15,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: gencorePVC
+  name: gencore-pvc
 spec:
   accessModes:
     - ReadWriteOnce
@@ -28,7 +28,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gencoreDeployment
+  name: gencore-deployment
 spec:
   replicas: 1
   selector:
@@ -40,13 +40,20 @@ spec:
         app: gencore
     spec:
       containers:
-      - name: gencoreContainer
+      - name: gencore-container
         image: gencore-image:latest  # Update this with the actual name and tag of your Docker image
         ports:
         - containerPort: 4488
         volumeMounts:
-        - name: gencoreVolume
+        - name: gencore-volume
           mountPath: "/app/data"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
         # Environment variables can be set here if needed
         # env:
         #   - name: ENV_VAR_NAME
@@ -69,7 +76,7 @@ spec:
         #     memory: "128Mi"
         #     cpu: "500m"
       volumes:
-      - name: gencoreVolume
+      - name: gencore-volume
         persistentVolumeClaim:
           claimName: gencorePVC
 
@@ -77,7 +84,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: gencoreService
+  name: gencore-service
 spec:
   selector:
     app: gencore
