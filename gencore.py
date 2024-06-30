@@ -20,14 +20,13 @@ from CLI.cli_print import print_message
 
 logging.basicConfig(filename='gizmo_record.log', level=logging.DEBUG)
 
-
-# Define CoreGizmo class.
-class CoreGizmo:
+# Define GenCore class.
+class GenCore:
     def __init__(self, gizmo_code, default_config):
         self.current_folder = os.getcwd()
         self.parent_folder = os.path.dirname(self.current_folder)
         self.volume_names = {
-            "GIZMO": [],
+            "GENCORE": [],
             "MEMORY": [],
             "BOOKS": [],
             "CONFIG": ["config_manager.py"],
@@ -93,20 +92,19 @@ class CoreGizmo:
         self.print_message(title_message, "initialization")
         self.print_message(init_message, "initialization")
 
-
-    
+    def ensure_folder_exists(self, folder_path):
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
 
     def setup_folders_and_files(self):
-        ensure_folder_exists(os.path.join(self.parent_folder, self.level_1))
+        self.ensure_folder_exists(os.path.join(self.parent_folder, self.level_1))
 
         for folder, py_files in self.level_2_folders.items():
             folder_path = os.path.join(self.parent_folder, self.level_1, folder)
             self.ensure_folder_exists(folder_path)
 
             for py_file in py_files:
-                self.create_python_file(folder_path, py_file, python_code.get(py_file, "# Sample code"))
-
-      
+                return
 
     def create_python_file(self, folder_path, py_file_name, code_content):
         py_file_path = os.path.join(folder_path, py_file_name)
@@ -264,5 +262,5 @@ if __name__ == '__main__':
         "monopoly_simulator.py": "# Code for Monopoly simulator with GPT interface",
         "banana_brain.py": "# Code for neural network related tasks"
     }
-    core = CoreGizmo(python_code, default_config)
+    core = GenCore()
     core.main()
