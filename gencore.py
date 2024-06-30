@@ -29,7 +29,7 @@ def check_error(command, description):
         raise RuntimeError(error_message)
 
 def log_error(description):
-    logger.error(f"{description} failed with error code {command.returncode}")
+    return
 
 def system_check():
     logger.info("Performing system checks...")
