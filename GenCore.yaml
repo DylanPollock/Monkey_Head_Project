@@ -10,6 +10,17 @@ spec:
   storageClassName: standard
   hostPath:
     path: "/data/gencore"
+  # Ensuring PV is retained even if the PVC is deleted
+  persistentVolumeReclaimPolicy: Retain
+  # Adding node affinity to ensure PV is created on specific nodes if required
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - your-node-name  # Replace with your specific node name if needed
 
 ---
 apiVersion: v1
@@ -54,31 +65,28 @@ spec:
           requests:
             memory: "64Mi"
             cpu: "250m"
-        # Environment variables can be set here if needed
-        # env:
-        #   - name: ENV_VAR_NAME
-        #     value: "value"
-        # Liveness and readiness probes can be configured here
-        # livenessProbe:
-        #   httpGet:
-        #     path: /health
-        #     port: 4488
-        # readinessProbe:
-        #   httpGet:
-        #     path: /ready
-        #     port: 4488
-        # Resource limits and requests
-        # resources:
-        #   requests:
-        #     memory: "64Mi"
-        #     cpu: "250m"
-        #   limits:
-        #     memory: "128Mi"
-        #     cpu: "500m"
+        env:
+        - name: PYTHONDONTWRITEBYTECODE
+          value: "1"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        # Adding liveness and readiness probes for health checks
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 4488
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 4488
+          initialDelaySeconds: 30
+          periodSeconds: 10
       volumes:
       - name: gencore-volume
         persistentVolumeClaim:
-          claimName: gencorePVC
+          claimName: gencore-pvc
 
 ---
 apiVersion: v1
@@ -93,8 +101,8 @@ spec:
     port: 4488
     targetPort: 4488
   type: LoadBalancer
-  # External traffic policy can be set to ensure that the network traffic is routed properly
-  # externalTrafficPolicy: Local
-  # Load balancer IP can be specified if you want to set a specific IP
+  # External traffic policy to ensure network traffic is routed properly
+  externalTrafficPolicy: Local
+  # Uncomment and set the load balancer IP if you want to set a specific IP
   # loadBalancerIP: 192.168.50.1
   # (NOTE: This content has been written or altered by an AI agent & is pending approval from a human counterpart.)
