@@ -1,9 +1,3 @@
-Sure! Here's an expanded and detailed version of the `CONTRIBUTING.md` document:
-
----
-
-(NOTE: This content has been written or altered by an AI agent & is pending approval from a human counterpart.)
-
 # Contributing to the Monkey Head Project
 
 ## Welcome!
@@ -116,6 +110,5 @@ Your contributions make the Monkey Head Project better. Thank you for your time,
 If you have any questions or suggestions, feel free to reach out to us at admin@dlrp.ca. We are here to help and support you in your contribution journey.
 
 By following these guidelines, you help us maintain the high standards of the Monkey Head Project and ensure that it remains a valuable resource for everyone. Happy coding!
-
 
 (NOTE: This content has been written or altered by an AI agent & is pending approval from a human counterpart.)
