@@ -18,15 +18,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-venv \
     mate-desktop-environment-core \
     tightvncserver \
-    # Additional libraries for AI development
-    # NLTK and PyTorch installation
-    && pip3 install nltk \
-    && pip3 install torch torchvision torchaudio \
-    # Uncomment to install other necessary libraries or tools
-    # curl \
-    # vim \
+    && pip3 install nltk torch torchvision torchaudio \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && echo "Installation completed successfully."
 
 # Set up the working directory inside the container
 WORKDIR /gencore-workdir
@@ -35,27 +30,30 @@ WORKDIR /gencore-workdir
 COPY requirements.txt ./
 
 # Install Python dependencies from the requirements file
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt \
+    && echo "Python dependencies installed successfully."
 
 # Copy the rest of the project files into the container
 COPY . .
 
 # Non-root User:
-# Correcting user creation and usage
 RUN useradd -m dlrp && chown -R dlrp:dlrp /gencore-workdir
 USER dlrp
 
 # Set up VNC server
-RUN mkdir /root/.vnc
-RUN echo "dlrp" | vncpasswd -f > /root/.vnc/passwd
-RUN chmod 600 /root/.vnc/passwd
-
-# Set up VNC session startup script
-RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &" > /root/.vnc/xstartup
-RUN chmod +x /root/.vnc/xstartup
+RUN mkdir /home/dlrp/.vnc \
+    && echo "dlrp" | vncpasswd -f > /home/dlrp/.vnc/passwd \
+    && chmod 600 /home/dlrp/.vnc/passwd \
+    && echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &" > /home/dlrp/.vnc/xstartup \
+    && chmod +x /home/dlrp/.vnc/xstartup \
+    && echo "VNC server setup completed successfully."
 
 # Expose the necessary port(s)
 EXPOSE 4488
+
+# Health check to ensure the VNC server is running properly
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD pgrep vncserver || exit 1
 
 # Define the command to run when the container starts
 CMD ["vncserver", "-geometry", "1280x800", "-depth", "24", "-localhost", "no", ":1"]
