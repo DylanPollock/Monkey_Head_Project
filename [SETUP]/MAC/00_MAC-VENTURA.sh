@@ -1,120 +1,121 @@
 #!/bin/bash
 
-# Function to check for administrative privileges
+# Change to the script's own directory
+cd "$(dirname "$0")"
+
+# Clear screen and set color
+clear
+echo -e "\e[32m[****|    00 - WIN10.sh - GenCore AI/OS - Windows 11 Pro For Workstations x64   |****]\e[0m"
+echo
+
+# Function to ensure the script is running with administrative privileges
 ensureAdmin() {
-    if [[ $EUID -ne 0 ]]; then
-        echo "Please run this script as root or with sudo."
+    if [ "$(id -u)" != "0" ]; then
+        echo "Please run this script as root."
+        read -p "Press Enter to exit..."
         exit 1
     fi
 }
 
 # Function to check the last command and exit if it failed
 checkError() {
-    if [[ $? -ne 0 ]]; then
+    if [ $? -ne 0 ]; then
         echo "Error: $1 failed with error code $?."
         logError "$1"
-        exit 1
+        read -p "Press Enter to exit..."
+        exit $?
     fi
 }
 
 # Function to log errors
 logError() {
-    echo "$(date) - Error: $1 failed with error code $?" >> error_log.txt
+    echo "$(date +"%Y-%m-%d %H:%M:%S") - Error: $1 failed with error code $?" >> error_log.txt
 }
 
 # Function to perform initial system checks
 systemCheck() {
     echo "Performing system checks..."
-    # Check for macOS version
-    sw_vers -productVersion | grep -q "13"
-    checkError "macOS Ventura Check"
-
     # Check for available disk space
-    FreeSpace=$(df / | tail -1 | awk '{print $4}')
-    echo "Free space on /: ${FreeSpace}K"
-
+    FreeSpace=$(df -h --output=avail "$SystemDrive" | tail -n 1)
+    echo "Free space on $SystemDrive: $FreeSpace"
     # Check for internet connectivity
     ping -c 1 google.com > /dev/null 2>&1
-    if [[ $? -ne 0 ]]; then
+    if [ $? -ne 0 ]; then
         echo "Error: No internet connection detected."
         logError "Internet Connectivity Check"
-        exit 1
+        read -p "Press Enter to exit..."
+        exit $?
     fi
-
-    # Check for required software (e.g., Homebrew, Git)
-    which git > /dev/null
-    checkError "Git Availability Check"
-}
-
-# Function to install Homebrew if not already installed
-installHomebrew() {
-    if ! command -v brew &> /dev/null; then
-        echo "Installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        checkError "Homebrew Installation"
-    else
-        echo "Homebrew is already installed."
+    # Check for required software (e.g., PowerShell, Git)
+    command -v git > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "Error: Git is not installed."
+        logError "Git Availability Check"
+        read -p "Press Enter to exit..."
+        exit $?
     fi
-}
-
-# Function to update system files and health
-updateSystem() {
-    echo "Updating system..."
-    softwareupdate --all --install --force
-    checkError "System Update"
+    # Add any other necessary checks here
 }
 
 # Function to install common tools
 installCommonTools() {
     echo "Installing common tools..."
-    brew install git
+    # Install Git
+    apt-get install -y git
     checkError "Git Installation"
-    brew install node
-    checkError "Node.js Installation"
-    brew install --cask visual-studio-code
+    # Install Node.js
+    apt-get install -y nodejs
+    checkError "NodeJS Installation"
+    # Install VSCode
+    apt-get install -y code
     checkError "VSCode Installation"
 }
 
 # Function to install additional tools
 installAdditionalTools() {
     echo "Installing additional tools..."
-    brew install python
+    # Install Python
+    apt-get install -y python
     checkError "Python Installation"
-    brew install --cask docker
+    # Install Docker
+    apt-get install -y docker
     checkError "Docker Installation"
 }
 
 # Function to install optional tools
 installOptionalTools() {
     echo "Installing optional tools..."
-    brew install postman
-    checkError "Postman Installation"
-    brew install slack
-    checkError "Slack Installation"
-    brew install zoom
-    checkError "Zoom Installation"
-    brew install p7zip
-    checkError "7zip Installation"
-    brew install wget
-    checkError "Wget Installation"
-    brew install curl
-    checkError "Curl Installation"
-    brew install terraform
-    checkError "Terraform Installation"
-    brew install kubectl
-    checkError "kubectl Installation"
-    brew install minikube
-    checkError "Minikube Installation"
-    brew install awscli
-    checkError "AWS CLI Installation"
-    brew install azure-cli
-    checkError "Azure CLI Installation"
+    # Uncomment the tools you need
+    # apt-get install -y postman
+    # checkError "Postman Installation"
+    # apt-get install -y slack
+    # checkError "Slack Installation"
+    # apt-get install -y zoom
+    # checkError "Zoom Installation"
+    # apt-get install -y p7zip
+    # checkError "7zip Installation"
+    # apt-get install -y wget
+    # checkError "Wget Installation"
+    # apt-get install -y curl
+    # checkError "Curl Installation"
+    # apt-get install -y terraform
+    # checkError "Terraform Installation"
+    # apt-get install -y kubectl
+    # checkError "kubectl Installation"
+    # apt-get install -y minikube
+    # checkError "Minikube Installation"
+    # apt-get install -y awscli
+    # checkError "AWS CLI Installation"
+    # apt-get install -y azure-cli
+    # checkError "Azure CLI Installation"
 }
 
 # Function to clone the repository
 cloneRepository() {
     echo "Cloning repository..."
-    mkdir -p "$HOME/Source"
+    if [ ! -d "$HOME/Source" ]; then
+        mkdir "$HOME/Source"
+    fi
     cd "$HOME/Source"
     git clone https://github.com/your/repo.git
     checkError "Git Clone"
@@ -124,7 +125,7 @@ cloneRepository() {
 setupPythonEnv() {
     echo "Setting up Python environment..."
     cd "$HOME/Source/repo"
-    python3 -m venv venv
+    python -m venv venv
     checkError "Python Virtual Environment Setup"
     source venv/bin/activate
     checkError "Activate Python Virtual Environment"
@@ -144,9 +145,9 @@ configureGit() {
 # Function to create common directories
 createDirectories() {
     echo "Creating common directories..."
-    mkdir -p "$HOME/Projects"
+    mkdir "$HOME/Projects"
     checkError "Creating Projects Directory"
-    mkdir -p "$HOME/Tools"
+    mkdir "$HOME/Tools"
     checkError "Creating Tools Directory"
 }
 
@@ -158,7 +159,7 @@ updateEnvVariables() {
 }
 
 # Function to update Python packages
-update_python_packages() {
+updatePythonPackages() {
     echo "Updating Python Packages..."
     pip install --upgrade pip
     checkError "Pip Upgrade"
@@ -167,17 +168,20 @@ update_python_packages() {
 }
 
 # Function to build the system
-build_system() {
+buildSystem() {
     echo "Building System..."
+    # Add commands to build the system here
+    # Example:
     cd "$HOME/Source/repo"
     python setup.py build
     checkError "Build System"
 }
 
 # Function to manage Docker containers
-manage_containers() {
+manageContainers() {
     echo "Managing Containers..."
-    cd "$HOME/Source/repo"
+    # Add commands to manage Docker containers here
+    # Example:
     docker-compose up -d
     checkError "Start Docker Containers"
     docker ps
@@ -185,8 +189,10 @@ manage_containers() {
 }
 
 # Function to manage Docker volumes
-manage_volumes() {
+manageVolumes() {
     echo "Managing Volumes..."
+    # Add commands to manage Docker volumes here
+    # Example:
     docker volume ls
     checkError "List Docker Volumes"
     docker volume prune -f
@@ -194,9 +200,10 @@ manage_volumes() {
 }
 
 # Function to deploy with Kubernetes
-deploy_kubernetes() {
+deployKubernetes() {
     echo "Deploying with Kubernetes..."
-    cd "$HOME/Source/repo"
+    # Add commands to deploy with Kubernetes here
+    # Example:
     kubectl apply -f deployment.yaml
     checkError "Deploy Kubernetes Resources"
     kubectl get pods
@@ -204,39 +211,47 @@ deploy_kubernetes() {
 }
 
 # Function to start the system
-start_system() {
+startSystem() {
     echo "Starting System..."
+    # Add commands to start the system here
+    # Example:
     cd "$HOME/Source/repo"
     python main.py
     checkError "Start System"
 }
 
 # Function to set up HostOS
-setup_hostos() {
+setupHostOS() {
     echo "Setting up HostOS..."
-    brew install htop
+    # Add commands to set up HostOS here
+    # Example:
+    apt-get install -y htop
     checkError "Install htop"
 }
 
 # Function to set up SubOS
-setup_subos() {
+setupSubOS() {
     echo "Setting up SubOS..."
     # Add commands to set up SubOS here
-    echo "SubOS setup is a placeholder."
+    # Example:
+    # Placeholder for SubOS setup commands
     checkError "Setup SubOS"
 }
 
 # Function to set up NanoOS
-setup_nanoos() {
+setupNanoOS() {
     echo "Setting up NanoOS..."
     # Add commands to set up NanoOS here
-    echo "NanoOS setup is a placeholder."
+    # Example:
+    # Placeholder for NanoOS setup commands
     checkError "Setup NanoOS"
 }
 
 # Function to manage Kubernetes
-kubernetes_management() {
+kubernetesManagement() {
     echo "Managing Kubernetes..."
+    # Add commands to manage Kubernetes here
+    # Example:
     kubectl get nodes
     checkError "Get Kubernetes Nodes"
     kubectl get services
@@ -246,6 +261,7 @@ kubernetes_management() {
 # Function to check system status
 status() {
     echo "Checking System Status..."
+    # Call a status script or include status commands here
     echo "Checking Docker status..."
     docker ps
     checkError "Check Docker Status"
@@ -255,87 +271,76 @@ status() {
 }
 
 # Function to backup configurations
-backup_config() {
+backupConfig() {
     echo "Backing up Configurations..."
-    mkdir -p "$HOME/Backup/repo/config"
+    # Placeholder for backup commands
+    # Example:
     cp -r "$HOME/Source/repo/config" "$HOME/Backup/repo/config"
     checkError "Backup Configurations"
 }
 
 # Function to restore configurations
-restore_config() {
+restoreConfig() {
     echo "Restoring Configurations..."
+    # Placeholder for restore commands
+    # Example:
     cp -r "$HOME/Backup/repo/config" "$HOME/Source/repo/config"
     checkError "Restore Configurations"
 }
 
 # Function to check and install dependencies
-check_dependencies() {
+checkDependencies() {
     echo "Checking and Installing Dependencies..."
-    if ! command -v terraform &> /dev/null; then
-        brew install terraform
+    # Placeholder for dependency checks and installations
+    # Example:
+    command -v terraform > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        apt-get install -y terraform
         checkError "Install Terraform"
     fi
 }
 
 # Function to launch terminal
-launch_terminal() {
+launchTerminal() {
     echo "Launching Terminal..."
     ensureAdmin
-    open -a Terminal .
+    x-terminal-emulator
     checkError "Launch Terminal"
 }
 
-# Function to handle full setup
-full_setup() {
-    echo "Starting Full Setup..."
-    ensureAdmin
-    systemCheck
-    installHomebrew
-    updateSystem
-    installCommonTools
-    installAdditionalTools
-    installOptionalTools
-    cloneRepository
-    setupPythonEnv
-    configureGit
-    createDirectories
-    updateEnvVariables
-    echo "Full Setup Complete."
-    checkError "Full Setup"
-}
-
-# Function to handle mini setup
-mini_setup() {
-    echo "Starting Mini Setup..."
-    ensureAdmin
-    systemCheck
-    installHomebrew
-    updateSystem
-    installCommonTools
-    installAdditionalTools
-    echo "Mini Setup Complete."
-    checkError "Mini Setup"
-}
-
 # Main Execution Flow
+echo "Ensuring script runs with administrative privileges..."
 ensureAdmin
+
+echo "Performing initial system checks..."
 systemCheck
-installHomebrew
-updateSystem
+
+echo "Installing common tools..."
 installCommonTools
+
+echo "Installing additional tools..."
 installAdditionalTools
-installOptionalTools
+
+echo "Cloning the repository..."
 cloneRepository
+
+echo "Setting up Python environment..."
 setupPythonEnv
+
+echo "Configuring Git..."
 configureGit
+
+echo "Creating common directories..."
 createDirectories
+
+echo "Updating environment variables..."
 updateEnvVariables
 
-# Main menu
 while true; do
     clear
+    echo
     echo "Main Menu:"
+    echo
     echo "1. Full Setup"
     echo "2. Mini Setup"
     echo "3. Cleanup"
@@ -355,28 +360,29 @@ while true; do
     echo "17. Restore Configurations"
     echo "18. Check Dependencies"
     echo "E. Exit"
+    echo
     read -p "Enter your choice: " choice
+
     case $choice in
-        1) full_setup ;;
-        2) mini_setup ;;
+        1) fullSetup ;;
+        2) miniSetup ;;
         3) cleanup ;;
-        4) launch_terminal ;;
-        5) update_python_packages ;;
-        6) build_system ;;
-        7) manage_containers ;;
-        8) manage_volumes ;;
-        9) deploy_kubernetes ;;
-        10) start_system ;;
-        11) setup_hostos ;;
-        12) setup_subos ;;
-        13) setup_nanoos ;;
-        14) kubernetes_management ;;
+        4) launchTerminal ;;
+        5) updatePythonPackages ;;
+        6) buildSystem ;;
+        7) manageContainers ;;
+        8) manageVolumes ;;
+        9) deployKubernetes ;;
+        10) startSystem ;;
+        11) setupHostOS ;;
+        12) setupSubOS ;;
+        13) setupNanoOS ;;
+        14) kubernetesManagement ;;
         15) status ;;
-        16) backup_config ;;
-        17) restore_config ;;
-        18) check_dependencies ;;
-        [Ee]) echo "Exiting script. Thank you for using GenCore."; exit 0 ;;
-        *) echo "Invalid choice. Please select a valid option." ;;
+        16) backupConfig ;;
+        17) restoreConfig ;;
+        18) checkDependencies ;;
+        [Ee]) exit ;;
+        *) echo "Invalid choice. Please try again." ;;
     esac
-    read -p "Press any key to return to the main menu..." -n1 -s
 done
