@@ -1,0 +1,26 @@
+Huey: Dual Supermicro Motherboards
+
+Name of the Robot: Huey
+
+1. SuperMicro X9QRI-F+ Motherboard
+- Processors: Armed with four Intel Xeon E5-4627 V2 CPUs, Huey is endowed with unparalleled processing power, specifically tailored for complex computational tasks requiring high throughput and utmost reliability.
+- Features: Excelling in environments demanding multi-threaded applications, this motherboard offers vast memory support and extensive I/O capabilities, rendering it perfect for managing heavy workloads and optimizing task execution.
+
+2. Supermicro C9X299-RPGF-L X299 LGA2066 Motherboard
+- Processor: The Intel i7-7820X powers this configuration, known for its exceptional performance in processing-intensive tasks.
+- Features: This motherboard supports quad-channel DDR4 memory and provides ample PCI Express lanes for expansion, along with overclocking capabilities, meeting a wide array of professional and computational research needs.
+
+RAM Configuration
+Huey leverages 128GB of physical RAM, mirrored to 64GB of ECC RAM, to ensure data integrity and error correction, maintaining unparalleled reliability in operations.
+
+Cooling System
+An exclusive liquid cooling solution is employed across both platforms, ensuring Huey operates at optimal temperatures with maximum efficiency, even under significant computational strain.
+
+Power System
+A custom-designed power solution caters to Huey's demands, accommodating the high-energy needs of its sophisticated hardware configuration.
+
+Storage System
+Huey's storage framework is deliberately engineered to accommodate its advanced processing requirements, integrating state-of-the-art storage technologies for superior data management and access.
+
+Summation
+The integration of the SuperMicro X9QRI-F+ and Supermicro C9X299-RPGF-L X299 LGA2066 motherboards, alongside the Intel Xeon E5-4627 V2 and Intel i7-7820X processors, marks a significant advancement in the Monkey Head Project's ambition to redefine the boundaries of robotics and AI research. This dual-platform approach not only demonstrates the project's dedication to harnessing cutting-edge technology but also affirms its commitment to the principles of modularity, expandability, and autonomous progression. Huey symbolizes the project's relentless pursuit to forge new pathways in robotics, ready to adapt and excel in the face of technological evolution.
