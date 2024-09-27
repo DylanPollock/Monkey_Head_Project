@@ -4,3 +4,9 @@
 [submodule "[REPO]/shell-gpt-gencore"]
 	path = [REPO]/shell-gpt-gencore
 	url = https://github.com/DLRP1995/shell-gpt-gencore.git
+[submodule "pygpt"]
+	path = pygpt
+	url = https://github.com/DylanPollock/pygpt.git
+[submodule "pypdf"]
+	path = pypdf
+	url = https://github.com/DylanPollock/pypdf.git
