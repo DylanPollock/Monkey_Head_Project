@@ -63,8 +63,8 @@ if %errorlevel% neq 0 (
     echo Docker daemon is not running. Attempting to start...
     start /B "Docker Daemon" "C:\Program Files\Docker\Docker\Docker Desktop.exe"
     timeout /t 10 >nul
-    docker info >nul 2>&1
-    if %errorlevel% neq 0 (
+docker info >nul 2>&1
+if %errorlevel% neq 0 (
         echo Error: Docker daemon failed to start.
         call :checkError "Starting Docker Daemon"
     ) else (
