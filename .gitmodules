@@ -10,3 +10,12 @@
 [submodule "pypdf"]
 	path = pypdf
 	url = https://github.com/DylanPollock/pypdf.git
+[submodule "terminal"]
+	path = terminal
+	url = https://github.com/microsoft/terminal.git
+[submodule "PowerShell"]
+	path = PowerShell
+	url = https://github.com/PowerShell/PowerShell.git
+[submodule "vscode"]
+	path = vscode
+	url = https://github.com/microsoft/vscode.git
