@@ -1,0 +1,4 @@
+
+#include "resource.h"
+
+CHAFA_CONTENT RCDATA "chafa.txt"

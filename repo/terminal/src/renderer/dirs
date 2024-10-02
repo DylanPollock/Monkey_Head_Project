@@ -1,0 +1,4 @@
+DIRS= \
+     base \
+     gdi \
+     wddmcon \

@@ -1,0 +1,194 @@
+@font-face {{
+  font-family: "Lato";
+  src: url('file:///%fonts%/Lato/Lato-Regular.ttf');
+}}
+@font-face {{
+  font-family: "Monaspace Neon";
+  src: url('file:///%fonts%/MonaspaceNeon/MonaspaceNeon-Regular.otf');
+}}
+* {{
+    font-family: 'Lato'; 
+}}
+body {{ 
+    word-wrap: break-word;
+    padding: 6px;
+    line-height: 1.25;
+    will-change: transform, opacity;
+    margin: 4px;
+    padding: 0;
+    max-width: 100%;
+}}
+::-webkit-scrollbar {{
+    height: 12px;
+    width: 12px;
+}}
+::-webkit-scrollbar-thumb {{
+    -webkit-border-radius: 1ex;
+    -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+}}
+p {{ 
+    margin-top: 5px;
+    margin-bottom: 5px;
+}}
+.msg-user {{
+    white-space: pre-wrap;
+    width: auto;
+    max-width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    margin-top: 10px;
+    margin-left: 0px;
+    margin-bottom: 5px;
+}}
+.msg-bot {{
+    white-space: pre-wrap;
+    width: auto;
+    max-width: 100%;
+    margin-top: 10px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}}
+.msg-extra {{
+    margin-top: 10px;
+    margin-bottom: 0px;
+}}
+.msg-box {{
+    padding: 5px;
+    max-width: 100%;
+}}
+.msg-box .msg {{
+    margin: 0;
+    padding: 5px;
+}}
+.msg-box:first-child {{
+    margin-top: 0px;
+}}
+.msg-box:last-child {{
+    border-bottom: none;
+}}
+.msg-box .name-header {{
+    display: none;
+}}
+.image {{
+    max-width: 400px;
+}}
+.cmd {{
+    font-family: 'Lato';
+    text-decoration: none;
+    padding-bottom: 0px;
+}}
+.ts {{
+    display: none;
+}}
+ul, ol, .list {{
+    margin-top: 0px;
+    margin-bottom: 0px;
+}}
+pre {{
+    font-family: 'Monaspace Neon';
+    display: block;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    text-align: left;
+    padding: 0;
+}}
+code {{
+    font-family: 'Monaspace Neon';
+    word-wrap: break-word;
+}}
+.code-header-wrapper {{
+    text-align: right;
+    width: auto;
+    padding: 10px;
+    padding-top: 10px;
+    margin: 0;
+    font-size: 0.9rem;
+}}
+.code-header {{
+    text-align: right;
+    width: 90%;
+    padding: 0px;
+}}
+.code-header-lang {{
+    float: left;
+}}
+.code-header-copy {{
+    text-align: right;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    color: #6e6e6e;
+}}
+.code-header-copy img {{
+    vertical-align: middle;
+    padding-right: 5px;
+}}
+.code-wrapper {{
+    padding: 0px;
+    margin: 0px;
+}}
+.code-wrapper pre {{
+    padding: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    margin-top: 0;
+}}
+.highlight span {{
+    font-family: 'Monaspace Neon';
+}}
+.action-icons {{
+    margin-top: 10px;
+}}
+.action-icons a {{
+    text-decoration: none;
+}}
+.action-icons a:hover {{
+    filter: brightness(60%);
+}}
+.action-img {{
+    width: 20px;
+    height: 20px;
+}}
+.edit-icon {{
+    display: none;
+}}
+.display-edit-icons .edit-icon {{
+    display: inline;
+}}
+.display-timestamp .ts {{
+    display: inline;
+}}
+.display-blocks {{
+}}
+.display-blocks .msg-box {{
+    border-radius: 10px;
+    padding: 10px;
+    margin-right: 10px;
+}}
+.display-blocks .msg-box:not(first-child) {{
+    margin-top: 20px !important;
+}}
+.display-blocks .name-header {{
+    display: block;
+    font-size: 0.8rem;
+}}
+.display-blocks .name-header::before {{
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}}
+.append_input {{
+    margin: 0;
+    padding: 0;
+}}
+.append_output {{
+    margin: 0;
+    padding: 0;
+}}
+.empty_list {{
+}}

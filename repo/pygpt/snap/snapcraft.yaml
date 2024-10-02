@@ -1,0 +1,89 @@
+name: pygpt
+base: core22  # Ubuntu 22.04
+version: '2.3.2'
+summary: Desktop AI Assistant - GPT-4, GPT-4V, GPT-3, DALL-E 3, chat, assistant, vision
+description: |
+  **PyGPT** is **all-in-one** Desktop AI Assistant that provides direct interaction with OpenAI language models, including GPT-4, GPT-4 Vision, and GPT-3.5, through the OpenAI API. The application also integrates with alternative LLMs, like those available on HuggingFace, by utilizing Langchain.
+
+grade: stable  # 'stable', 'devel'
+confinement: strict  # 'strict', 'classic', 'devmode'
+architectures:
+    - build-on: amd64
+      build-for: [amd64]
+    - build-on: i386
+      build-for: [i386]
+
+parts:
+  pygpt:
+    #source: https://github.com/szczyglis-dev/py-gpt.git
+    #source-branch: master
+    source: .
+    plugin: python
+    python-requirements: [requirements.txt]
+    stage-packages:
+      - portaudio19-dev
+      - ffmpeg
+      - gstreamer1.0-libav
+      - docker
+      - libxcb-cursor0
+      - libxkbfile1
+      - ubuntu-restricted-extras
+      - libqt5webengine5
+      - mesa-utils
+      - libgl1-mesa-dri
+      - libgl1-mesa-glx
+      - libglx-mesa0
+      - libgl1
+      - libglu1-mesa
+      - libfreetype6
+      - libgtk-3-0
+      - libpng16-16
+      - libfontconfig1
+      - libxi6        
+      - xkb-data
+    build-packages:
+      - execstack
+      - portaudio19-dev
+      - gstreamer1.0-libav
+      - libxcb-cursor0
+    override-build: |
+      snapcraftctl build
+      find $SNAPCRAFT_PART_INSTALL -name "onnxruntime_pybind11_state.cpython-310-${SNAPCRAFT_ARCH_TRIPLET}.so" -exec execstack --clear-execstack {} \;
+      cp -r $SNAPCRAFT_PART_SRC/snaprun.sh $SNAPCRAFT_PART_INSTALL/
+      cp -r $SNAPCRAFT_PART_SRC/src $SNAPCRAFT_PART_INSTALL/
+      python3 -m nltk.downloader -d $SNAPCRAFT_PART_INSTALL/lib/python3.10/site-packages/llama_index/legacy/_static/nltk_cache stopwords punkt
+
+layout:
+  /usr/share/alsa:
+    bind: $SNAP/usr/share/alsa
+  /usr/share/qt5:
+    bind: $SNAP/usr/share/qt5
+
+apps:
+  pygpt:
+    command: snaprun.sh
+    extensions: [kde-neon]
+    environment:
+      "LD_LIBRARY_PATH": "$LD_LIBRARY_PATH:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/blas:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/lapack"
+      "PYTHONPATH": "$PYTHONPATH:$SNAP/usr/lib/python3/dist-packages:$SNAP/src"
+      "QT_XKB_CONFIG_ROOT": "$SNAP/usr/share/X11/xkb"
+      "LIBGL_DRIVERS_PATH": "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/dri"
+      "QTWEBENGINEPROCESS_PATH": "$SNAP/lib/python3.10/site-packages/PySide6/Qt/libexec/QtWebEngineProcess"
+      "QML_IMPORT_PATH": "$SNAP/qml"
+      "QML2_IMPORT_PATH": "$SNAP/qml"
+    plugs:
+    - alsa
+    - audio-playback
+    - audio-record
+    - browser-support
+    - network
+    - home
+    - gsettings
+    - desktop
+    - desktop-legacy
+    #- wayland
+    - x11
+    - opengl
+    - unity7
+    - camera
+    - serial-port

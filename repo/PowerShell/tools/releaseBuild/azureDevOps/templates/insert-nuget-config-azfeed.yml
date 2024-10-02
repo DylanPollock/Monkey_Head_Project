@@ -1,0 +1,8 @@
+parameters:
+- name: "repoRoot"
+  default: $(REPOROOT)
+steps:
+  - template: /.pipelines/templates/insert-nuget-config-azfeed.yml@self
+    parameters:
+      repoRoot: $(REPOROOT)
+
