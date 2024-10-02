@@ -65,7 +65,7 @@ class Formatter:
         formatted_program_name = ' '.join(word.capitalize() for word in program_name.split('_'))
         title_message = f"[Initialization] Monkey Head Project: {formatted_program_name} Initialized"
         init_message = (f"Starting '{formatted_program_name}.py'...", "initialization")
-        print(f"Monkey Head Project: Gizmo / BananaBrain - {formatted_program_name}")
+        print(f"Monkey Head Project: GenCore / BananaBrain - {formatted_program_name}")
         self.print_message(title_message, "initialization")
         self.print_message(init_message[0], init_message[1])
 
@@ -74,13 +74,13 @@ class Formatter:
         # Validation and Error Handling extracted to a separate function
         self.validate_print_message_input(output_message, message_type)
         # Actual message printing
-        if message type.lower() == "alert":
+        if message_type.lower() == "alert":
             output_message = f"Alert has been triggered & program may fail!' {output_message}'"
-        if message type.lower() == "user_input":
-            return input(f"> {message type.capitalize()}: {output_message}")
+        if message_type.lower() == "user_input":
+            return input(f"> {message_type.capitalize()}: {output_message}")
         else:
-            print(f"> {message type.capitalize()}: {output_message}")
-            logging.info(f"{message type.capitalize()}: {output_message}")
+            print(f"> {message_type.capitalize()}: {output_message}")
+            logging.info(f"{message_type.capitalize()}: {output_message}")
 
     # Validate the inputs to print_message function
     def validate_print_message_input(self, output_message, message_type):
