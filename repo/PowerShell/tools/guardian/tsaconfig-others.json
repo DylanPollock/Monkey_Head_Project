@@ -1,7 +1,0 @@
-{
-  "codebaseName": "PowerShellCore_201906",
-  "tools": [
-      "CredScan",
-      "PoliCheck"
-  ]
-}
