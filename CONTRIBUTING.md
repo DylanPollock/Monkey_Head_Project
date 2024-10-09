@@ -76,7 +76,8 @@ To maintain the quality and consistency of the project, please adhere to the fol
 - **Coding Standards:**
   - Follow Python PEP8 standards for coding.
   - Ensure your code is well-documented and includes comments where necessary.
-  
+  - When working with Docker, Kubernetes, or Debian-related optimizations, ensure your configurations follow the project standards for containerization and cloud scaling.
+
 - **Commit Messages:**
   - Write clear, concise, and descriptive commit messages.
   - Use imperative mood in the subject line (e.g., "Add feature" instead of "Added feature").
@@ -84,10 +85,12 @@ To maintain the quality and consistency of the project, please adhere to the fol
 - **Testing:**
   - Ensure your code has accompanying tests.
   - Run existing tests to verify that your changes do not break any functionality.
+  - For hardware-related code contributions, make sure to follow lab testing protocols and provide benchmark results.
 
 - **Documentation:**
   - Update documentation as necessary to reflect your changes.
   - Ensure that new features or changes are documented in the relevant sections.
+  - The core focus of the documentation is to 'breathe new life into old tech,' so make sure all contributions align with this ethos.
 
 ## Reporting Bugs or Issues
 If you encounter a bug or have a feature request, please use the [GitHub issue tracker](link_to_issue_tracker) to report it. When reporting issues, please include:
@@ -96,12 +99,14 @@ If you encounter a bug or have a feature request, please use the [GitHub issue t
 - Steps to reproduce the issue.
 - Expected and actual results.
 - Any relevant logs, screenshots, or error messages.
+- For hardware-specific issues, provide system specs and setup details (e.g., CPU, RAM, disk space, etc.).
 
 ## Community and Communication
 Join our community to stay updated and engage with other contributors:
 
 - **Community Forum:** Participate in discussions, ask questions, and share ideas at our [Community Forum](link_to_forum).
 - **Virtual Meetups:** We hold regular virtual meetups every [time frame]. Details are posted on the community forum.
+- **Monthly Updates:** Project updates will be provided monthly, detailing the latest features, issues, and future roadmap.
 
 ## Acknowledgments
 Your contributions make the Monkey Head Project better. Thank you for your time, effort, and expertise. We appreciate every contributor's effort, no matter how big or small.
